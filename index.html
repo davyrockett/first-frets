@@ -125,11 +125,13 @@ svg text{font-family:var(--f-body)}
 .fb-lbl{font-size:12px;font-weight:700;text-anchor:middle;dominant-baseline:central;fill:#1E1B18}
 .fb-hit{fill:transparent;cursor:pointer}
 .fb-hit:hover{fill:rgba(255,255,255,.08)}
-.fb-mark text{font-size:13px;font-weight:700;text-anchor:middle;dominant-baseline:central;fill:#1E1B18;pointer-events:none}
-.fb-mark circle{stroke:var(--surface);stroke-width:2;pointer-events:none}
-.fb-mark.open circle{fill:none;stroke-width:3}
-.fb-mark.open text{fill:var(--ink)}
+.fb-mark text{font-size:16px;font-weight:800;text-anchor:middle;dominant-baseline:central;fill:#1E1B18;pointer-events:none}
+.fb-mark circle{pointer-events:none}
+.fb-mark .dot{stroke:#fff;stroke-width:2.5;filter:drop-shadow(0 1px 3px rgba(0,0,0,.45))}
+.fb-mark .halo{opacity:0;transform-box:fill-box;transform-origin:center}
 .fb-mark.pop{animation:pop .25s ease-out}
+.fb-mark.pop .halo{animation:halo .7s ease-out}
+@keyframes halo{from{transform:scale(1);opacity:.75}to{transform:scale(2.1);opacity:0}}
 @keyframes pop{from{transform:scale(.5);opacity:.3}to{transform:scale(1);opacity:1}}
 .fb-mark{transform-box:fill-box;transform-origin:center}
 .orient{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
@@ -378,7 +380,8 @@ function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,
   let base=[];
   function draw(list,popKey){
     marksG.innerHTML=list.map(m=>{const x=mx(m.f),y=sy(m.s),open=m.f===0;
-      return `<g class="fb-mark${open?' open':''}${popKey&&m.pop?' pop':''}"><circle cx="${x}" cy="${y}" r="12" ${open?`stroke="${STR[m.s].color}"`:`fill="${STR[m.s].color}"`}/><text x="${x}" y="${y}">${m.label??m.f}</text></g>`;}).join('');
+      // Big filled dot in the string's color (open strings too), with a ring that pulses out when the note sounds.
+      return `<g class="fb-mark${open?' open':''}${popKey&&m.pop?' pop':''}"><circle class="halo" cx="${x}" cy="${y}" r="15" fill="${STR[m.s].color}"/><circle class="dot" cx="${x}" cy="${y}" r="14.5" fill="${STR[m.s].color}"/><text x="${x}" y="${y}">${m.label??m.f}</text></g>`;}).join('');
   }
   let tmo;
   const api={el,
