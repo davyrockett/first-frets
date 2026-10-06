@@ -876,14 +876,15 @@ const L=[
   <section class="block"><h3>String names</h3><p class="prose">Thicker to thinner: E A D G B e. Tap a letter to hear it.</p><div data-w="mn"></div></section>
   <section class="block"><h3>Which peg turns which string</h3><p class="prose">Trace the string from the bridge, toward the headstock, past the nut, to the post it winds around. That peg is the one.</p><div data-w="hs"></div>
     <div class="callout warn"><b class="t">Common mistake</b><p>Turning the wrong peg. If the string you're plucking doesn't respond, stop. Don't keep cranking; you're tightening a different string.</p></div></section>
-  <section class="block"><h3>Using a tuner</h3><p class="prose">This app has a tuner built in. Tap Start, allow the microphone, and pluck one string at a time. You can also open it any time from the <b>Tuner</b> button at the top of the page.</p><div data-w="tl"></div><ul class="points">
+  <section class="block"><h3>Using a tuner</h3><ul class="points">
     <li><b>Phone tuner app</b> or <b>clip-on tuner</b>. There are a ton of free guitar tuner apps out there: just search "guitar tuner." I recommend the Fender Tune app. A clip-on attaches to the headstock and feels the vibration directly, so room noise doesn't confuse it.</li>
     <li><b>One string at a time.</b> Other strings ringing will confuse the tuner. Use a rest stroke: rest your thumb on the string you're tuning, push through it, and let your thumb land on the next thinner string. That keeps the neighboring string quiet. Same thumb motion as Right Hand Basics.</li>
     <li><b>Keep plucking while you turn.</b> Notes fade quickly. Hold the guitar with your right arm, reach the peg with your left hand, and <b>KEEP PLUCKING!</b></li>
     <li><b>Very out of tune?</b> The tuner may not recognize the note. Get it close by ear (use the letters above) first.</li>
     <li><b>Tune twice.</b> Big adjustments shift the tension on the neck. After all six, go back and check them again.</li></ul>
-    <h4 class="subhead">Tune up to the note</h4><p class="prose">Always approach the target pitch from below. If you overshoot and go sharp, loosen until you're below the note, then tighten back up. A string tuned up to pitch holds its tuning better. Practice it here.</p><div data-w="tt"></div></section>`,
- mount(r){const t=Tuner();STOP_ALL.push(t.stop);mount(r,'tl',t.el);mount(r,'mn',Mnemonic());mount(r,'hs',Headstock());mount(r,'tt',TunerTrainer());}},
+    <h4 class="subhead">Tune up to the note</h4><p class="prose">Always approach the target pitch from below. If you overshoot and go sharp, loosen until you're below the note, then tighten back up. A string tuned up to pitch holds its tuning better. Practice it here.</p><div data-w="tt"></div>
+    <div class="callout tip"><b class="t">This app has a tuner</b><p>When you're ready to tune your guitar for real, tap the <b>Tuner</b> button at the top of any page. Allow the microphone, then pluck one string at a time.</p></div></section>`,
+ mount(r){mount(r,'mn',Mnemonic());mount(r,'hs',Headstock());mount(r,'tt',TunerTrainer());}},
 
 {t:'The Guitar\'s Map',html:`
   <p class="lead">Every note has an address: a string and a fret. Learn to read the address and you can find any note.</p>
