@@ -109,7 +109,12 @@ ul.points li::marker{color:var(--accent)}
 .tuner-live{display:flex;flex-direction:column;gap:14px}
 .tuner-live .gauge{max-width:360px}
 .tuner-live .strsel .btn.heard{box-shadow:0 0 0 3px var(--hl)}
-.tuner-open{margin-top:6px;align-self:flex-start}
+.tools{display:flex;gap:8px;margin-top:6px}
+.tools .btn{padding:7px 14px;font-size:14px}
+.tmodal-card.wide{max-width:860px}
+.chordchart{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.chordchart .chordcard{padding:8px 6px 10px}
+.chordchart .chord{width:100%;max-width:170px}
 .tmodal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px 24px;overflow:auto}
 .tmodal-card{background:var(--bg);border-radius:16px;padding:18px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .tmodal-card h2{font-size:34px;text-transform:uppercase}
@@ -278,7 +283,11 @@ figcaption{font-size:14px;color:var(--muted)}
   .brand{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
   .brand h1{font-size:28px}
   .brand p{display:none}
-  .tuner-open{margin:0;padding:6px 12px;font-size:14px}
+  .brand{flex-wrap:wrap;align-items:center;row-gap:6px}
+  .tools{margin:0;gap:6px}
+  .tools .btn{padding:5px 10px;font-size:13px}
+  .prog{flex-basis:100%;flex-direction:row;align-items:center;gap:10px}
+  .prog .bar{flex:1}
   .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px;scrollbar-width:none}
   .nav button{grid-template-columns:auto;padding:6px 12px;border:1px solid var(--line);white-space:nowrap}
   .nav .t,.nav .ck{display:none}
@@ -294,7 +303,7 @@ figcaption{font-size:14px;color:var(--muted)}
 <body>
 <div class="app">
   <aside class="rail">
-    <div class="brand"><h1>Beginner Guitar</h1><p>A method for absolute beginners</p><button type="button" class="btn tuner-open" id="tuner-open">Tuner</button>
+    <div class="brand"><h1>Beginner Guitar</h1><p>A method for absolute beginners</p><div class="tools"><button type="button" class="btn" id="tuner-open">Tuner</button><button type="button" class="btn" id="chords-open">Chords</button></div>
       <div class="prog" id="prog"><span id="progText"></span><div class="bar"><i id="progBar"></i></div></div>
     </div>
     <ul class="nav" id="nav"></ul>
@@ -456,13 +465,15 @@ function Player(song,{frets=7,phoneFrets=null,bpm=80}={}){
 }
 
 /* ---------- chord diagram (headstock at top, thicker strings on the left) ---------- */
-function Chord({name,frets,fingers={}}){
+function Chord({name,frets,fingers={},barre=null}){
   const xs=k=>28+(6-k)*24,ny=58,fy=j=>ny+j*34;
   let s=`<svg class="chord" viewBox="0 0 176 236" role="img" aria-label="${name} chord diagram">`;
   s+=`<text class="name" x="88" y="28">${name}</text>`;
   s+=`<g class="grid">`;for(let k=1;k<=6;k++)s+=`<line x1="${xs(k)}" x2="${xs(k)}" y1="${ny}" y2="${fy(4)}" stroke-width="${(.8+(k-1)*.35).toFixed(2)}"/>`;
   for(let j=1;j<=4;j++)s+=`<line x1="${xs(6)}" x2="${xs(1)}" y1="${fy(j)}" y2="${fy(j)}"/>`;s+=`</g>`;
   s+=`<rect class="nutbar" x="${xs(6)-1}" y="${ny-5}" width="${xs(1)-xs(6)+2}" height="6"/>`;
+  // One finger pressing two or more strings (e.g. F's index finger on the B and e strings).
+  if(barre)s+=`<rect class="dot" x="${xs(barre.from)-10}" y="${fy(barre.fret)-27}" width="${xs(barre.to)-xs(barre.from)+20}" height="20" rx="10"/>`;
   for(let k=1;k<=6;k++){const f=frets[k];
     if(f==='x'){const x=xs(k),y=ny-16;s+=`<line class="xm" x1="${x-5}" y1="${y-5}" x2="${x+5}" y2="${y+5}"/><line class="xm" x1="${x+5}" y1="${y-5}" x2="${x-5}" y2="${y+5}"/>`;}
     else if(f===0)s+=`<circle class="om" cx="${xs(k)}" cy="${ny-16}" r="6"/>`;
@@ -476,8 +487,18 @@ function Chord({name,frets,fingers={}}){
 }
 const CH={
   Em:{name:'Em',frets:{6:0,5:2,4:2,3:0,2:0,1:0},fingers:{5:2,4:3}},
-  Am:{name:'Am',frets:{6:'x',5:0,4:2,3:2,2:1,1:0},fingers:{4:2,3:3,2:1}}
+  Am:{name:'Am',frets:{6:'x',5:0,4:2,3:2,2:1,1:0},fingers:{4:2,3:3,2:1}},
+  A:{name:'A',frets:{6:'x',5:0,4:2,3:2,2:2,1:0},fingers:{4:1,3:2,2:3}},
+  B7:{name:'B7',frets:{6:'x',5:2,4:1,3:2,2:0,1:2},fingers:{5:2,4:1,3:3,1:4}},
+  C:{name:'C',frets:{6:'x',5:3,4:2,3:0,2:1,1:0},fingers:{5:3,4:2,2:1}},
+  D:{name:'D',frets:{6:'x',5:'x',4:0,3:2,2:3,1:2},fingers:{3:1,2:3,1:2}},
+  E:{name:'E',frets:{6:0,5:2,4:2,3:1,2:0,1:0},fingers:{5:2,4:3,3:1}},
+  // Small F: no 5th or 6th string; index finger covers the B and e strings at fret 1.
+  F:{name:'F',frets:{6:'x',5:'x',4:3,3:2,2:1,1:1},fingers:{4:3,3:2,2:1,1:1},barre:{fret:1,from:2,to:1}},
+  G:{name:'G',frets:{6:3,5:2,4:0,3:0,2:0,1:3},fingers:{6:2,5:1,1:3}}
 };
+// The open "cowboy" chords, in the order shown in the Chords pop-up.
+const COWBOY=['A','Am','B7','C','D','E','F','Em','G'];
 const EM=[[6,0],[5,2],[4,2],[3,0],[2,0],[1,0]],AM=[[5,0],[4,2],[3,2],[2,1],[1,0]];
 
 /* ---------- songs ---------- */
@@ -964,14 +985,21 @@ function go(i,scroll=true){
   art.querySelector('.next').addEventListener('click',()=>{done.add(cur);store.set('done',[...done]);cur<L.length-1?go(cur+1):renderNav();});
   renderNav();if(scroll)window.scrollTo({top:0});
 }
-// Pop-up tuner, available from every page.
-const tmodal=h(`<div class="tmodal" role="dialog" aria-modal="true" aria-label="Tuner" hidden><div class="tmodal-card"><div class="row" style="justify-content:space-between"><h2>Tuner</h2><button type="button" class="btn tmodal-x">Close</button></div><div class="tmodal-slot"></div></div></div>`);
-document.body.append(tmodal);let modalTuner=null;
-document.getElementById('tuner-open').onclick=()=>{if(!modalTuner){modalTuner=Tuner();tmodal.querySelector('.tmodal-slot').append(modalTuner.el);}tmodal.hidden=false;};
-const closeTuner=()=>{tmodal.hidden=true;if(modalTuner)modalTuner.stop();};
-tmodal.querySelector('.tmodal-x').onclick=closeTuner;
-tmodal.addEventListener('click',e=>{if(e.target===tmodal)closeTuner();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!tmodal.hidden)closeTuner();});
+// Pop-ups available from every page: the tuner and the chord chart.
+function Popup(title,build,onClose=()=>{},wide=false){
+  const m=h(`<div class="tmodal" role="dialog" aria-modal="true" aria-label="${title}" hidden><div class="tmodal-card${wide?' wide':''}"><div class="row" style="justify-content:space-between"><h2>${title}</h2><button type="button" class="btn tmodal-x">Close</button></div><div class="tmodal-slot"></div></div></div>`);
+  document.body.append(m);let built=false;
+  const close=()=>{m.hidden=true;onClose();};
+  m.querySelector('.tmodal-x').onclick=close;
+  m.addEventListener('click',e=>{if(e.target===m)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!m.hidden)close();});
+  return {open(){if(!built){m.querySelector('.tmodal-slot').append(build());built=true;}m.hidden=false;}};
+}
+let modalTuner=null;
+const tunerPop=Popup('Tuner',()=>(modalTuner=Tuner()).el,()=>modalTuner&&modalTuner.stop());
+const chordPop=Popup('Chords',()=>h(`<div class="chordchart">${''}</div>`),()=>{},true);
+document.getElementById('tuner-open').onclick=()=>tunerPop.open();
+document.getElementById('chords-open').onclick=()=>{chordPop.open();const g=document.querySelector('.chordchart');if(g&&!g.childElementCount){COWBOY.forEach(k=>g.append(Chord(CH[k])));g.insertAdjacentHTML('afterend','<p class="cap">Tap a chord to hear it. Numbers in the dots are left-hand fingers. ✕ means don\'t strum that string; ○ means play it open.</p>');}};
 
 // "finger 2" style reminders: tap to see the finger-number picture.
 const fpop=h(`<div class="fpop-card" role="dialog" aria-label="Finger numbers" hidden><div class="fpop-img"><img src="${IMG.hands}" alt="Left hand with fingers numbered 1 index, 2 middle, 3 ring, 4 pinky"></div><p><b>Left-hand fingers:</b> 1 index · 2 middle · 3 ring · 4 pinky</p></div>`);
