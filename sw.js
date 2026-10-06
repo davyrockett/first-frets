@@ -2,7 +2,7 @@
 //
 // IMPORTANT: whenever any file below changes, bump VERSION.
 // That is how phones and iPads learn there's an update to download.
-const VERSION = 'v4';
+const VERSION = 'v5';
 const CACHE = `guitar-${VERSION}`;
 const FONTS = 'guitar-fonts';
 
@@ -14,6 +14,7 @@ const ASSETS = [
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
   './img/guitar.webp',
+  './img/neck.webp',
 ];
 
 self.addEventListener('install', (event) => {

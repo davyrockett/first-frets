@@ -239,7 +239,14 @@ figcaption{font-size:14px;color:var(--muted)}
 .rh-lbl{fill:var(--ink);font-size:26px;font-weight:700}
 .rh-sub{fill:var(--muted);font-size:20px}
 .anchor{fill:none;stroke:var(--accent-ink);stroke-width:2.5;stroke-dasharray:6 5}
-.place .opt{cursor:pointer}
+.pl text{font-family:var(--f-body)}
+.pl-sub{fill:var(--muted);font-size:15px}
+.pl-num{fill:var(--muted);font-size:16px;text-anchor:middle;font-variant-numeric:tabular-nums}
+.pl-num.on{fill:var(--hl);font-weight:700}
+.pl-space{fill:var(--hl);fill-opacity:.18;stroke:var(--hl);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
+.pl-target{fill:var(--hl);stroke:#fff;stroke-width:3;vector-effect:non-scaling-stroke}
+.pl-lead{stroke:var(--hl);stroke-width:2;vector-effect:non-scaling-stroke}
+.pl-lbl{fill:var(--ink);font-size:18px;font-weight:700}
 .finger{fill:#E3B48F;stroke:#9B6B49;stroke-width:1.5}
 .nail{fill:#F3DCCB;stroke:#9B6B49;stroke-width:1}
 .cdot{fill:var(--accent);stroke:var(--surface);stroke-width:2}
@@ -626,26 +633,22 @@ function TunerTrainer(){
 }
 
 function Placement(){
-  const W=[110,330,540],opts={mid:{x:222,mode:'buzz',t:'Middle of the space',d:'Buzzy. The string isn\'t held firmly against the wire, so it rattles. You\'d need to press much harder to fix it.'},
-    near:{x:312,mode:'clean',t:'Just toward the headstock of the wire',d:'Clean. This is the spot. The wire does the work, so you need the least pressure.'},
-    on:{x:330,mode:'mute',t:'On top of the wire',d:'Muted. Your finger smothers the string right where it should ring.'}};
-  const el=h(`<div class="card place" style="display:flex;flex-direction:column;gap:12px"><div class="scroll"><svg viewBox="0 0 640 190" style="width:100%;min-width:480px;display:block" role="img" aria-label="Side view of two fret spaces">
-      <rect x="20" y="112" width="600" height="26" fill="var(--board)" rx="3"/>
-      ${W.map((x,i)=>`<rect x="${x-5}" y="96" width="10" height="18" rx="4" fill="var(--wire)"/><text class="diag-sub" x="${x}" y="158" text-anchor="middle">fret ${i+1} wire</text>`).join('')}
-      <rect class="fb-nut" x="14" y="88" width="10" height="26"/><text class="diag-sub" x="19" y="158" text-anchor="middle">nut</text>
-      <text class="diag-lbl" x="${(W[0]+W[1])/2}" y="182" text-anchor="middle">← this space is the 2nd fret →</text>
-      <line x1="20" x2="620" y1="92" y2="92" stroke="var(--metal)" stroke-width="2.5" class="pstr"/>
-      <g class="fing" style="transition:transform .2s"><ellipse class="finger" cx="0" cy="68" rx="16" ry="24"/><circle class="cdot" cx="0" cy="92" r="5"/></g>
-      ${Object.entries(opts).map(([k,o])=>`<rect class="opt" data-o="${k}" x="${o.x-(k==='on'?7:18)}" y="40" width="${k==='on'?14:36}" height="70" fill="transparent"/>`).join('')}
-      <text class="diag-sub" x="24" y="24">← toward the headstock</text><text class="diag-sub" x="616" y="24" text-anchor="end">toward the body →</text>
-    </svg></div>
-    <div class="row" role="group" aria-label="Finger position">${Object.entries(opts).map(([k,o])=>`<button type="button" class="btn" data-o="${k}">${o.t}</button>`).join('')}</div>
-    <div aria-live="polite"><b class="pt"></b> <span class="pd"></span></div></div>`);
-  const g=el.querySelector('.fing');
-  const sel=k=>{const o=opts[k];g.setAttribute('transform',`translate(${o.x} 0)`);el.querySelector('.pt').textContent=o.t+'.';el.querySelector('.pd').textContent=o.d;
-    el.querySelectorAll('.row .btn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===k));};
-  el.addEventListener('click',e=>{const t=e.target.closest('[data-o]');if(!t)return;sel(t.dataset.o);playNote(3,2,{mode:opts[t.dataset.o].mode});});
-  sel('near');return el;
+  // Close-up of the Martin's neck (img/neck.webp, 760 × 215), turned so the headstock is on the left and the thinnest string is on top.
+  const sy={1:49,2:73,3:96,4:121,5:146,6:171};
+  const wires=[18,134,236,333,425,511,593,670,744];
+  const mid=f=>(wires[f-1]+wires[f])/2;
+  let s=`<svg class="pl" viewBox="-48 -34 820 290" style="width:100%;min-width:540px;display:block" role="img" aria-label="Photo of a guitar neck. The fingertip goes on string 4 in the middle of the 5th fret space, right next to the dot.">
+    <image href="img/neck.webp" x="0" y="0" width="760" height="215"/>
+    <text class="pl-sub" x="0" y="-14">← toward the headstock</text><text class="pl-sub" x="760" y="-14" text-anchor="end">toward the body →</text>
+    <rect class="pl-space" x="${wires[4]+3}" y="38" width="${wires[5]-wires[4]-6}" height="146" rx="6"/>`;
+  for(let k=1;k<=6;k++)s+=`<circle cx="-24" cy="${sy[k]}" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="-24" y="${sy[k]}">${STR[k].name}</text>`;
+  s+=`<text class="pl-num" x="${wires[0]}" y="206">nut</text>`;
+  for(let f=1;f<=7;f++)s+=`<text class="pl-num${f===5?' on':''}" x="${mid(f)}" y="206">${f}</text>`;
+  s+=`<circle class="pl-target" cx="${mid(5)}" cy="${sy[4]}" r="13"/>
+    <path class="pl-lead" d="M${mid(5)} ${sy[4]+14} L${mid(5)} 226"/>
+    <text class="pl-lbl" x="${mid(5)}" y="246" text-anchor="middle">String 4, fret 5: fingertip here</text></svg>`;
+  return h(`<figure class="card" style="display:flex;flex-direction:column;gap:10px"><div class="scroll">${s}</div>
+    <figcaption>The 5th fret is the space between the 4th and 5th wires. Your fingertip goes in the middle of that space, on string 4, right beside the dot.</figcaption></figure>`);
 }
 
 function Fingertip(){
@@ -770,7 +773,7 @@ const L=[
     <li>A fret is a <b>space</b>. The 2nd fret is the space between the 1st and 2nd metal wires, and it's named for the wire on its body side.</li>
     <li>Find the dots on your neck. The first dot is usually the 3rd fret; the next is the 5th.</li>
     <li>Higher fret numbers are toward the body and higher in pitch. Lower numbers are toward the headstock and lower in pitch.</li></ul></section>
-  <section class="block"><h3>Where exactly to put your finger</h3><p class="prose">Just toward the headstock of the named wire: not on the wire, not in the middle of the space. Tap each spot to hear why.</p><div data-w="pl"></div></section>
+  <section class="block"><h3>Where exactly to put your finger</h3><p class="prose">Put your fingertip in the middle of the fret space, between the two wires. The dots sit in the middle of their spaces, so they make a handy guide: for string 4, fret 5, your finger goes right next to the dot.</p><div data-w="pl"></div></section>
   <section class="block"><h3>Left hand shape</h3><div class="photo-wrap"><figure><img src="${'{{IMG.hands}}'}" alt="Finger numbers: left hand fingers 1 to 4 plus thumb; right hand p i m a"><figcaption>Finger numbers. Left-hand fingers are 1–4 from index to pinky.</figcaption></figure>
     <ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li></ul></div>
     <div data-w="tip"></div></section>
