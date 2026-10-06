@@ -32,19 +32,19 @@ img{max-width:100%}
   --f-display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
   --f-body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  --r:10px;
+  --r:10px; --hl:#1668E3;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A79E92; --line:#3B342D;
   --accent:#EE9A45; --accent-ink:#F5BE85; --accent-soft:#3B2A19;
   --good:#5DBB84; --good-soft:#1E3427; --bad:#E5735F; --bad-soft:#3D221D;
-  --wood:#B88550; --wood-edge:#8A5C2E; --board:#0F0B09; --wire:#8F887E; --nut:#D8CFBB; --metal:#9C958A; --hole:#0A0705;
+  --wood:#B88550; --wood-edge:#8A5C2E; --board:#0F0B09; --wire:#8F887E; --nut:#D8CFBB; --metal:#9C958A; --hole:#0A0705; --hl:#3D8BFF;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A79E92; --line:#3B342D;
   --accent:#EE9A45; --accent-ink:#F5BE85; --accent-soft:#3B2A19;
   --good:#5DBB84; --good-soft:#1E3427; --bad:#E5735F; --bad-soft:#3D221D;
-  --wood:#B88550; --wood-edge:#8A5C2E; --board:#0F0B09; --wire:#8F887E; --nut:#D8CFBB; --metal:#9C958A; --hole:#0A0705;
+  --wood:#B88550; --wood-edge:#8A5C2E; --board:#0F0B09; --wire:#8F887E; --nut:#D8CFBB; --metal:#9C958A; --hole:#0A0705; --hl:#3D8BFF;
   color-scheme:dark}
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--ink)}
@@ -157,9 +157,13 @@ svg text{font-family:var(--f-body)}
 .chordcard{display:flex;flex-direction:column;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 14px;cursor:pointer}
 .chordcard:hover{border-color:var(--accent)}
 .anat{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:24px;align-items:start}
-.anat svg{width:100%;max-width:280px;display:block;margin:0 auto}
+.anat svg{width:100%;max-width:280px;height:auto;display:block;margin:0 auto}
 .anat .hit{fill:transparent;cursor:pointer}
-.anat .hl{fill:none;stroke:var(--accent);stroke-width:4;stroke-linejoin:round;pointer-events:none;opacity:0;transition:opacity .15s}
+.anat .hl{fill:var(--hl);fill-opacity:.22;stroke:var(--hl);stroke-width:3.5;vector-effect:non-scaling-stroke;stroke-linejoin:round;pointer-events:none;opacity:0;transition:opacity .15s;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1.5px #fff)}
+.anat .hl *{vector-effect:non-scaling-stroke}
+.anat figure{gap:6px}
+.credit{font-size:11px;text-align:center}
+.credit a{color:inherit}
 .anat .hl.on{opacity:1}
 .parts{display:flex;flex-wrap:wrap;gap:6px}
 .parts .btn{font-size:14px;padding:7px 11px}
@@ -455,43 +459,34 @@ const SONGS={
 
 /* ---------- widgets ---------- */
 function Anatomy(){
-  const fy=f=>122+465*(1-Math.pow(2,-f/12));
-  let frets='';for(let f=1;f<=14;f++)frets+=`<line x1="138" x2="182" y1="${fy(f)}" y2="${fy(f)}" stroke="var(--wire)" stroke-width="2"/>`;
-  let dots='';[3,5,7,9].forEach(f=>dots+=`<circle cx="160" cy="${(fy(f-1)+fy(f))/2}" r="3.5" fill="var(--nut)"/>`);
-  dots+=`<circle cx="151" cy="${(fy(11)+fy(12))/2}" r="3.5" fill="var(--nut)"/><circle cx="169" cy="${(fy(11)+fy(12))/2}" r="3.5" fill="var(--nut)"/>`;
-  let strings='';for(let i=0;i<6;i++)strings+=`<line class="metal" x1="${142.5+i*7}" y1="118" x2="${137+i*9.2}" y2="618" stroke-width="${(1.6-i*.18).toFixed(2)}"/>`;
-  const body='M160 372 C230 370 268 400 262 460 C258 505 232 515 238 545 C246 575 300 600 290 660 C282 705 220 714 160 714 C100 714 38 705 30 660 C20 600 74 575 82 545 C88 515 62 505 58 460 C52 400 90 370 160 372Z';
-  const head='M128 18 L192 18 Q199 20 197 30 L186 118 L134 118 L123 30 Q121 20 128 18Z';
-  const pegC=[45,70,95];
+  // Photo: Martin D-28 by Niranjan Arminius, CC BY-SA 4.0 (background removed). Shapes are in the photo's pixel space (598 × 1500).
+  const body='M433 750 L457 760 L474 770 L485 780 L494 790 L500 800 L504 810 L508 820 L510 830 L512 840 L513 850 L514 860 L514 870 L513 880 L512 890 L512 900 L510 910 L509 920 L508 930 L506 940 L504 950 L504 960 L504 970 L502 980 L502 990 L502 1000 L502 1010 L504 1020 L506 1030 L508 1040 L512 1050 L515 1060 L519 1070 L523 1080 L528 1090 L532 1100 L537 1110 L541 1120 L545 1130 L550 1140 L554 1150 L559 1160 L562 1170 L567 1180 L572 1190 L574 1200 L577 1210 L581 1220 L583 1230 L585 1240 L587 1250 L588 1260 L589 1270 L590 1280 L591 1290 L591 1300 L589 1310 L589 1320 L587 1330 L585 1340 L582 1350 L579 1360 L575 1370 L570 1380 L564 1390 L557 1400 L550 1410 L541 1420 L531 1430 L519 1440 L504 1450 L485 1460 L461 1470 L426 1480 L358 1490 L300 1496 L183 1490 L149 1480 L119 1470 L98 1460 L81 1450 L68 1440 L58 1430 L49 1420 L41 1410 L34 1400 L28 1390 L23 1380 L18 1370 L15 1360 L12 1350 L10 1340 L8 1330 L6 1320 L6 1310 L6 1300 L6 1290 L6 1280 L7 1270 L8 1260 L10 1250 L13 1240 L15 1230 L18 1220 L21 1210 L25 1200 L29 1190 L32 1180 L37 1170 L41 1160 L45 1150 L50 1140 L54 1130 L59 1120 L63 1110 L68 1100 L72 1090 L76 1080 L80 1070 L85 1060 L88 1050 L91 1040 L93 1030 L96 1020 L98 1010 L98 1000 L98 990 L98 980 L98 970 L96 960 L95 950 L94 940 L92 930 L90 920 L90 910 L88 900 L88 890 L87 880 L86 870 L86 860 L87 850 L88 840 L90 830 L93 820 L96 810 L101 800 L108 790 L115 780 L126 770 L142 760 L167 750Z';
+  const head='M250 9 L351 9 L340 213 L265 213Z';
+  const knobs=[[231,55],[231,110],[231,165],[363,55],[363,110],[363,165]];
+  const dots=[[301,436],[282,516],[321,516],[301,586],[282,676],[320,676],[302,754],[302,799]];
   const P={
     headstock:{t:'Headstock',d:'The end of the neck that holds the tuning pegs.',shape:`<path d="${head}"/>`},
-    pegs:{t:'Tuning pegs',d:'Turn a peg to tighten or loosen its string. Tightening raises the pitch. Each peg controls exactly one string, and you\'ll learn which in Tuning.',shape:pegC.map(y=>`<circle cx="110" cy="${y}" r="11"/><circle cx="210" cy="${y}" r="11"/>`).join('')},
-    nut:{t:'Nut',d:'The strip at the end of the fingerboard. It counts as fret 0, which is also called an open string: you pluck the string without any finger on the fingerboard.',shape:`<rect x="131" y="111" width="58" height="15" rx="3"/>`},
-    frets:{t:'Frets',d:'The metal wires across the neck. Fret numbers count up from the headstock: lower numbers toward the headstock are lower in pitch, higher numbers toward the body are higher in pitch.',shape:`<rect x="134" y="${fy(1)-6}" width="52" height="${fy(4)-fy(1)+12}" rx="4"/>`},
-    markers:{t:'Fret markers',d:'The dots on the neck. They usually appear on the 3rd, 5th, 7th, 9th and 12th frets, so you can find your place at a glance.',shape:[3,5,7,9].map(f=>`<circle cx="160" cy="${(fy(f-1)+fy(f))/2}" r="9"/>`).join('')},
-    neck:{t:'Neck / fingerboard',d:'The long wooden part your left hand moves along. The front surface, where you press the strings, is the fingerboard (also called the fretboard).',shape:`<rect x="136" y="${fy(4)}" width="48" height="${390-fy(4)}" rx="3"/>`},
+    pegs:{t:'Tuning pegs',d:'Turn a peg to tighten or loosen its string. Tightening raises the pitch. Each peg controls exactly one string, and you\'ll learn which in Tuning.',shape:knobs.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="19"/>`).join('')},
+    nut:{t:'Nut',d:'The strip at the end of the fingerboard. It counts as fret 0, which is also called an open string: you pluck the string without any finger on the fingerboard.',shape:`<rect x="263" y="207" width="80" height="17" rx="3"/>`},
+    frets:{t:'Frets',d:'The metal wires across the neck. Fret numbers count up from the headstock: lower numbers toward the headstock are lower in pitch, higher numbers toward the body are higher in pitch.',shape:`<rect x="261" y="226" width="84" height="117" rx="4"/>`},
+    markers:{t:'Fret markers',d:'The dots on the neck. They usually appear on the 3rd, 5th, 7th, 9th and 12th frets, so you can find your place at a glance.',shape:dots.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="12"/>`).join('')},
+    neck:{t:'Neck / fingerboard',d:'The long wooden part your left hand moves along. The front surface, where you press the strings, is the fingerboard (also called the fretboard).',shape:`<rect x="261" y="226" width="84" height="650" rx="4"/>`},
     body:{t:'Body',d:'The big hollow part. It rests on your right leg, and your right forearm drapes over its top edge.',shape:`<path d="${body}"/>`},
-    soundhole:{t:'Soundhole',d:'The round opening in the body. Pluck the strings over this area. Electric guitars have pickups here instead; you pluck in the same place.',shape:`<circle cx="160" cy="485" r="44"/>`},
-    bridge:{t:'Bridge',d:'Where the strings are anchored on the body. Your right wrist rests near it.',shape:`<rect x="112" y="604" width="96" height="28" rx="8"/>`},
-    strings:{t:'Strings',d:`Six strings, numbered 6 to 1 from thickest to thinnest: ${[6,5,4,3,2,1].map(pill).join(' ')}. Thicker strings play lower pitches.`,shape:`<rect x="132" y="530" width="56" height="70" rx="4"/>`}
+    soundhole:{t:'Soundhole',d:'The round opening in the body. Pluck the strings over this area. Electric guitars have pickups here instead; you pluck in the same place.',shape:`<circle cx="310" cy="966" r="90"/>`},
+    bridge:{t:'Bridge',d:'Where the strings are anchored on the body. Your right wrist rests near it.',shape:`<rect x="183" y="1147" width="240" height="70" rx="14"/>`},
+    strings:{t:'Strings',d:`Six strings, numbered 6 to 1 from thickest to thinnest: ${[6,5,4,3,2,1].map(pill).join(' ')}. Thicker strings play lower pitches.`,shape:`<path d="M268 216 L338 216 L362 1170 L250 1170Z"/>`}
   };
-  const hit={headstock:`<path d="${head}"/>`,pegs:`<rect x="96" y="30" width="30" height="80"/><rect x="194" y="30" width="30" height="80"/>`,
-    nut:`<rect x="128" y="108" width="64" height="18"/>`,frets:`<rect x="130" y="126" width="60" height="${fy(4)-126}"/>`,
-    neck:`<rect x="130" y="${fy(4)}" width="60" height="${380-fy(4)}"/>`,body:`<path d="${body}"/>`,soundhole:`<circle cx="160" cy="485" r="42"/>`,
-    bridge:`<rect x="108" y="600" width="104" height="36"/>`,strings:`<rect x="130" y="530" width="60" height="70"/>`,
-    markers:[3,5,7,9].map(f=>`<circle cx="160" cy="${(fy(f-1)+fy(f))/2}" r="10"/>`).join('')};
+  const hit={headstock:`<path d="${head}"/>`,pegs:`<rect x="200" y="28" width="52" height="166"/><rect x="342" y="28" width="56" height="166"/>`,
+    nut:`<rect x="255" y="203" width="96" height="24"/>`,frets:`<rect x="245" y="227" width="116" height="116"/>`,
+    neck:`<rect x="245" y="343" width="116" height="533"/>`,body:`<path d="${body}"/>`,soundhole:`<circle cx="310" cy="966" r="90"/>`,
+    bridge:`<rect x="175" y="1140" width="256" height="84"/>`,strings:`<rect x="240" y="1056" width="130" height="86"/>`,
+    markers:dots.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="16"/>`).join('')};
   const order=['body','headstock','neck','frets','strings','soundhole','bridge','nut','pegs','markers'];
-  const svg=`<svg viewBox="0 0 320 730" role="img" aria-label="Acoustic guitar, front view">
-    <path class="body-edge" d="${body}" transform="translate(160 543) scale(1.025) translate(-160 -543)"/><path class="body-wood" d="${body}"/>
-    <circle class="hole" cx="160" cy="485" r="36"/><circle class="ros" cx="160" cy="485" r="42"/>
-    <rect class="bridge" x="116" y="606" width="88" height="22" rx="8"/><line x1="128" x2="192" y1="613" y2="613" stroke="var(--nut)" stroke-width="3"/>
-    <path class="hs-wood" d="${head}"/>
-    ${pegC.map(y=>`<rect x="110" y="${y-2.5}" width="30" height="5" class="peg"/><rect x="180" y="${y-2.5}" width="30" height="5" class="peg"/><ellipse class="peg" cx="108" cy="${y}" rx="9" ry="7"/><ellipse class="peg" cx="212" cy="${y}" rx="9" ry="7"/><circle class="post" cx="143" cy="${y}" r="4"/><circle class="post" cx="177" cy="${y}" r="4"/>`).join('')}
-    <rect x="138" y="122" width="44" height="300" fill="var(--board)"/>${frets}${dots}
-    <rect class="fb-nut" x="135" y="115" width="50" height="7" rx="1.5"/>${strings}
+  const svg=`<svg viewBox="0 0 598 1500" role="img" aria-label="Photo of an acoustic guitar, front view">
+    <image href="img/guitar.webp" x="0" y="0" width="598" height="1500"/>
     <g>${order.map(k=>`<g class="hl" data-hl="${k}">${P[k].shape}</g>`).join('')}</g>
     <g>${order.map(k=>`<g class="hit" data-p="${k}">${hit[k]}</g>`).join('')}</g></svg>`;
-  const el=h(`<div class="anat"><div>${svg}</div><div class="partinfo">
+  const el=h(`<div class="anat"><figure>${svg}<figcaption class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Martin_D-28_Acoustic_Guitar.jpg" target="_blank" rel="noopener">Niranjan Arminius</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, background removed</figcaption></figure><div class="partinfo">
       <div class="parts" role="group" aria-label="Guitar parts">${['headstock','pegs','nut','frets','markers','neck','body','soundhole','bridge','strings'].map(k=>`<button type="button" class="btn" data-p="${k}">${P[k].t}</button>`).join('')}</div>
       <div class="card partinfo" aria-live="polite"><h4></h4><p></p></div></div></div>`);
   const sel=k=>{el.querySelectorAll('.hl').forEach(g=>g.classList.toggle('on',g.dataset.hl===k));
