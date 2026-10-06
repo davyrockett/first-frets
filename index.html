@@ -106,6 +106,13 @@ ul.points li::marker{color:var(--accent)}
 .pager .btn small{font-weight:400;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
 .pager .next{margin-left:auto;align-items:flex-end}
 .chn{text-transform:none}
+.tuner-live{display:flex;flex-direction:column;gap:14px}
+.tuner-live .gauge{max-width:360px}
+.tuner-live .strsel .btn.heard{box-shadow:0 0 0 3px var(--hl)}
+.tuner-open{margin-top:6px;align-self:flex-start}
+.tmodal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px 24px;overflow:auto}
+.tmodal-card{background:var(--bg);border-radius:16px;padding:18px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.tmodal-card h2{font-size:34px;text-transform:uppercase}
 h4.subhead{font-family:var(--f-display);font-size:24px;text-transform:uppercase;margin:12px 0 0}
 .fpop{font:inherit;color:var(--accent-ink);background:var(--accent-soft);border:0;border-bottom:2px dotted var(--accent);border-radius:4px;padding:0 4px;cursor:pointer}
 .fpop-card{position:absolute;z-index:30;width:250px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:10px;display:flex;flex-direction:column;gap:6px;font-size:14px}
@@ -271,6 +278,7 @@ figcaption{font-size:14px;color:var(--muted)}
   .brand{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
   .brand h1{font-size:28px}
   .brand p{display:none}
+  .tuner-open{margin:0;padding:6px 12px;font-size:14px}
   .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px;scrollbar-width:none}
   .nav button{grid-template-columns:auto;padding:6px 12px;border:1px solid var(--line);white-space:nowrap}
   .nav .t,.nav .ck{display:none}
@@ -286,7 +294,7 @@ figcaption{font-size:14px;color:var(--muted)}
 <body>
 <div class="app">
   <aside class="rail">
-    <div class="brand"><h1>Beginner Guitar</h1><p>A method for absolute beginners</p>
+    <div class="brand"><h1>Beginner Guitar</h1><p>A method for absolute beginners</p><button type="button" class="btn tuner-open" id="tuner-open">Tuner</button>
       <div class="prog" id="prog"><span id="progText"></span><div class="bar"><i id="progBar"></i></div></div>
     </div>
     <ul class="nav" id="nav"></ul>
@@ -623,6 +631,78 @@ function Headstock(){
   ask();return el;
 }
 
+// Live tuner: listens through the microphone and shows how far the string is from its target.
+let ACTIVE_TUNER=null;
+function Tuner(){
+  const el=h(`<div class="card tuner-live">
+    <div class="row strsel" role="group" aria-label="String to tune"><button type="button" class="btn" data-s="0" aria-pressed="true">Auto</button>${[6,5,4,3,2,1].map(s=>`<button type="button" class="btn" data-s="${s}" style="border-color:${STR[s].color}">${STR[s].name}</button>`).join('')}</div>
+    <svg class="gauge" viewBox="0 0 300 200" role="img" aria-label="Tuner needle">
+      <path class="arc" d="M46.1 90 A120 120 0 0 1 253.9 90"/><path class="zone" d="M137.5 30.7 A120 120 0 0 1 162.5 30.7"/>
+      ${[-50,-25,0,25,50].map(c=>{const a=c/50*60*Math.PI/180;return `<line class="tick" x1="${150+100*Math.sin(a)}" y1="${150-100*Math.cos(a)}" x2="${150+88*Math.sin(a)}" y2="${150-88*Math.cos(a)}"/>`;}).join('')}
+      <text class="gl" x="40" y="118">♭ flat</text><text class="gl" x="260" y="118">sharp ♯</text>
+      <line class="needle" x1="150" y1="150" x2="150" y2="40"/><circle class="hub" cx="150" cy="150" r="7"/>
+      <text class="note" x="150" y="190">–</text><text class="cents" x="150" y="128"></text></svg>
+    <div class="feedback tl-msg" aria-live="polite">Tap Start, then pluck one string at a time.</div>
+    <div class="row"><button type="button" class="btn primary tl-go">Start tuner</button><span class="cap">Uses your microphone. Nothing is recorded or sent anywhere.</span></div></div>`);
+  const needle=el.querySelector('.needle'),gauge=el.querySelector('.gauge'),msg=el.querySelector('.tl-msg'),go=el.querySelector('.tl-go'),
+        noteT=el.querySelector('.note'),centsT=el.querySelector('.cents');
+  needle.style.transformOrigin='150px 150px';
+  let target=0,stream=null,srcNode=null,an=null,buf=null,raf=0,hist=[],lastHeard=0,running=false;
+  const say=(t,cls='')=>{msg.className='feedback tl-msg '+cls;msg.textContent=t;};
+  const setNeedle=(c,dim)=>{needle.style.transform=`rotate(${Math.max(-62,Math.min(62,c/50*60))}deg)`;needle.style.opacity=dim?.35:1;};
+  // YIN pitch detection on a 2× downsampled buffer (good for 60–1000 Hz, light enough for phones).
+  function detect(x,sr){
+    let rms=0;for(let i=0;i<x.length;i++)rms+=x[i]*x[i];rms=Math.sqrt(rms/x.length);if(rms<.008)return 0;
+    const n=x.length>>1,y=new Float32Array(n);for(let i=0;i<n;i++)y[i]=(x[2*i]+x[2*i+1])*.5;const fs=sr/2;
+    const maxT=Math.min(Math.floor(fs/60),n>>1),minT=Math.floor(fs/1000),W=n-maxT,d=new Float32Array(maxT+1);
+    for(let t=1;t<=maxT;t++){let sum=0;for(let i=0;i<W;i++){const v=y[i]-y[i+t];sum+=v*v;}d[t]=sum;}
+    let run=0,best=-1;d[0]=1;for(let t=1;t<=maxT;t++){run+=d[t];d[t]=run?d[t]*t/run:1;}
+    for(let t=minT;t<=maxT;t++){if(d[t]<.15){while(t+1<=maxT&&d[t+1]<d[t])t++;best=t;break;}}
+    if(best<0){let m=1;for(let t=minT;t<=maxT;t++)if(d[t]<m){m=d[t];best=t;}if(m>.35)return 0;}
+    const a=d[best-1]??d[best],b=d[best],c=d[best+1]??d[best],den=a-2*b+c,shift=den?.5*(a-c)/den:0;
+    return fs/(best+shift);
+  }
+  function show(f){
+    let s=target;if(!s){let bd=9;for(let k=1;k<=6;k++){const dd=Math.abs(Math.log2(f/STR[k].freq));if(dd<bd){bd=dd;s=k;}}}
+    const c=1200*Math.log2(f/STR[s].freq),ac=Math.abs(c);
+    noteT.textContent=STR[s].name;noteT.style.fill=STR[s].color;centsT.textContent=`${c>0?'+':''}${Math.round(c)} cents`;
+    setNeedle(c,false);gauge.classList.toggle('intune',ac<=5);
+    el.querySelectorAll('.strsel .btn').forEach(b=>b.classList.toggle('heard',!target&&+b.dataset.s===s));
+    if(ac<=5)say(`${STR[s].name} string: in tune.`,'ok');
+    else if(c<-100)say(`Way too low for the ${STR[s].name} string. Keep tightening, slowly.`);
+    else if(c>100)say(`Way too high for the ${STR[s].name} string. Loosen it well below the note, then tighten up to it.`,'no');
+    else if(c<0)say(`Too low (flat). Tighten slowly up to the note.`);
+    else say(`Too high (sharp). Loosen until you're below the note, then tighten back up to it.`,'no');
+  }
+  function loop(){
+    raf=requestAnimationFrame(loop);
+    an.getFloatTimeDomainData(buf);const f=detect(buf,AC.sampleRate),now=performance.now();
+    if(f>60&&f<1000){hist.push(f);if(hist.length>5)hist.shift();const m=[...hist].sort((a,b)=>a-b)[hist.length>>1];lastHeard=now;show(m);}
+    else if(now-lastHeard>700){hist=[];setNeedle(0,true);gauge.classList.remove('intune');centsT.textContent='';noteT.textContent='–';noteT.style.fill='';say('Listening… pluck one string and let it ring.');}
+  }
+  async function start(){
+    if(ACTIVE_TUNER&&ACTIVE_TUNER!==api)ACTIVE_TUNER.stop();
+    const c=audio();
+    if(!c||!navigator.mediaDevices?.getUserMedia){say('This browser can\'t use the microphone. Try Safari or Chrome.','no');return;}
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    }catch(e){say('The tuner needs the microphone. Allow microphone access for this site in your browser settings, then tap Start again.','no');return;}
+    srcNode=c.createMediaStreamSource(stream);an=c.createAnalyser();an.fftSize=4096;srcNode.connect(an);buf=new Float32Array(an.fftSize);
+    running=true;ACTIVE_TUNER=api;go.textContent='Stop tuner';lastHeard=0;say('Listening… pluck one string and let it ring.');loop();
+  }
+  function stop(){
+    cancelAnimationFrame(raf);if(srcNode)srcNode.disconnect();if(stream)stream.getTracks().forEach(t=>t.stop());
+    stream=srcNode=an=null;running=false;if(ACTIVE_TUNER===api)ACTIVE_TUNER=null;go.textContent='Start tuner';
+    setNeedle(0,true);gauge.classList.remove('intune');el.querySelectorAll('.strsel .btn').forEach(b=>b.classList.remove('heard'));
+  }
+  go.onclick=()=>running?(stop(),say('Tuner stopped.')):start();
+  el.querySelector('.strsel').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;target=+b.dataset.s;hist=[];
+    el.querySelectorAll('.strsel .btn').forEach(x=>{const on=x===b;x.setAttribute('aria-pressed',on);x.style.background=on&&target?STR[target].color:'';});});
+  setNeedle(0,true);
+  const api={el,stop};return api;
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&ACTIVE_TUNER)ACTIVE_TUNER.stop();});
+
 function TunerTrainer(){
   const el=h(`<div class="card" style="display:flex;flex-direction:column;gap:16px">
     <div class="row strsel" role="group" aria-label="String to tune">${[6,5,4,3,2,1].map(s=>`<button type="button" class="btn" data-s="${s}" style="border-color:${STR[s].color}">${STR[s].name}</button>`).join('')}</div>
@@ -796,14 +876,14 @@ const L=[
   <section class="block"><h3>String names</h3><p class="prose">Thicker to thinner: E A D G B e. Tap a letter to hear it.</p><div data-w="mn"></div></section>
   <section class="block"><h3>Which peg turns which string</h3><p class="prose">Trace the string from the bridge, toward the headstock, past the nut, to the post it winds around. That peg is the one.</p><div data-w="hs"></div>
     <div class="callout warn"><b class="t">Common mistake</b><p>Turning the wrong peg. If the string you're plucking doesn't respond, stop. Don't keep cranking; you're tightening a different string.</p></div></section>
-  <section class="block"><h3>Using a tuner</h3><ul class="points">
+  <section class="block"><h3>Using a tuner</h3><p class="prose">This app has a tuner built in. Tap Start, allow the microphone, and pluck one string at a time. You can also open it any time from the <b>Tuner</b> button at the top of the page.</p><div data-w="tl"></div><ul class="points">
     <li><b>Phone tuner app</b> or <b>clip-on tuner</b>. There are a ton of free guitar tuner apps out there: just search "guitar tuner." I recommend the Fender Tune app. A clip-on attaches to the headstock and feels the vibration directly, so room noise doesn't confuse it.</li>
     <li><b>One string at a time.</b> Other strings ringing will confuse the tuner. Use a rest stroke: rest your thumb on the string you're tuning, push through it, and let your thumb land on the next thinner string. That keeps the neighboring string quiet. Same thumb motion as Right Hand Basics.</li>
     <li><b>Keep plucking while you turn.</b> Notes fade quickly. Hold the guitar with your right arm, reach the peg with your left hand, and <b>KEEP PLUCKING!</b></li>
     <li><b>Very out of tune?</b> The tuner may not recognize the note. Get it close by ear (use the letters above) first.</li>
     <li><b>Tune twice.</b> Big adjustments shift the tension on the neck. After all six, go back and check them again.</li></ul>
     <h4 class="subhead">Tune up to the note</h4><p class="prose">Always approach the target pitch from below. If you overshoot and go sharp, loosen until you're below the note, then tighten back up. A string tuned up to pitch holds its tuning better. Practice it here.</p><div data-w="tt"></div></section>`,
- mount(r){mount(r,'mn',Mnemonic());mount(r,'hs',Headstock());mount(r,'tt',TunerTrainer());}},
+ mount(r){const t=Tuner();STOP_ALL.push(t.stop);mount(r,'tl',t.el);mount(r,'mn',Mnemonic());mount(r,'hs',Headstock());mount(r,'tt',TunerTrainer());}},
 
 {t:'The Guitar\'s Map',html:`
   <p class="lead">Every note has an address: a string and a fret. Learn to read the address and you can find any note.</p>
@@ -883,6 +963,15 @@ function go(i,scroll=true){
   art.querySelector('.next').addEventListener('click',()=>{done.add(cur);store.set('done',[...done]);cur<L.length-1?go(cur+1):renderNav();});
   renderNav();if(scroll)window.scrollTo({top:0});
 }
+// Pop-up tuner, available from every page.
+const tmodal=h(`<div class="tmodal" role="dialog" aria-modal="true" aria-label="Tuner" hidden><div class="tmodal-card"><div class="row" style="justify-content:space-between"><h2>Tuner</h2><button type="button" class="btn tmodal-x">Close</button></div><div class="tmodal-slot"></div></div></div>`);
+document.body.append(tmodal);let modalTuner=null;
+document.getElementById('tuner-open').onclick=()=>{if(!modalTuner){modalTuner=Tuner();tmodal.querySelector('.tmodal-slot').append(modalTuner.el);}tmodal.hidden=false;};
+const closeTuner=()=>{tmodal.hidden=true;if(modalTuner)modalTuner.stop();};
+tmodal.querySelector('.tmodal-x').onclick=closeTuner;
+tmodal.addEventListener('click',e=>{if(e.target===tmodal)closeTuner();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!tmodal.hidden)closeTuner();});
+
 // "finger 2" style reminders: tap to see the finger-number picture.
 const fpop=h(`<div class="fpop-card" role="dialog" aria-label="Finger numbers" hidden><div class="fpop-img"><img src="${IMG.hands}" alt="Left hand with fingers numbered 1 index, 2 middle, 3 ring, 4 pinky"></div><p><b>Left-hand fingers:</b> 1 index · 2 middle · 3 ring · 4 pinky</p></div>`);
 document.body.append(fpop);
