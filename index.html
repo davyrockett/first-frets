@@ -472,8 +472,9 @@ const EM=[[6,0],[5,2],[4,2],[3,0],[2,0],[1,0]],AM=[[5,0],[4,2],[3,2],[2,1],[1,0]
 /* ---------- songs ---------- */
 const N=(s,f,b=1,extra={})=>({n:[[s,f]],b,...extra});
 const SONGS={
-  sna:[N(5,7,1.5),N(5,7,.5),N(5,10,.75),N(5,7,.75),N(5,5,.5),N(5,3,2),N(5,2,2,{bar:true}),
-       N(5,7,1.5),N(5,7,.5),N(5,10,.75),N(5,7,.75),N(5,5,.5),N(5,3,2),N(5,2,2)],
+  // Starts on the open D string; only the D and A strings, frets 0-3 (D D F D C Bb A).
+  sna:[N(4,0,1.5),N(4,0,.5),N(4,3,.75),N(4,0,.75),N(5,3,.5),N(5,1,2),N(5,0,2,{bar:true}),
+       N(4,0,1.5),N(4,0,.5),N(4,3,.75),N(4,0,.75),N(5,3,.5),N(5,1,2),N(5,0,2)],
   nem:[6,3,2,1,2,3,6,3,2,1,2,3].map((s,i)=>N(s,0,.5,{bar:i===5})),
   nemEm:[...EM.map(([s,f])=>N(s,f,.75)),N(2,0,.75),N(3,0,.75,{bar:true}),...EM.map(([s,f])=>N(s,f,.75)),N(2,0,.75),N(3,0,.75)],
   emStrum:Array.from({length:8},(_,i)=>({n:EM,b:1,bar:i===3})),
@@ -796,14 +797,14 @@ const L=[
 
 {t:'Your First Songs',html:`
   <p class="lead">Four short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
-  <div class="song"><span class="eyebrow">One string</span><h3>Seven Nation Army</h3><p class="sub">The whole riff lives on one string, the A string (string 5). Only the fret numbers change.</p><div data-w="s1"></div></div>
+  <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, the D string (string 4) and the A string (string 5). It starts on the open D string.</p><div data-w="s1"></div></div>
   <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">No left-hand fingers at all. With the thumb of your right hand, move from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
   <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put <button type="button" class="fpop">finger 2</button> on the A string, 2nd fret, and <button type="button" class="fpop">finger 3</button> on the D string, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
   <div class="song"><span class="eyebrow">All six at once</span><h3>One sweep of the thumb</h3><p class="sub">Same two fingers, same strings. Now sweep your thumb across all six in one motion. Stacked numbers in tab mean "play these together."</p><div data-w="s4"></div></div>
   <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
     <p class="prose">Here's a map of what your fingers were doing. A chord diagram is a picture of the neck standing up: headstock at the top, thicker strings on the left.</p>
     <div class="chords"><div data-w="em"></div><ul class="points" style="flex:1;min-width:220px"><li>Circle above a string: play it open.</li><li>Dot: put a finger here. The number is which finger.</li><li>Finger 2 on the A string, finger 3 on the D string, both at the 2nd fret. Exactly what you just did.</li></ul></div></div></section>`,
- mount(r){mount(r,'s1',Player(SONGS.sna,{frets:10,bpm:95}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord(CH.Em));}},
+ mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord(CH.Em));}},
 
 {t:'Chord Diagrams',html:`
   <p class="lead">Tab and chord diagrams show the same notes two different ways. Tab is the order in time. A chord diagram is a snapshot of your hand at a given moment.</p>
