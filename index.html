@@ -241,10 +241,10 @@ figcaption{font-size:14px;color:var(--muted)}
 .anchor{fill:none;stroke:var(--accent-ink);stroke-width:2.5;stroke-dasharray:6 5}
 .pl text{font-family:var(--f-body)}
 .pl-sub{fill:var(--muted);font-size:15px}
-.pl-num{fill:var(--muted);font-size:16px;text-anchor:middle;font-variant-numeric:tabular-nums}
+.pl-num{fill:var(--muted);font-size:24px;text-anchor:middle;font-variant-numeric:tabular-nums}
 .pl-num.on{fill:var(--hl);font-weight:700}
 .pl-space{fill:var(--hl);fill-opacity:.18;stroke:var(--hl);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
-.pl-target{fill:var(--hl);stroke:#fff;stroke-width:3;vector-effect:non-scaling-stroke}
+.pl-target{fill:none;stroke:var(--hl);stroke-width:4;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1.5px #fff)}
 .pl-lead{stroke:var(--hl);stroke-width:2;vector-effect:non-scaling-stroke}
 .pl-lbl{fill:var(--ink);font-size:18px;font-weight:700}
 .finger{fill:#E3B48F;stroke:#9B6B49;stroke-width:1.5}
@@ -634,21 +634,19 @@ function TunerTrainer(){
 
 function Placement(){
   // Close-up of the Martin's neck (img/neck.webp, 760 × 215), turned so the headstock is on the left and the thinnest string is on top.
+  // No min-width: the photo shrinks to fit a phone instead of scrolling sideways, so labels are sized large in photo units.
   const sy={1:49,2:73,3:96,4:121,5:146,6:171};
   const wires=[18,134,236,333,425,511,593,670,744];
   const mid=f=>(wires[f-1]+wires[f])/2;
-  let s=`<svg class="pl" viewBox="-48 -34 820 290" style="width:100%;min-width:540px;display:block" role="img" aria-label="Photo of a guitar neck. The fingertip goes on string 4 in the middle of the 5th fret space, right next to the dot.">
+  let s=`<svg class="pl" viewBox="-44 30 810 210" style="width:100%;height:auto;display:block" role="img" aria-label="Photo of a guitar neck. The fingertip goes on string 4 in the middle of the 5th fret space, right next to the dot.">
     <image href="img/neck.webp" x="0" y="0" width="760" height="215"/>
-    <text class="pl-sub" x="0" y="-14">← toward the headstock</text><text class="pl-sub" x="760" y="-14" text-anchor="end">toward the body →</text>
     <rect class="pl-space" x="${wires[4]+3}" y="38" width="${wires[5]-wires[4]-6}" height="146" rx="6"/>`;
-  for(let k=1;k<=6;k++)s+=`<circle cx="-24" cy="${sy[k]}" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="-24" y="${sy[k]}">${STR[k].name}</text>`;
-  s+=`<text class="pl-num" x="${wires[0]}" y="206">nut</text>`;
-  for(let f=1;f<=7;f++)s+=`<text class="pl-num${f===5?' on':''}" x="${mid(f)}" y="206">${f}</text>`;
-  s+=`<circle class="pl-target" cx="${mid(5)}" cy="${sy[4]}" r="13"/>
-    <path class="pl-lead" d="M${mid(5)} ${sy[4]+14} L${mid(5)} 226"/>
-    <text class="pl-lbl" x="${mid(5)}" y="246" text-anchor="middle">String 4, fret 5: fingertip here</text></svg>`;
-  return h(`<figure class="card" style="display:flex;flex-direction:column;gap:10px"><div class="scroll">${s}</div>
-    <figcaption>The 5th fret is the space between the 4th and 5th wires. Your fingertip goes in the middle of that space, on string 4, right beside the dot.</figcaption></figure>`);
+  for(let k=1;k<=6;k++)s+=`<circle cx="-22" cy="${sy[k]}" r="12" fill="${STR[k].color}"/><text class="fb-lbl" x="-22" y="${sy[k]}" style="font-size:15px">${STR[k].name}</text>`;
+  for(let f=1;f<=7;f++)s+=`<text class="pl-num${f===5?' on':''}" x="${mid(f)}" y="218">${f}</text>`;
+  s+=`<circle class="pl-target" cx="${mid(5)}" cy="${sy[4]}" r="15"/></svg>`;
+  return h(`<figure class="card" style="display:flex;flex-direction:column;gap:10px">${s}
+    <div class="orient"><span>← toward the headstock</span><span>Thinnest string on top</span><span>toward the body →</span></div>
+    <figcaption><b style="color:var(--ink)">String 4, fret 5:</b> the 5th fret is the space between the 4th and 5th wires. Put your fingertip in the middle of that space, on string 4, right beside the dot.</figcaption></figure>`);
 }
 
 function Fingertip(){
