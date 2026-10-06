@@ -232,6 +232,13 @@ figcaption{font-size:14px;color:var(--muted)}
 .diag-sub{fill:var(--muted);font-size:12px}
 .diag-lead{stroke:var(--accent);stroke-width:1.5;fill:none}
 .zone-fill{fill:var(--accent);opacity:.35}
+.rh text{font-family:var(--f-body)}
+.rh-zone{fill:var(--hl);fill-opacity:.3;stroke:var(--hl);stroke-width:3;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.5px #fff)}
+.rh-mark{fill:none;stroke:var(--hl);stroke-width:3;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.5px #fff)}
+.rh-anchor{fill:var(--hl);fill-opacity:.15;stroke:var(--hl);stroke-width:3;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.5px #fff)}
+.rh-lead{fill:none;stroke:var(--hl);stroke-width:2;vector-effect:non-scaling-stroke}
+.rh-lbl{fill:var(--ink);font-size:26px;font-weight:700}
+.rh-sub{fill:var(--muted);font-size:20px}
 .anchor{fill:none;stroke:var(--accent-ink);stroke-width:2.5;stroke-dasharray:6 5}
 .place .opt{cursor:pointer}
 .finger{fill:#E3B48F;stroke:#9B6B49;stroke-width:1.5}
@@ -513,17 +520,16 @@ function Checklist(items,key){
 }
 
 function RightHandDiagram(){
-  return h(`<figure class="card"><div class="scroll"><svg viewBox="0 0 520 300" style="width:100%;min-width:420px;display:block" role="img" aria-label="Right hand position: pluck over the soundhole, wrist anchored near the bridge">
-    <path class="body-wood" d="M40 300 C30 200 60 40 140 12 L260 12 C340 40 370 200 360 300 Z"/>
-    <circle class="ros" cx="200" cy="96" r="58"/><circle class="hole" cx="200" cy="96" r="50"/>
-    <rect class="zone-fill" x="150" y="104" width="100" height="70" rx="12"/>
-    <rect class="bridge" x="140" y="232" width="120" height="22" rx="8"/>
-    ${[0,1,2,3,4,5].map(i=>`<line class="metal" x1="${178+i*9}" y1="0" x2="${172+i*11.2}" y2="240" stroke-width="${(2.2-i*.3).toFixed(2)}"/>`).join('')}
-    <ellipse class="anchor" cx="268" cy="250" rx="44" ry="24"/>
-    <path class="diag-lead" d="M252 140 L380 110"/><text class="diag-lbl" x="386" y="108">Pluck zone</text><text class="diag-sub" x="386" y="126">over the soundhole area</text>
-    <path class="diag-lead" d="M310 250 L380 228"/><text class="diag-lbl" x="386" y="226">Wrist anchor</text><text class="diag-sub" x="386" y="244">rests near the bridge</text>
-    <path class="diag-lead" d="M140 244 L70 270"/><text class="diag-lbl" x="14" y="290">Bridge</text>
-  </svg></div><figcaption>Front view of the body. The strings run from the neck (top of the picture) down to the bridge.</figcaption></figure>`);
+  // Same photo as Section 1 (img/guitar.webp, 598 × 1500), cropped to the body. Labels sit to the right.
+  return h(`<figure class="card"><div class="scroll"><svg class="rh" viewBox="0 730 880 780" style="width:100%;min-width:520px;display:block" role="img" aria-label="Right hand position on a guitar photo: pluck over the soundhole, wrist anchored near the bridge">
+    <image href="img/guitar.webp" x="0" y="0" width="598" height="1500"/>
+    <rect class="rh-zone" x="236" y="925" width="148" height="130" rx="20"/>
+    <rect class="rh-mark" x="183" y="1147" width="240" height="70" rx="14"/>
+    <ellipse class="rh-anchor" cx="236" cy="1190" rx="78" ry="42"/>
+    <path class="rh-lead" d="M384 990 L612 975"/><text class="rh-lbl" x="620" y="975">Pluck zone</text><text class="rh-sub" x="620" y="1003">over the soundhole area</text>
+    <path class="rh-lead" d="M423 1182 L612 1182"/><text class="rh-lbl" x="620" y="1182">Bridge</text><text class="rh-sub" x="620" y="1210">strings anchor here</text>
+    <path class="rh-lead" d="M262 1230 L330 1340 L612 1340"/><text class="rh-lbl" x="620" y="1340">Wrist anchor</text><text class="rh-sub" x="620" y="1368">rests near the bridge</text>
+  </svg></div><figcaption>Front view of the body, headstock pointing up. The strings run down from the neck to the bridge.</figcaption></figure>`);
 }
 
 function StrumPad(){
