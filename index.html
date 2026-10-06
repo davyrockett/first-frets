@@ -484,6 +484,7 @@ const SONGS={
   emAm:[...Array.from({length:4},(_,i)=>({n:EM,b:1,c:'Em',bar:i===3})),...Array.from({length:4},(_,i)=>({n:AM,b:1,c:'Am',bar:i===3})),
         ...Array.from({length:4},(_,i)=>({n:EM,b:1,c:'Em',bar:i===3})),...Array.from({length:2},()=>({n:AM,b:1,c:'Am'})),{n:EM,b:2,c:'Em'}],
   // Builds up slowly: four notes on the thinnest string, then the B string joins, then the rest. Frets 0-3 only.
+  tq:[N(1,3),N(1,1),N(1,0),N(2,1,1,{bar:true}),N(2,3),N(1,2),N(3,2),N(3,0,1,{bar:true}),N(4,2),N(5,3),N(6,0),N(6,1)],
   zig:[N(1,3),N(1,1),N(1,0),N(1,2,1,{bar:true}),
        N(1,3),N(2,1),N(1,0),N(2,3,1,{bar:true}),
        N(1,2),N(2,0),N(3,2),N(2,1,1,{bar:true}),
@@ -685,6 +686,39 @@ function Pressure(){
   return el;
 }
 
+// Read-the-tab game: the highlighted tab number is the target; tap it on the fretboard to move on.
+function TabQuiz(seq){
+  const el=h(`<div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="row" style="justify-content:space-between"><b>Tap this note on the fretboard</b><span class="cap tq-n"></span></div>
+    <div class="scroll tabbox"></div><div class="fbbox"></div>
+    <div class="feedback" aria-live="polite"></div>
+    <div class="row"><button type="button" class="btn tq-hint">Show me</button><button type="button" class="btn tq-reset">Start over</button></div></div>`);
+  const fbk=el.querySelector('.feedback'),cnt=el.querySelector('.tq-n'),hint=el.querySelector('.tq-hint');
+  let i=0,busy=false;
+  const tab=Tab(seq);
+  const fb=Fretboard({frets:3,readout:false,orient:false,onTap:(s,f)=>{tap(s,f);return false;}});
+  el.querySelector('.tabbox').append(tab.el);el.querySelector('.fbbox').append(fb.el);
+  const show=()=>{busy=false;tab.setCur(i);fb.setMarks([]);cnt.textContent=`Note ${i+1} of ${seq.length}`;hint.hidden=false;};
+  function tap(s,f){
+    if(busy||i>=seq.length)return;
+    const [ts,tf]=seq[i].n[0];playNote(s,f);
+    if(s===ts&&f===tf){
+      fb.setMarks([{s,f}]);fbk.className='feedback ok';
+      fbk.innerHTML=`Yes! ${pill(s)} ${strDesc(s)}, ${f?`fret ${f}`:'open'}.`;
+      i++;busy=true;
+      if(i>=seq.length){cnt.textContent='Done';hint.hidden=true;fbk.innerHTML='You read the whole line of tab. Nice work!';tab.setCur(-1);busy=false;}
+      else setTimeout(show,650);
+    }else{
+      fb.flash(s,f);fbk.className='feedback no';
+      fbk.innerHTML=s!==ts?`That's the ${STR[s].name} string. Check which line the number is on: top line is the thinnest string.`
+        :`Right string! That's ${f?`fret ${f}`:'open'}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`;
+    }
+  }
+  hint.onclick=()=>{if(i<seq.length){const [ts,tf]=seq[i].n[0];fb.setMarks([{s:ts,f:tf}]);fbk.className='feedback';fbk.textContent='Here it is. Tap it to keep going.';}};
+  el.querySelector('.tq-reset').onclick=()=>{i=0;fbk.className='feedback';fbk.textContent='';show();};
+  show();return el;
+}
+
 function MapQuiz(){
   const Q=[
     {q:'Find the first dot on the neck. Which fret is it?',choices:[3,5,7],a:5,ok:'Right. The first dot is on the 5th fret.'},
@@ -792,8 +826,9 @@ const L=[
   <section class="block"><h3>The six lines</h3><p class="prose">Six lines for six strings. The <b>thinnest string is the top line</b>, the thickest is the bottom line. The numbers are fret numbers; 0 means an open string, which you still pluck.</p>
     <div class="callout tip"><b class="t">Mixed up?</b><p>Look at the front of your guitar with the headstock to the left, the same way the tab is drawn. The thinnest string is on top, just like the top line of the tab.</p></div></section>
   <section class="block"><h3>Try it</h3><p class="prose">Press Play and follow along. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div></section>
+  <section class="block"><h3>Your turn</h3><p class="prose">The highlighted number in the tab is your next note. Tap that spot on the fretboard: the line tells you the string, and the number tells you the fret. Get it right and the tab moves on to the next note.</p><div data-w="tq"></div></section>
   <section class="block"><h3>Check in</h3><p class="prose">Read tab from left to right, like a sentence: each number is the next note to play. Left to right tells you <b>when</b>. The line and the number tell you <b>where</b>.</p><p class="prose">This is the idea most likely to get tangled. Make sure it's solid before moving on.</p><div data-w="q"></div></section>`,
- mount(r){mount(r,'zig',Player(SONGS.zig,{frets:3,bpm:40}));mount(r,'q',TermQuiz([
+ mount(r){mount(r,'zig',Player(SONGS.zig,{frets:3,bpm:40}));mount(r,'tq',TabQuiz(SONGS.tq));mount(r,'q',TermQuiz([
    {q:'In tab, a number further to the right means…',o:['play it later','play it closer to the body'],a:0,why:'Yes. Left to right is the order in time.',no:'That\'s the trap. Position on the neck comes only from the number.'},
    {q:'The top line of tab is…',o:['the thickest string','the thinnest string'],a:1,why:'Right. Top line, thinnest string.'},
    {q:'A 0 on the bottom line means…',o:['rest, don\'t play','pluck the thickest string open'],a:1,why:'Yes. 0 is the nut: no finger down, but you still pluck.'}]));}},
