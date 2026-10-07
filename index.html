@@ -1032,6 +1032,7 @@ const settingsPop=Popup('Settings',()=>{
     <div class="set-row"><div><b>Text size</b><p class="cap">Makes the lessons bigger. Diagrams grow too.</p></div>${seg('text','Text size',[['normal','Normal'],['large','Large'],['larger','Larger']],'normal')}</div>
     <div class="set-row reset-row"><div><b>Reset my progress</b><p class="cap">Clears the section checkmarks and the posture checklist on this device.</p></div>
       <div class="row"><button type="button" class="btn" id="set-reset">Reset progress</button><span class="reset-confirm row" hidden><span>Are you sure?</span><button type="button" class="btn primary" id="set-reset-yes">Yes, reset</button><button type="button" class="btn" id="set-reset-no">Cancel</button></span></div></div>
+    <div class="set-row"><div><b>App version</b><p class="cap ver-line"></p></div><button type="button" class="btn" id="set-update">Check for updates</button></div>
     <p class="cap set-note">Settings are saved on this device only.</p></div>`);
   const mark=()=>el.querySelectorAll('.seg').forEach(g=>{const cur=store.get(g.dataset.key,g.dataset.def);g.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===cur));});
   el.addEventListener('click',e=>{const b=e.target.closest('.seg [data-v]');if(!b)return;const key=b.closest('.seg').dataset.key,v=b.dataset.v;store.set(key,v);
@@ -1050,6 +1051,16 @@ const settingsPop=Popup('Settings',()=>{
   rb.onclick=()=>{conf.hidden=false;rb.hidden=true;};
   el.querySelector('#set-reset-no').onclick=()=>{conf.hidden=true;rb.hidden=false;};
   el.querySelector('#set-reset-yes').onclick=()=>{done=new Set();store.set('done',[]);store.set('posture',[]);conf.hidden=true;rb.hidden=false;rb.textContent='Progress reset';rb.disabled=true;setTimeout(()=>{rb.textContent='Reset progress';rb.disabled=false;},2500);go(cur,false);};
+  const ver=el.querySelector('.ver-line'),ub=el.querySelector('#set-update');
+  ver.textContent=`You're on ${window.APP_VERSION||'unknown'}.`;
+  ub.onclick=async()=>{
+    const reg=window.SW_REG;if(!reg||!navigator.onLine){ver.textContent='Connect to the internet, then try again.';return;}
+    ub.disabled=true;ver.textContent='Checking…';
+    try{await reg.update();}catch(e){}
+    const w=reg.waiting||reg.installing;
+    if(w){ver.textContent='Updating now…';const go=()=>w.postMessage('skipWaiting');if(w.state==='installed')go();else w.addEventListener('statechange',()=>{if(w.state==='installed')go();});}
+    else{ver.textContent=`You're on the latest version (${window.APP_VERSION}).`;ub.disabled=false;}
+  };
   mark();return el;
 },()=>{},true);
 document.getElementById('settings-open').onclick=()=>settingsPop.open();
@@ -1071,31 +1082,45 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 
 <div class="update" id="update-banner" role="status" hidden><span>A new version is ready.</span><button type="button" class="btn primary" id="update-btn">Update</button></div>
 <script>
-// Offline support + update banner. See sw.js.
+// Offline support + updates. See sw.js.
+// The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
+window.APP_VERSION = 'v17';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
+  window.SW_REG = reg;
   const banner = document.getElementById('update-banner');
-  const offer = (worker) => {
-    banner.hidden = false;
-    document.getElementById('update-btn').onclick = () => worker.postMessage('skipWaiting');
-  };
-  if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
-  reg.addEventListener('updatefound', () => {
-    const worker = reg.installing;
-    worker.addEventListener('statechange', () => {
-      if (worker.state === 'installed' && navigator.serviceWorker.controller) offer(worker);
-    });
-  });
   const hadController = Boolean(navigator.serviceWorker.controller);
+  const apply = (worker) => worker.postMessage('skipWaiting');
+  // Right after the app opens there's nothing to lose, so updates apply on their own.
+  // Later on, offer a banner instead of reloading in the middle of a lesson.
+  const justOpened = () => performance.now() < 20000;
+  const handle = (worker) => {
+    if (!worker || !navigator.serviceWorker.controller) return;
+    if (justOpened()) apply(worker);
+    else {
+      banner.hidden = false;
+      document.getElementById('update-btn').onclick = () => apply(worker);
+    }
+  };
+  const watch = (worker) => {
+    if (!worker) return;
+    if (worker.state === 'installed') return handle(worker);
+    worker.addEventListener('statechange', () => { if (worker.state === 'installed') handle(worker); });
+  };
+  handle(reg.waiting);
+  watch(reg.installing);
+  reg.addEventListener('updatefound', () => watch(reg.installing));
   let reloaded = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (hadController && !reloaded) { reloaded = true; location.reload(); }
   });
-  // Home Screen apps rarely restart, so check for updates whenever the app is reopened.
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && navigator.onLine) reg.update();
-  });
+  // Check now, and again whenever the Home Screen app comes back to the front.
+  // iPhones can finish downloading an update while the app is in the background,
+  // so look for a waiting update after each check too.
+  const check = () => { if (navigator.onLine) reg.update().catch(() => {}).then(() => handle(reg.waiting)); };
+  check();
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
 })();
 </script>
 </body>

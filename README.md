@@ -23,10 +23,10 @@ iPhone and iPad Home Screens and the Mac's Dock, and works with no signal once i
 ## Publishing a change
 
 1. Edit the files.
-2. **In `sw.js`, bump `VERSION`** (v1 → v2 …). Without this, devices keep the old copy.
+2. **Run `tools/bump.sh`** to bump the version (it updates `sw.js` and the version shown in Settings). Without this, devices keep the old copy.
 3. Commit and push (`git add -A && git commit -m "…" && git push`).
-4. GitHub Pages updates within a minute or two. Open the app and an
-   **Update** banner appears. Tap it.
+4. GitHub Pages updates within a minute or two. Devices update by themselves the next time the app is opened
+   (or show an **Update** banner if it's already open). Settings → **Check for updates** forces it.
 
 ## Backups
 
