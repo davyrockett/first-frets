@@ -115,6 +115,10 @@ ul.points li::marker{color:var(--accent)}
 .settings{display:flex;flex-direction:column;gap:16px}
 .set-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
+.share-row{align-items:flex-start}
+.share-url{font-family:var(--f-mono);font-size:13px;word-break:break-all;margin:6px 0 8px;user-select:all;-webkit-user-select:all}
+.qr-box{width:170px;flex:none;background:#fff;border-radius:12px;padding:6px;box-shadow:0 0 0 1px var(--line)}
+.qr-box svg{display:block;width:100%;height:auto}
 .set-row>div:first-child{flex:1 1 220px;min-width:0}
 .set-row select{font:inherit;font-size:15px;padding:7px 9px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
 .set-row input[type=range]{width:150px;accent-color:var(--accent)}
@@ -1032,6 +1036,9 @@ const settingsPop=Popup('Settings',()=>{
     <div class="set-row"><div><b>Text size</b><p class="cap">Makes the lessons bigger. Diagrams grow too.</p></div>${seg('text','Text size',[['normal','Normal'],['large','Large'],['larger','Larger']],'normal')}</div>
     <div class="set-row reset-row"><div><b>Reset my progress</b><p class="cap">Clears the section checkmarks and the posture checklist on this device.</p></div>
       <div class="row"><button type="button" class="btn" id="set-reset">Reset progress</button><span class="reset-confirm row" hidden><span>Are you sure?</span><button type="button" class="btn primary" id="set-reset-yes">Yes, reset</button><button type="button" class="btn" id="set-reset-no">Cancel</button></span></div></div>
+    <div class="set-row share-row"><div><b>Share with students</b><p class="cap">Students scan this with their phone camera to open the app. Then they can add it to their Home Screen.</p>
+      <p class="share-url"><span id="app-url">https://davyrockett.github.io/beginner-guitar/</span></p><button type="button" class="btn" id="copy-url">Copy link</button></div>
+      <div class="qr-box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" class="qr" role="img" aria-label="QR code for the app"><path fill="#fff" d="M0 0h37v37h-37z"/><path stroke="#1e1b18" d="M2 2.5h7m1 0h8m1 0h2m2 0h2m3 0h7m-33 1h1m5 0h1m1 0h1m1 0h2m2 0h1m2 0h2m1 0h1m1 0h1m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h2m3 0h7m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m2 0h1m1 0h1m2 0h2m2 0h1m2 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h2m1 0h1m2 0h5m1 0h2m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m7 0h1m1 0h1m1 0h1m1 0h3m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h1m2 0h1m1 0h2m6 0h2m-23 1h1m4 0h4m1 0h3m1 0h1m1 0h1m4 0h2m1 0h1m5 0h2m-33 1h1m1 0h1m1 0h2m6 0h1m3 0h2m1 0h1m2 0h2m4 0h3m-31 1h1m4 0h3m1 0h3m1 0h5m10 0h1m1 0h2m-32 1h1m2 0h2m4 0h2m5 0h1m2 0h2m3 0h1m1 0h6m-32 1h3m2 0h2m2 0h2m1 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m1 0h2m4 0h1m-33 1h1m1 0h1m2 0h1m1 0h4m3 0h1m1 0h1m1 0h3m2 0h1m2 0h2m2 0h3m-32 1h1m2 0h1m1 0h2m3 0h2m1 0h2m1 0h2m5 0h3m1 0h1m2 0h1m-31 1h1m3 0h1m1 0h1m2 0h4m1 0h3m5 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-33 1h1m1 0h1m2 0h2m2 0h3m1 0h1m1 0h2m5 0h2m1 0h1m1 0h2m3 0h1m-33 1h1m1 0h3m2 0h3m1 0h1m1 0h2m2 0h1m1 0h1m1 0h1m1 0h1m2 0h1m2 0h4m-31 1h1m2 0h4m1 0h2m2 0h1m2 0h1m1 0h3m1 0h2m1 0h2m1 0h2m1 0h1m-33 1h1m2 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m2 0h3m-26 1h2m1 0h2m1 0h3m2 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h3m2 0h1m-33 1h4m1 0h1m1 0h2m2 0h5m3 0h1m1 0h3m4 0h2m-30 1h1m1 0h1m3 0h2m2 0h1m1 0h1m3 0h3m1 0h1m4 0h1m2 0h1m2 0h1m-32 1h1m2 0h3m4 0h1m2 0h1m2 0h2m4 0h1m1 0h1m2 0h4m1 0h1m-33 1h2m4 0h3m2 0h3m3 0h2m5 0h6m-22 1h4m1 0h1m3 0h4m2 0h2m3 0h1m1 0h1m1 0h1m-33 1h7m1 0h2m1 0h2m2 0h3m4 0h3m1 0h1m1 0h1m1 0h2m-32 1h1m5 0h1m3 0h1m2 0h6m4 0h2m3 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m8 0h1m1 0h6m1 0h1m-32 1h1m1 0h3m1 0h1m2 0h1m1 0h1m5 0h1m1 0h2m1 0h4m1 0h2m3 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m3 0h1m3 0h2m1 0h1m1 0h3m1 0h2m1 0h3m-33 1h1m5 0h1m1 0h4m2 0h1m5 0h1m1 0h1m2 0h1m1 0h4m-31 1h7m3 0h1m5 0h3m1 0h1m1 0h6m3 0h1"/></svg></div></div>
     <div class="set-row"><div><b>App version</b><p class="cap ver-line"></p></div><button type="button" class="btn" id="set-update">Check for updates</button></div>
     <p class="cap set-note">Settings are saved on this device only.</p></div>`);
   const mark=()=>el.querySelectorAll('.seg').forEach(g=>{const cur=store.get(g.dataset.key,g.dataset.def);g.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===cur));});
@@ -1051,6 +1058,11 @@ const settingsPop=Popup('Settings',()=>{
   rb.onclick=()=>{conf.hidden=false;rb.hidden=true;};
   el.querySelector('#set-reset-no').onclick=()=>{conf.hidden=true;rb.hidden=false;};
   el.querySelector('#set-reset-yes').onclick=()=>{done=new Set();store.set('done',[]);store.set('posture',[]);conf.hidden=true;rb.hidden=false;rb.textContent='Progress reset';rb.disabled=true;setTimeout(()=>{rb.textContent='Reset progress';rb.disabled=false;},2500);go(cur,false);};
+  const cu=el.querySelector('#copy-url');
+  cu.onclick=()=>{const url=el.querySelector('#app-url').textContent;
+    const done=()=>{cu.textContent='Copied';setTimeout(()=>cu.textContent='Copy link',2000);};
+    const fallback=()=>{const r=document.createRange();r.selectNodeContents(el.querySelector('#app-url'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);cu.textContent='Selected: copy it';};
+    if(navigator.clipboard)navigator.clipboard.writeText(url).then(done,fallback);else fallback();};
   const ver=el.querySelector('.ver-line'),ub=el.querySelector('#set-update');
   ver.textContent=`You're on ${window.APP_VERSION||'unknown'}.`;
   ub.onclick=async()=>{
@@ -1084,7 +1096,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v18';
+window.APP_VERSION = 'v19';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
