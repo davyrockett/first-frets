@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Beginner Guitar",
-  "short_name": "Guitar",
-  "description": "An interactive beginner guitar method.",
+  "name": "First Frets",
+  "short_name": "First Frets",
+  "description": "An interactive guitar method for absolute beginners.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
