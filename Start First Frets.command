@@ -1,5 +1,5 @@
 #!/bin/bash
-# Double-click this file to run a local test copy of the app on this Mac.
+# Double-click this file to run a local test copy of First Frets on this Mac.
 # Keep this window open while you use it; close it to stop.
 cd "$(dirname "$0")"
 PORT=8766
@@ -8,6 +8,6 @@ if ! lsof -i :$PORT >/dev/null 2>&1; then
   sleep 1
 fi
 open -a Safari "http://localhost:$PORT/"
-echo "Beginner Guitar is running at http://localhost:$PORT"
+echo "First Frets is running at http://localhost:$PORT"
 echo "Close this window when you're done."
 wait

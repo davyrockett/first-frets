@@ -15,7 +15,7 @@ iPhone and iPad Home Screens and the Mac's Dock, and works with no signal once i
 | `icons/` | App icons (redraw with `python3 tools/make-icons.py`) |
 | `img/neck.webp` | Neck close-up in Section 6, cut from the same Martin D-28 photo (same credit and license as below) |
 | `img/guitar.webp` | Guitar photo in Sections 1 and 4 (background removed): Martin D-28 by Niranjan Arminius, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Martin_D-28_Acoustic_Guitar.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). The edited photo is shared under the same license. |
-| `Start Guitar App.command` | Double-click to run a local test copy on this Mac |
+| `Start First Frets.command` | Double-click to run a local test copy on this Mac |
 
 ## Installing it
 
