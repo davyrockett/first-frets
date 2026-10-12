@@ -51,7 +51,7 @@ def draw():
         y, w = y0 + i * (y1 - y0) / 5, 12 + i * 4.5
         glow(img, layer(color, mask(lambda d: d.rounded_rectangle([nut_x, y - w / 2, S + 20, y + w / 2], w / 2, fill=255))), 0.7, 14)
     glow(img, layer(PAPER, mask(lambda d: d.rounded_rectangle([nut_x - 66, top, nut_x, bot], 18, fill=255))), 0.6, 22)
-    glow(img, layer(ACCENT, one(330, 520, 880)), 0.55, 26)  # softer glow than Page Fright
+    glow(img, layer(ACCENT, one(330, 520, 880)), 0.875, 35)  # a little softer than Page Fright
     return img.convert("RGB")
 
 
