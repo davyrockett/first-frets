@@ -2,7 +2,7 @@
 //
 // IMPORTANT: whenever any file below changes, bump VERSION.
 // That is how phones and iPads learn there's an update to download.
-const VERSION = 'v21';
+const VERSION = 'v22';
 const CACHE = `firstfrets-${VERSION}`;
 const FONTS = 'guitar-fonts';
 
@@ -13,6 +13,7 @@ const ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  './icons/icon-maskable-512.png',
   './img/guitar-lines.png',
   './img/neck.webp',
 ];
