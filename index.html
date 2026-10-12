@@ -273,6 +273,11 @@ figcaption{font-size:14px;color:var(--muted)}
 .rh text{font-family:var(--f-body)}
 .rh-zone{fill:var(--hl);fill-opacity:.3;stroke:var(--hl);stroke-width:3;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.5px #fff)}
 .rh-anchor{fill:var(--hl);fill-opacity:.15;stroke:var(--hl);stroke-width:3;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.5px #fff)}
+.rh-badge{fill:var(--hl);stroke:#fff;stroke-width:3;vector-effect:non-scaling-stroke}
+.rh-badge-n{fill:#fff;font-size:26px;font-weight:800;text-anchor:middle;dominant-baseline:central}
+.rh-key{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.rh-key li{display:flex;gap:10px;align-items:baseline}
+.rh-key-n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--hl);color:#fff;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
 .rh-lead{fill:none;stroke:var(--hl);stroke-width:2;vector-effect:non-scaling-stroke}
 .rh-lbl{fill:var(--ink);font-size:26px;font-weight:700}
 .rh-sub{fill:var(--muted);font-size:20px}
@@ -600,16 +605,27 @@ function Checklist(items,key){
 }
 
 function RightHandDiagram(){
-  // Same drawing as Section 1 (img/guitar-lines.png, 784 × 1168), cropped to the body. Labels sit to the right.
-  return h(`<figure class="card"><div class="scroll"><svg class="rh" viewBox="140 525 880 600" style="width:100%;min-width:520px;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
-    ${guitarLines('rh')}
+  // Same drawing as Section 1 (img/guitar-lines.png, 784 × 1168), cropped to the body.
+  // Wide screens: labels sit to the right. Phones: the labels would make it scroll sideways, so the
+  // shapes get numbers instead and the labels move into a key under the drawing.
+  const narrow=window.matchMedia('(max-width: 600px)').matches;
+  const marks=`
     <rect class="rh-zone" x="330" y="652" width="116" height="92" rx="18"/>
     <ellipse class="rh-anchor" cx="318" cy="872" rx="58" ry="30"/>
-    <ellipse class="rh-anchor" cx="180" cy="935" rx="38" ry="80"/>
+    <ellipse class="rh-anchor" cx="180" cy="935" rx="38" ry="80"/>`;
+  const items=[['Pluck zone','over the soundhole area',446,652],['Wrist anchor','rests near the bridge',380,848],['Right forearm','rests over the edge of the body',222,858]];
+  if(narrow){
+    return h(`<figure class="card"><svg class="rh" viewBox="140 525 500 600" style="width:100%;height:auto;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge, right forearm over the edge of the body">
+      ${guitarLines('rh')}${marks}
+      ${items.map(([,,x,y],i)=>`<circle class="rh-badge" cx="${x}" cy="${y}" r="22"/><text class="rh-badge-n" x="${x}" y="${y}">${i+1}</text>`).join('')}
+    </svg><ol class="rh-key">${items.map(([t,d],i)=>`<li><span class="rh-key-n">${i+1}</span><span><b>${t}</b> ${d}</span></li>`).join('')}</ol></figure>`);
+  }
+  return h(`<figure class="card"><svg class="rh" viewBox="140 525 880 600" style="width:100%;height:auto;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
+    ${guitarLines('rh')}${marks}
     <path class="rh-lead" d="M446 698 L652 690"/><text class="rh-lbl" x="660" y="690">Pluck zone</text><text class="rh-sub" x="660" y="718">over the soundhole area</text>
     <path class="rh-lead" d="M340 900 L400 960 L652 960"/><text class="rh-lbl" x="660" y="960">Wrist anchor</text><text class="rh-sub" x="660" y="988">rests near the bridge</text>
     <path class="rh-lead" d="M196 1012 L246 1062 L652 1062"/><text class="rh-lbl" x="660" y="1062">Right forearm</text><text class="rh-sub" x="660" y="1090">rests over the edge of the body</text>
-  </svg></div></figure>`);
+  </svg></figure>`);
 }
 
 function StrumPad(){
@@ -1102,7 +1118,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v24';
+window.APP_VERSION = 'v25';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
