@@ -53,6 +53,8 @@ students. Live: https://davyrockett.github.io/first-frets/ (`#s3` etc. link to a
   tuner, chord chart pop-up, Settings (appearance, fretboard dot labels, playback speed, volume, text size,
   reset progress, share link + QR code for students, check for updates). localStorage keys start with `bg.`.
 - Students are absolute beginners: keep wording simple and friendly.
-- The guitar photos are CC BY-SA (credits in README); keep the credits.
+- Sections 1 and 4 use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
+  lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is
+  CC BY-SA (credit in README); keep that credit.
 - The first version is tagged `v1-original`. The old address davyrockett.github.io/beginner-guitar/ forwards
   here (repo davyrockett/beginner-guitar).

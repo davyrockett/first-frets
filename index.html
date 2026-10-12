@@ -197,9 +197,10 @@ svg text{font-family:var(--f-body)}
 .anat .hl *{vector-effect:non-scaling-stroke}
 .anat figure{gap:6px}
 .credit{font-size:11px;text-align:center}
-.an-fret{fill:var(--muted);font-size:26px;font-weight:700;dominant-baseline:central}
-.an-lbl{fill:#1E1B18;font-size:24px;font-weight:700}
-.an-num{fill:#1E1B18;font-size:18px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.an-fret{fill:var(--muted);font-size:20px;font-weight:700;dominant-baseline:central}
+.an-lbl{fill:var(--ink);font-size:22px;font-weight:700}
+.g-ink{fill:var(--ink)}
+.an-num{fill:#1E1B18;font-size:15px;font-weight:700;text-anchor:middle;dominant-baseline:central}
 .credit a{color:inherit}
 .anat .hl.on{opacity:1}
 .parts{display:flex;flex-wrap:wrap;gap:6px}
@@ -537,38 +538,42 @@ const SONGS={
 };
 
 /* ---------- widgets ---------- */
+// The guitar line drawing (img/guitar-lines.png is white lines on black): used as a mask over a rectangle in the
+// text colour, so the lines are dark in light mode and light in dark mode. `id` keeps each SVG's mask separate.
+const guitarLines=id=>`<defs><mask id="gl-${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="784" height="1168"><image href="img/guitar-lines.png" x="0" y="0" width="784" height="1168"/></mask></defs><rect class="g-ink" x="0" y="0" width="784" height="1168" mask="url(#gl-${id})"/>`;
 function Anatomy(){
-  // Photo: Martin D-28 by Niranjan Arminius, CC BY-SA 4.0 (background removed). Shapes are in the photo's pixel space (598 × 1500).
-  const body='M433 750 L457 760 L474 770 L485 780 L494 790 L500 800 L504 810 L508 820 L510 830 L512 840 L513 850 L514 860 L514 870 L513 880 L512 890 L512 900 L510 910 L509 920 L508 930 L506 940 L504 950 L504 960 L504 970 L502 980 L502 990 L502 1000 L502 1010 L504 1020 L506 1030 L508 1040 L512 1050 L515 1060 L519 1070 L523 1080 L528 1090 L532 1100 L537 1110 L541 1120 L545 1130 L550 1140 L554 1150 L559 1160 L562 1170 L567 1180 L572 1190 L574 1200 L577 1210 L581 1220 L583 1230 L585 1240 L587 1250 L588 1260 L589 1270 L590 1280 L591 1290 L591 1300 L589 1310 L589 1320 L587 1330 L585 1340 L582 1350 L579 1360 L575 1370 L570 1380 L564 1390 L557 1400 L550 1410 L541 1420 L531 1430 L519 1440 L504 1450 L485 1460 L461 1470 L426 1480 L358 1490 L300 1496 L183 1490 L149 1480 L119 1470 L98 1460 L81 1450 L68 1440 L58 1430 L49 1420 L41 1410 L34 1400 L28 1390 L23 1380 L18 1370 L15 1360 L12 1350 L10 1340 L8 1330 L6 1320 L6 1310 L6 1300 L6 1290 L6 1280 L7 1270 L8 1260 L10 1250 L13 1240 L15 1230 L18 1220 L21 1210 L25 1200 L29 1190 L32 1180 L37 1170 L41 1160 L45 1150 L50 1140 L54 1130 L59 1120 L63 1110 L68 1100 L72 1090 L76 1080 L80 1070 L85 1060 L88 1050 L91 1040 L93 1030 L96 1020 L98 1010 L98 1000 L98 990 L98 980 L98 970 L96 960 L95 950 L94 940 L92 930 L90 920 L90 910 L88 900 L88 890 L87 880 L86 870 L86 860 L87 850 L88 840 L90 830 L93 820 L96 810 L101 800 L108 790 L115 780 L126 770 L142 760 L167 750Z';
-  const head='M250 9 L351 9 L340 213 L265 213Z';
-  const knobs=[[231,55],[231,110],[231,165],[363,55],[363,110],[363,165]];
-  const dots=[[301,436],[282,516],[321,516],[301,586],[282,676],[320,676],[302,754],[302,799]];
+  // Line drawing David supplied (img/guitar-lines.png, 784 × 1168: white lines on black, used as a mask so the lines
+  // take the text colour in light and dark mode). Shapes are in the drawing's pixel space.
+  const body='M478 536 L507 544 L523 552 L534 560 L542 568 L549 576 L553 584 L557 592 L560 600 L562 608 L563 616 L563 624 L563 632 L562 640 L562 648 L560 656 L559 664 L558 672 L556 680 L555 688 L554 696 L553 704 L553 712 L554 720 L554 728 L556 736 L558 744 L560 752 L563 760 L566 768 L570 776 L574 784 L578 792 L582 800 L586 808 L591 816 L595 824 L599 832 L603 840 L607 848 L610 856 L613 864 L616 872 L619 880 L622 888 L624 896 L626 904 L627 912 L629 920 L630 928 L630 936 L631 944 L631 952 L630 960 L630 968 L628 976 L627 984 L625 992 L623 1000 L620 1008 L616 1016 L613 1024 L608 1032 L603 1040 L597 1048 L590 1056 L582 1064 L573 1072 L562 1080 L549 1088 L532 1096 L509 1104 L464 1112 L391 1116 L318 1112 L273 1104 L250 1096 L233 1088 L220 1080 L209 1072 L200 1064 L192 1056 L185 1048 L179 1040 L174 1032 L170 1024 L166 1016 L162 1008 L159 1000 L157 992 L155 984 L154 976 L152 968 L152 960 L151 952 L151 944 L152 936 L152 928 L153 920 L154 912 L156 904 L158 896 L160 888 L163 880 L166 872 L169 864 L172 856 L176 848 L179 840 L183 832 L187 824 L192 816 L196 808 L200 800 L204 792 L209 784 L213 776 L216 768 L219 760 L222 752 L225 744 L226 736 L228 728 L229 720 L229 712 L229 704 L228 696 L227 688 L226 680 L225 672 L223 664 L222 656 L220 648 L219 640 L219 632 L219 624 L219 616 L220 608 L222 600 L225 592 L229 584 L233 576 L240 568 L248 560 L259 552 L274 544 L304 536Z';
+  const head='M344 30 L372 20 L410 20 L440 24 L423 188 L359 188Z';
+  const knobs=[[331,68],[331,104],[331,144],[451,68],[451,104],[451,144]];
+  const dots=[[391,281],[391,338],[391,390],[391,437],[370,499],[412,499],[391,552],[391,583]];
   const P={
     headstock:{t:'Headstock',d:'The end of the neck that holds the tuning pegs.',shape:`<path d="${head}"/>`},
-    pegs:{t:'Tuning pegs',d:'Turn a peg to tighten or loosen its string. Tightening raises the pitch. Each peg controls exactly one string, and you\'ll learn which in Tuning.',shape:knobs.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="19"/>`).join('')},
-    nut:{t:'Nut',d:'The strip at the end of the fingerboard. It counts as fret 0, which is also called an open string: you pluck the string with your right hand without any left-hand fingers on the fretboard.',shape:`<rect x="263" y="207" width="80" height="17" rx="3"/>`},
-    frets:{t:'Frets',d:'The metal wires across the neck. Fret numbers count up from the headstock: lower numbers toward the headstock are lower in pitch, higher numbers toward the body are higher in pitch.',shape:`<rect x="261" y="226" width="84" height="117" rx="4"/>`},
-    markers:{t:'Fret markers',d:'The dots on the neck, also called fret markers. On this guitar they start at the 5th fret: 5, 7, 9 and 12. They help you find your place at a glance.',shape:dots.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="12"/>`).join('')},
-    neck:{t:'Neck / fingerboard',d:'The long wooden part your left hand moves along. The front surface, where you press the strings, is the fingerboard (also called the fretboard).',shape:`<rect x="261" y="226" width="84" height="650" rx="4"/>`},
+    pegs:{t:'Tuning pegs',d:'Turn a peg to tighten or loosen its string. Tightening raises the pitch. Each peg controls exactly one string, and you\'ll learn which in Tuning.',shape:knobs.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="15"/>`).join('')},
+    nut:{t:'Nut',d:'The strip at the end of the fingerboard. It counts as fret 0, which is also called an open string: you pluck the string with your right hand without any left-hand fingers on the fretboard.',shape:`<rect x="356" y="184" width="70" height="14" rx="3"/>`},
+    frets:{t:'Frets',d:'The metal wires across the neck. Fret numbers count up from the headstock: lower numbers toward the headstock are lower in pitch, higher numbers toward the body are higher in pitch.',shape:`<rect x="353" y="194" width="76" height="160" rx="4"/>`},
+    markers:{t:'Fret markers',d:'The dots on the neck, also called fret markers. On this guitar they\'re at frets 3, 5, 7, 9, 12 (two dots), 15 and 17. They help you find your place at a glance.',shape:dots.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="9"/>`).join('')},
+    neck:{t:'Neck / fingerboard',d:'The long wooden part your left hand moves along. The front surface, where you press the strings, is the fingerboard (also called the fretboard).',shape:`<rect x="353" y="194" width="76" height="442" rx="4"/>`},
     body:{t:'Body',d:'The big hollow part. It rests on your right leg, and your right forearm drapes over its top edge.',shape:`<path d="${body}"/>`},
-    soundhole:{t:'Soundhole',d:'The round opening in the body. Pluck the strings over this area. Electric guitars have pickups here instead; you pluck in the same place.',shape:`<circle cx="310" cy="966" r="90"/>`},
-    bridge:{t:'Bridge',d:'Where the strings are anchored on the body. Your right wrist rests near it.',shape:`<rect x="183" y="1147" width="240" height="70" rx="14"/>`},
-    strings:{t:'Strings',d:`Six strings, numbered 6 to 1 from thickest to thinnest: ${[6,5,4,3,2,1].map(pill).join(' ')}. Thicker strings play lower pitches.`,shape:`<path d="M268 216 L338 216 L362 1170 L250 1170Z"/>`}
+    soundhole:{t:'Soundhole',d:'The round opening in the body. Pluck the strings over this area. Electric guitars have pickups here instead; you pluck in the same place.',shape:`<circle cx="388" cy="690" r="64"/>`},
+    bridge:{t:'Bridge',d:'Where the strings are anchored on the body. Your right wrist rests near it.',shape:`<rect x="292" y="852" width="198" height="38" rx="8"/>`},
+    strings:{t:'Strings',d:`Six strings, numbered 6 to 1 from thickest to thinnest: ${[6,5,4,3,2,1].map(pill).join(' ')}. Thicker strings play lower pitches.`,shape:`<path d="M362 192 L420 192 L432 884 L350 884Z"/>`}
   };
-  const hit={headstock:`<path d="${head}"/>`,pegs:`<rect x="200" y="28" width="52" height="166"/><rect x="342" y="28" width="56" height="166"/>`,
-    nut:`<rect x="255" y="203" width="96" height="24"/>`,frets:`<rect x="245" y="227" width="116" height="116"/>`,
-    neck:`<rect x="245" y="343" width="116" height="533"/>`,body:`<path d="${body}"/>`,soundhole:`<circle cx="310" cy="966" r="90"/>`,
-    bridge:`<rect x="175" y="1140" width="256" height="84"/>`,strings:`<rect x="240" y="1056" width="130" height="86"/>`,
-    markers:dots.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="16"/>`).join('')};
+  const hit={headstock:`<path d="${head}"/>`,pegs:`<rect x="300" y="48" width="48" height="116"/><rect x="434" y="48" width="48" height="116"/>`,
+    nut:`<rect x="345" y="180" width="92" height="22"/>`,frets:`<rect x="340" y="202" width="102" height="150"/>`,
+    neck:`<rect x="340" y="352" width="102" height="268"/>`,body:`<path d="${body}"/>`,soundhole:`<circle cx="388" cy="690" r="70"/>`,
+    bridge:`<rect x="286" y="846" width="210" height="50"/>`,strings:`<rect x="340" y="770" width="102" height="76"/>`,
+    markers:dots.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="13"/>`).join('')};
   const order=['body','headstock','neck','frets','strings','soundhole','bridge','nut','pegs','markers'];
-  const svg=`<svg viewBox="0 0 598 1500" role="img" aria-label="Photo of an acoustic guitar, front view">
-    <image href="img/guitar.webp" x="0" y="0" width="598" height="1500"/>
-    ${[[1,246],[2,299],[3,347],[4,392],[5,436]].map(([f,y])=>`<text class="an-fret" x="356" y="${y}">${f===1?'fret 1':f}</text>`).join('')}
-    <text class="an-lbl" x="300" y="1256" text-anchor="middle">strings</text>
-    ${[6,5,4,3,2,1].map((k,i)=>`<circle cx="${225+i*31}" cy="${1290}" r="14" fill="${STR[k].color}"/><text class="an-num" x="${225+i*31}" y="1290">${k}</text>`).join('')}
+  const svg=`<svg viewBox="135 10 520 1115" role="img" aria-label="Drawing of an acoustic guitar, front view">
+    ${guitarLines('an')}
+    ${[[1,212],[2,247],[3,279],[4,309],[5,338]].map(([f,y])=>`<text class="an-fret" x="436" y="${y}">${f===1?'fret 1':f}</text>`).join('')}
+    <text class="an-lbl" x="391" y="934" text-anchor="middle">strings</text>
+    ${[6,5,4,3,2,1].map((k,i)=>`<circle cx="${324+i*27}" cy="${966}" r="12" fill="${STR[k].color}"/><text class="an-num" x="${324+i*27}" y="966">${k}</text>`).join('')}
     <g>${order.map(k=>`<g class="hl" data-hl="${k}">${P[k].shape}</g>`).join('')}</g>
     <g>${order.map(k=>`<g class="hit" data-p="${k}">${hit[k]}</g>`).join('')}</g></svg>`;
-  const el=h(`<div class="anat"><figure>${svg}<figcaption class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Martin_D-28_Acoustic_Guitar.jpg" target="_blank" rel="noopener">Niranjan Arminius</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, background removed</figcaption></figure><div class="partinfo">
+  const el=h(`<div class="anat"><figure>${svg}</figure><div class="partinfo">
       <div class="parts" role="group" aria-label="Guitar parts">${['headstock','pegs','nut','frets','markers','neck','body','soundhole','bridge','strings'].map(k=>`<button type="button" class="btn" data-p="${k}">${P[k].t}</button>`).join('')}</div>
       <div class="card partinfo" aria-live="polite"><h4></h4><p></p></div></div></div>`);
   const sel=k=>{el.querySelectorAll('.hl').forEach(g=>g.classList.toggle('on',g.dataset.hl===k));
@@ -595,15 +600,15 @@ function Checklist(items,key){
 }
 
 function RightHandDiagram(){
-  // Same photo as Section 1 (img/guitar.webp, 598 × 1500), cropped to the body. Labels sit to the right.
-  return h(`<figure class="card"><div class="scroll"><svg class="rh" viewBox="0 730 880 780" style="width:100%;min-width:520px;display:block" role="img" aria-label="Right hand position on a guitar photo: pluck over the soundhole, wrist anchored near the bridge">
-    <image href="img/guitar.webp" x="0" y="0" width="598" height="1500"/>
-    <rect class="rh-zone" x="236" y="925" width="148" height="130" rx="20"/>
-    <ellipse class="rh-anchor" cx="236" cy="1190" rx="78" ry="42"/>
-    <ellipse class="rh-anchor" cx="58" cy="1250" rx="52" ry="100"/>
-    <path class="rh-lead" d="M384 990 L612 975"/><text class="rh-lbl" x="620" y="975">Pluck zone</text><text class="rh-sub" x="620" y="1003">over the soundhole area</text>
-    <path class="rh-lead" d="M262 1230 L330 1310 L612 1310"/><text class="rh-lbl" x="620" y="1310">Wrist anchor</text><text class="rh-sub" x="620" y="1338">rests near the bridge</text>
-    <path class="rh-lead" d="M80 1346 L140 1430 L612 1430"/><text class="rh-lbl" x="620" y="1430">Right forearm</text><text class="rh-sub" x="620" y="1458">rests over the edge of the body</text>
+  // Same drawing as Section 1 (img/guitar-lines.png, 784 × 1168), cropped to the body. Labels sit to the right.
+  return h(`<figure class="card"><div class="scroll"><svg class="rh" viewBox="140 525 880 600" style="width:100%;min-width:520px;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
+    ${guitarLines('rh')}
+    <rect class="rh-zone" x="330" y="652" width="116" height="92" rx="18"/>
+    <ellipse class="rh-anchor" cx="318" cy="872" rx="58" ry="30"/>
+    <ellipse class="rh-anchor" cx="180" cy="935" rx="38" ry="80"/>
+    <path class="rh-lead" d="M446 698 L652 690"/><text class="rh-lbl" x="660" y="690">Pluck zone</text><text class="rh-sub" x="660" y="718">over the soundhole area</text>
+    <path class="rh-lead" d="M340 900 L400 960 L652 960"/><text class="rh-lbl" x="660" y="960">Wrist anchor</text><text class="rh-sub" x="660" y="988">rests near the bridge</text>
+    <path class="rh-lead" d="M196 1012 L246 1062 L652 1062"/><text class="rh-lbl" x="660" y="1062">Right forearm</text><text class="rh-sub" x="660" y="1090">rests over the edge of the body</text>
   </svg></div></figure>`);
 }
 
@@ -1097,7 +1102,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v20';
+window.APP_VERSION = 'v21';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
