@@ -25,8 +25,8 @@ img{max-width:100%}
 <style>
 /* Layout: lesson rail on the left, one lesson at a time in a reading column; every diagram is something you can tap and hear. */
 :root{
-  --bg:#F1F0EC; --surface:#FFFFFF; --sunk:#E7E5DF; --ink:#1E1B18; --muted:#635D55; --line:#D8D4CC;
-  --accent:#D47B22; --accent-ink:#8C4A0A; --accent-soft:#F6E3CC;
+  --bg:#F1F0EC; --surface:#FFFFFF; --sunk:#E7E5DF; --ink:#1E1B18; --muted:#676767; --line:#D8D4CC;
+  --accent:#E27039; --accent-ink:#9A3F12; --accent-soft:#F9E0D3;
   --good:#2E7D4F; --good-soft:#DDEFE3; --bad:#B23A28; --bad-soft:#F6DED8;
   --wood:#D9A86C; --wood-edge:#A9733A; --board:#3B2B22; --wire:#C8C2B8; --nut:#EFE6D2; --metal:#B9B2A6; --hole:#2A1D16;
   --f-display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
@@ -35,14 +35,14 @@ img{max-width:100%}
   --r:10px; --hl:#1668E3;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A79E92; --line:#3B342D;
-  --accent:#EE9A45; --accent-ink:#F5BE85; --accent-soft:#3B2A19;
+  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A3A3A3; --line:#3B342D;
+  --accent:#F2844F; --accent-ink:#FFB892; --accent-soft:#3E2418;
   --good:#5DBB84; --good-soft:#1E3427; --bad:#E5735F; --bad-soft:#3D221D;
   --wood:#B88550; --wood-edge:#8A5C2E; --board:#0F0B09; --wire:#8F887E; --nut:#D8CFBB; --metal:#9C958A; --hole:#0A0705; --hl:#3D8BFF;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A79E92; --line:#3B342D;
-  --accent:#EE9A45; --accent-ink:#F5BE85; --accent-soft:#3B2A19;
+  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A3A3A3; --line:#3B342D;
+  --accent:#F2844F; --accent-ink:#FFB892; --accent-soft:#3E2418;
   --good:#5DBB84; --good-soft:#1E3427; --bad:#E5735F; --bad-soft:#3D221D;
   --wood:#B88550; --wood-edge:#8A5C2E; --board:#0F0B09; --wire:#8F887E; --nut:#D8CFBB; --metal:#9C958A; --hole:#0A0705; --hl:#3D8BFF;
   color-scheme:dark}
@@ -1122,7 +1122,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v28';
+window.APP_VERSION = 'v29';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
