@@ -108,7 +108,7 @@ ul.points li::marker{color:var(--accent)}
 .chn{text-transform:none}
 .tuner-live{display:flex;flex-direction:column;gap:14px}
 .tuner-live .gauge{max-width:360px}
-.tuner-live .strsel .btn.heard{box-shadow:0 0 0 3px var(--hl)}
+.tuner-live .strpick .btn.heard{box-shadow:0 0 0 3px var(--hl)}
 .tools{display:flex;gap:8px;margin-top:6px}
 .tools .btn{padding:7px 14px;font-size:14px}
 .tools .btn.icon{padding:6px 8px;display:inline-flex;align-items:center}
@@ -259,8 +259,9 @@ figcaption{font-size:14px;color:var(--muted)}
 .turn{display:flex;gap:10px}
 .turn .btn{flex:1;padding:16px 10px;font-size:16px;user-select:none;-webkit-user-select:none;touch-action:none}
 .strsel{flex-wrap:nowrap;gap:6px}
+.strpick{display:flex;flex-direction:column;gap:8px}
+.tl-auto{padding:8px 22px}
 .strsel .btn{flex:1 1 0;min-width:0;padding:9px 0;font-size:14px;text-align:center}
-.strsel .btn[data-s="0"]{flex:1.7 1 0}
 .strsel .btn[aria-pressed="true"]{color:var(--ink)}
 .hs{width:100%;max-width:300px;display:block;margin:0 auto}
 .hs .knob{cursor:pointer}
@@ -694,7 +695,7 @@ function Headstock(){
 let ACTIVE_TUNER=null;
 function Tuner(){
   const el=h(`<div class="card tuner-live">
-    <div class="row strsel" role="group" aria-label="String to tune"><button type="button" class="btn" data-s="0" aria-pressed="true">Auto</button>${[6,5,4,3,2,1].map(s=>`<button type="button" class="btn" data-s="${s}" style="border-color:${STR[s].color}">${STR[s].name}</button>`).join('')}</div>
+    <div class="strpick" role="group" aria-label="String to tune"><div class="row"><button type="button" class="btn tl-auto" data-s="0" aria-pressed="true">Auto</button></div><div class="row strsel">${[6,5,4,3,2,1].map(s=>`<button type="button" class="btn" data-s="${s}" style="border-color:${STR[s].color}">${STR[s].name}</button>`).join('')}</div></div>
     <svg class="gauge" viewBox="0 0 300 244" role="img" aria-label="Tuner needle">
       <path class="arc" d="M46.1 90 A120 120 0 0 1 253.9 90"/><path class="zone" d="M137.5 30.7 A120 120 0 0 1 162.5 30.7"/>
       ${[-50,-25,0,25,50].map(c=>{const a=c/50*60*Math.PI/180;return `<line class="tick" x1="${150+100*Math.sin(a)}" y1="${150-100*Math.cos(a)}" x2="${150+88*Math.sin(a)}" y2="${150-88*Math.cos(a)}"/>`;}).join('')}
@@ -726,7 +727,7 @@ function Tuner(){
     const c=1200*Math.log2(f/STR[s].freq),ac=Math.abs(c);
     noteT.textContent=STR[s].name;noteT.style.fill=STR[s].color;centsT.textContent=`${c>0?'+':''}${Math.round(c)} cents`;
     setNeedle(c,false);gauge.classList.toggle('intune',ac<=5);
-    el.querySelectorAll('.strsel .btn').forEach(b=>b.classList.toggle('heard',!target&&+b.dataset.s===s));
+    el.querySelectorAll('.strpick .btn').forEach(b=>b.classList.toggle('heard',!target&&+b.dataset.s===s));
     if(ac<=5)say(`${STR[s].name} string: in tune.`,'ok');
     else if(c<-100)say(`Way too low for the ${STR[s].name} string. Keep tightening, slowly.`);
     else if(c>100)say(`Way too high for the ${STR[s].name} string. Loosen it well below the note, then tighten up to it.`,'no');
@@ -752,11 +753,11 @@ function Tuner(){
   function stop(){
     cancelAnimationFrame(raf);if(srcNode)srcNode.disconnect();if(stream)stream.getTracks().forEach(t=>t.stop());
     stream=srcNode=an=null;running=false;if(ACTIVE_TUNER===api)ACTIVE_TUNER=null;go.textContent='Start tuner';
-    setNeedle(0,true);gauge.classList.remove('intune');el.querySelectorAll('.strsel .btn').forEach(b=>b.classList.remove('heard'));
+    setNeedle(0,true);gauge.classList.remove('intune');el.querySelectorAll('.strpick .btn').forEach(b=>b.classList.remove('heard'));
   }
   go.onclick=()=>running?(stop(),say('Tuner stopped.')):start();
-  el.querySelector('.strsel').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;target=+b.dataset.s;hist=[];
-    el.querySelectorAll('.strsel .btn').forEach(x=>{const on=x===b;x.setAttribute('aria-pressed',on);x.style.background=on&&target?STR[target].color:'';});});
+  el.querySelector('.strpick').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;target=+b.dataset.s;hist=[];
+    el.querySelectorAll('.strpick .btn').forEach(x=>{const on=x===b;x.setAttribute('aria-pressed',on);x.style.background=on&&target?STR[target].color:'';});});
   setNeedle(0,true);
   const api={el,stop};return api;
 }
@@ -1121,7 +1122,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v27';
+window.APP_VERSION = 'v28';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
