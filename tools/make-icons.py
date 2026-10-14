@@ -8,7 +8,7 @@ OUT = Path(__file__).resolve().parent.parent / "icons"
 FONT = "/System/Library/Fonts/Supplemental/DIN Condensed Bold.ttf"
 BG = (21, 19, 16)          # dark page background
 PAPER = (240, 235, 227)    # cream
-ACCENT = (238, 154, 69)    # the app's orange
+ACCENT = (255, 148, 51)    # the app's orange (dark-mode shade, on the dark icon)
 STRINGS = [(232, 190, 44), (238, 150, 56), (224, 103, 163), (77, 179, 106), (91, 155, 234), (226, 87, 75)]  # e B G D A E
 S = 1024
 
