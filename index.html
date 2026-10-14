@@ -237,6 +237,7 @@ figcaption{font-size:14px;color:var(--muted)}
 .mnemo .L{font-family:var(--f-display);font-size:40px;font-weight:800;line-height:1}
 .mnemo .w{font-size:13px;color:var(--muted);text-align:center}
 .mnemo .num{font-size:12px;color:var(--muted)}
+@media (max-width:420px){.mnemo{gap:4px}.mnemo div{padding:10px 1px}.mnemo .w,.mnemo .num{font-size:11px}.mnemo .L{font-size:34px}}
 .ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .pad{position:relative;height:230px;background:var(--wood);border-radius:var(--r);touch-action:none;cursor:pointer;overflow:hidden;user-select:none;-webkit-user-select:none}
 .pad .hole{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;background:var(--hole);box-shadow:0 0 0 8px var(--wood-edge)}
@@ -257,7 +258,8 @@ figcaption{font-size:14px;color:var(--muted)}
 .gauge.intune .needle{stroke:var(--good)}
 .turn{display:flex;gap:10px}
 .turn .btn{flex:1;padding:16px 10px;font-size:16px;user-select:none;-webkit-user-select:none;touch-action:none}
-.strsel .btn{min-width:46px}
+.strsel{flex-wrap:nowrap;gap:6px}
+.strsel .btn{flex:1 1 0;min-width:0;padding:9px 0;font-size:14px;text-align:center}
 .strsel .btn[aria-pressed="true"]{color:var(--ink)}
 .hs{width:100%;max-width:300px;display:block;margin:0 auto}
 .hs .knob{cursor:pointer}
@@ -692,12 +694,12 @@ let ACTIVE_TUNER=null;
 function Tuner(){
   const el=h(`<div class="card tuner-live">
     <div class="row strsel" role="group" aria-label="String to tune"><button type="button" class="btn" data-s="0" aria-pressed="true">Auto</button>${[6,5,4,3,2,1].map(s=>`<button type="button" class="btn" data-s="${s}" style="border-color:${STR[s].color}">${STR[s].name}</button>`).join('')}</div>
-    <svg class="gauge" viewBox="0 0 300 200" role="img" aria-label="Tuner needle">
+    <svg class="gauge" viewBox="0 0 300 244" role="img" aria-label="Tuner needle">
       <path class="arc" d="M46.1 90 A120 120 0 0 1 253.9 90"/><path class="zone" d="M137.5 30.7 A120 120 0 0 1 162.5 30.7"/>
       ${[-50,-25,0,25,50].map(c=>{const a=c/50*60*Math.PI/180;return `<line class="tick" x1="${150+100*Math.sin(a)}" y1="${150-100*Math.cos(a)}" x2="${150+88*Math.sin(a)}" y2="${150-88*Math.cos(a)}"/>`;}).join('')}
       <text class="gl" x="40" y="118">♭ flat</text><text class="gl" x="260" y="118">sharp ♯</text>
       <line class="needle" x1="150" y1="150" x2="150" y2="40"/><circle class="hub" cx="150" cy="150" r="7"/>
-      <text class="note" x="150" y="190">–</text><text class="cents" x="150" y="128"></text></svg>
+      <text class="note" x="150" y="210">–</text><text class="cents" x="150" y="238"></text></svg>
     <div class="feedback tl-msg" aria-live="polite">Tap Start, then pluck one string at a time.</div>
     <div class="row"><button type="button" class="btn primary tl-go">Start tuner</button><span class="cap">Uses your microphone. Nothing is recorded or sent anywhere.</span></div></div>`);
   const needle=el.querySelector('.needle'),gauge=el.querySelector('.gauge'),msg=el.querySelector('.tl-msg'),go=el.querySelector('.tl-go'),
@@ -762,12 +764,12 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&ACTIVE_TUN
 function TunerTrainer(){
   const el=h(`<div class="card" style="display:flex;flex-direction:column;gap:16px">
     <div class="row strsel" role="group" aria-label="String to tune">${[6,5,4,3,2,1].map(s=>`<button type="button" class="btn" data-s="${s}" style="border-color:${STR[s].color}">${STR[s].name}</button>`).join('')}</div>
-    <div class="tuner"><svg class="gauge" viewBox="0 0 300 200" role="img" aria-label="Tuner needle">
+    <div class="tuner"><svg class="gauge" viewBox="0 0 300 244" role="img" aria-label="Tuner needle">
       <path class="arc" d="M46.1 90 A120 120 0 0 1 253.9 90"/><path class="zone" d="M137.5 30.7 A120 120 0 0 1 162.5 30.7"/>
       ${[-50,-25,0,25,50].map(c=>{const a=c/50*60*Math.PI/180;return `<line class="tick" x1="${150+100*Math.sin(a)}" y1="${150-100*Math.cos(a)}" x2="${150+88*Math.sin(a)}" y2="${150-88*Math.cos(a)}"/>`;}).join('')}
       <text class="gl" x="40" y="118">♭ flat</text><text class="gl" x="260" y="118">sharp ♯</text>
       <line class="needle" x1="150" y1="150" x2="150" y2="40"/><circle class="hub" cx="150" cy="150" r="7"/>
-      <text class="note" x="150" y="190"></text><text class="cents" x="150" y="128"></text></svg>
+      <text class="note" x="150" y="210"></text><text class="cents" x="150" y="238"></text></svg>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="turn"><button type="button" class="btn" data-d="-1">↓ Loosen<br><small style="font-weight:400">pitch goes down</small></button><button type="button" class="btn primary" data-d="1">↑ Tighten<br><small style="font-weight:400">pitch goes up</small></button></div>
         <div class="feedback" aria-live="polite"></div>
@@ -929,7 +931,7 @@ const L=[
 
 {t:'Tuning',html:`
   <p class="lead">Every practice session starts here. A guitar that's slightly out of tune makes correct playing sound wrong.</p>
-  <section class="block"><h3>String names</h3><p class="prose">Thicker to thinner: E A D G B e. Tap a letter to hear it.</p><div data-w="mn"></div></section>
+  <section class="block"><h3>String names</h3><p class="prose">Thicker to thinner: E A D G B e. An easy way to remember the names of the strings is <b>Eddie Ate Dynamite, Good Bye Eddie</b>. Tap a letter to hear it.</p><div data-w="mn"></div></section>
   <section class="block"><h3>Which peg turns which string</h3><p class="prose">Trace the string from the bridge, toward the headstock, past the nut, to the post it winds around. That peg is the one.</p><div data-w="hs"></div>
     <div class="callout warn"><b class="t">Common mistake</b><p>Turning the wrong peg. If the string you're plucking doesn't respond, stop. Don't keep cranking; you're tightening a different string.</p></div></section>
   <section class="block"><h3>Using a tuner</h3><ul class="points">
@@ -1118,7 +1120,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v25';
+window.APP_VERSION = 'v26';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
