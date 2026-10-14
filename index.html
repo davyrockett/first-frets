@@ -260,6 +260,7 @@ figcaption{font-size:14px;color:var(--muted)}
 .turn .btn{flex:1;padding:16px 10px;font-size:16px;user-select:none;-webkit-user-select:none;touch-action:none}
 .strsel{flex-wrap:nowrap;gap:6px}
 .strsel .btn{flex:1 1 0;min-width:0;padding:9px 0;font-size:14px;text-align:center}
+.strsel .btn[data-s="0"]{flex:1.7 1 0}
 .strsel .btn[aria-pressed="true"]{color:var(--ink)}
 .hs{width:100%;max-width:300px;display:block;margin:0 auto}
 .hs .knob{cursor:pointer}
@@ -1120,7 +1121,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v26';
+window.APP_VERSION = 'v27';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
