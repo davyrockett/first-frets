@@ -46,6 +46,9 @@ with this section (copy it from any other app) plus an "## This app" section.
 <!-- shared-preferences:end -->
 
 ## This app
+- Tuner (pop-up from the header): the same tuner as Page Fright (McLeod pitch detection, mic filtered to the guitar's
+  range, adaptive level gate, steady median readings, Play pitch drone). It listens as soon as it opens, on Auto; no
+  Start button. Keep the two apps' tuner code in step; Page Fright's CLAUDE.md has the details.
 
 David's interactive guitar method for absolute beginners: an app version of his method book, used by his
 students. Live: https://davyrockett.github.io/first-frets/ (`#s3` etc. link to a section). See README.md.
