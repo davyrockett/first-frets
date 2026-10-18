@@ -337,6 +337,7 @@ figcaption{font-size:14px;color:var(--muted)}
   <main id="main"></main>
 </div>
 
+<script src="move.js" data-keep="bg."></script>
 <script>
 "use strict";
 /* ---------- data ---------- */
@@ -1162,6 +1163,7 @@ const settingsPop=Popup('Settings',()=>{
   rb.onclick=()=>{conf.hidden=false;rb.hidden=true;};
   el.querySelector('#set-reset-no').onclick=()=>{conf.hidden=true;rb.hidden=false;};
   el.querySelector('#set-reset-yes').onclick=()=>{done=new Set();store.set('done',[]);store.set('posture',[]);conf.hidden=true;rb.hidden=false;rb.textContent='Progress reset';rb.disabled=true;setTimeout(()=>{rb.textContent='Reset progress';rb.disabled=false;},2500);go(cur,false);};
+  const au=el.querySelector('#app-url');if(/davyrockett\./.test(location.hostname))au.textContent=location.origin+location.pathname.replace(/[^/]*$/,'');
   const cu=el.querySelector('#copy-url');
   cu.onclick=()=>{const url=el.querySelector('#app-url').textContent;
     const done=()=>{cu.textContent='Copied';setTimeout(()=>cu.textContent='Copy link',2000);};
@@ -1200,7 +1202,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v36';
+window.APP_VERSION = 'v37';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
