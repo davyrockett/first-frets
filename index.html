@@ -225,6 +225,9 @@ svg text{font-family:var(--f-body)}
 figure{margin:0;display:flex;flex-direction:column;gap:8px}
 figure img{border-radius:var(--r);background:#fff;display:block}
 figcaption{font-size:14px;color:var(--muted)}
+.lh-photo{max-width:560px}
+.lh-photo img{width:100%;height:auto;border-radius:var(--r)}
+.lh-draw img{background:#fff}
 .photo-wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
 .annot{display:flex;flex-direction:column;gap:12px}
 .annot div{display:flex;flex-direction:column;gap:2px}
@@ -1026,9 +1029,12 @@ const L=[
     <li>When we say "fret," we mean the <b>area between two metal wires</b>, not a wire. The 2nd fret is the area between the 1st and 2nd wires; it's named for the wire on its body side.</li>
     <li>Find the dots on your neck. They're called <b>fret markers</b>. Some guitars also have a dot on the 3rd fret.</li>
     <li>Higher fret numbers are toward the body and higher in pitch. Lower numbers are toward the headstock and lower in pitch.</li></ul></section>
-  <section class="block"><h3>Where exactly to put your finger</h3><p class="prose">Put your fingertip in the middle of the fret space, between the two wires. The dots sit in the middle of their spaces, so they make a handy guide: for string 4, fret 5, your finger goes right next to the dot.</p><div data-w="pl"></div></section>
+  <section class="block"><h3>Where exactly to put your finger</h3><p class="prose">Put your fingertip in the middle of the fret space, between the two wires. The dots sit in the middle of their spaces, so they make a handy guide: for string 4, fret 5, your finger goes right next to the dot.</p><div data-w="pl"></div>
+    <figure class="lh-photo"><img src="img/fret-space.webp" alt="Close-up of two fingertips pressing strings, each inside a fret space, with red arrows marking the space between two fret wires" loading="lazy"><figcaption>The red arrows show a fret space: the area between two wires. Each fingertip goes inside a space, never on top of a wire.</figcaption></figure></section>
   <section class="block"><h3>Left hand shape</h3><div class="photo-wrap"><figure><img src="${'{{IMG.hands}}'}" alt="Finger numbers: left hand fingers 1 to 4 plus thumb; right hand p i m a"><figcaption>Finger numbers. Left-hand fingers are 1–4 from index to pinky.</figcaption></figure>
-    <ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li></ul></div>
+    <ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li><li>Leave a little space between your palm and the underside of the neck. Your hand shouldn't squeeze or rest against the neck.</li></ul></div>
+    <figure class="lh-photo"><img src="img/palm-gap.webp" alt="Left hand fretting the guitar, with a red arrow showing the gap between the palm and the underside of the neck" loading="lazy"><figcaption>The red arrow shows the gap between your palm and the neck. Keep that space open.</figcaption></figure>
+    <figure class="lh-photo lh-draw"><img src="img/good-bad-hand.webp" alt="Drawings of a good fingering position, with curved fingers and the thumb behind the neck, and a bad one, with the palm pressed up against the neck" loading="lazy"><figcaption><b>Good:</b> thumb behind the neck, fingers curved and coming down onto the strings. <b>Bad:</b> palm pressed up against the neck, fingers flat.</figcaption></figure>
 </section>
   <section class="block"><h3>How hard to press</h3><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
   <section class="block"><h3>Mini quiz</h3><div data-w="qz"></div></section>`,
@@ -1196,7 +1202,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v32';
+window.APP_VERSION = 'v33';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

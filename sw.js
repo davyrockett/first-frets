@@ -2,7 +2,7 @@
 //
 // IMPORTANT: whenever any file below changes, bump VERSION.
 // That is how phones and iPads learn there's an update to download.
-const VERSION = 'v32';
+const VERSION = 'v33';
 const CACHE = `firstfrets-${VERSION}`;
 const FONTS = 'guitar-fonts';
 
@@ -16,6 +16,9 @@ const ASSETS = [
   './icons/icon-maskable-512.png',
   './img/guitar-lines.png',
   './img/neck.webp',
+  './img/fret-space.webp',
+  './img/palm-gap.webp',
+  './img/good-bad-hand.webp',
 ];
 
 self.addEventListener('install', (event) => {
