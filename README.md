@@ -2,7 +2,7 @@
 
 An interactive version of the beginner guitar method book, published as **First Frets**.
 
-**Live app:** https://davyrockett.github.io/first-frets/ It runs as an app on
+**Live app:** https://www.davyrockett.com/first-frets/ It runs as an app on
 iPhone and iPad Home Screens and the Mac's Dock, and works with no signal once installed.
 
 ## What's in here

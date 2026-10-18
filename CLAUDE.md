@@ -55,7 +55,7 @@ with this section (copy it from any other app) plus an "## This app" section.
   Start button. Keep the two apps' tuner code in step; Page Fright's CLAUDE.md has the details.
 
 David's interactive guitar method for absolute beginners: an app version of his method book, used by his
-students. Live: https://davyrockett.github.io/first-frets/ (`#s3` etc. link to a section). See README.md.
+students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a section). See README.md.
 
 - **Publish:** run `tools/bump.sh` (bumps `sw.js` VERSION and `window.APP_VERSION` in index.html), commit, push,
   confirm the live `sw.js` shows the new version. New files must be added to `ASSETS` in `sw.js`.
@@ -68,5 +68,5 @@ students. Live: https://davyrockett.github.io/first-frets/ (`#s3` etc. link to a
 - Sections 1 and 4 use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
   lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is
   CC BY-SA (credit in README); keep that credit.
-- The first version is tagged `v1-original`. The old address davyrockett.github.io/beginner-guitar/ forwards
+- The first version is tagged `v1-original`. The old address www.davyrockett.com/beginner-guitar/ forwards
   here (repo davyrockett/beginner-guitar).
