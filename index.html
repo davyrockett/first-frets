@@ -1029,11 +1029,11 @@ const L=[
     <li>Find the dots on your neck. They're called <b>fret markers</b>. Some guitars also have a dot on the 3rd fret.</li>
     <li>Higher fret numbers are toward the body and higher in pitch. Lower numbers are toward the headstock and lower in pitch.</li></ul></section>
   <section class="block"><h3>Where exactly to put your finger</h3><p class="prose">Put your fingertip in the middle of the fret space, between the two wires. The dots sit in the middle of their spaces, so they make a handy guide: for string 4, fret 5, your finger goes right next to the dot.</p><div data-w="pl"></div></section>
-  <section class="block"><h3>Left hand shape</h3><div class="photo-wrap"><figure><img src="${'{{IMG.hands}}'}" alt="Finger numbers: left hand fingers 1 to 4 plus thumb; right hand p i m a"><figcaption>Finger numbers. Left-hand fingers are 1–4 from index to pinky.</figcaption></figure>
-    <ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li><li>Leave a little space between your palm and the underside of the neck. Your hand shouldn't squeeze or rest against the neck.</li></ul></div>
+  <section class="block"><h3>Left hand shape</h3><ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li><li>Leave a little space between your palm and the underside of the neck. Your hand shouldn't squeeze or rest against the neck.</li></ul>
     <figure class="lh-photo"><img src="img/fret-space.webp" alt="Close-up of two fingertips pressing strings, fingers arched tall and coming straight down onto the fingerboard" loading="lazy"><figcaption>Keep your fingers as tall as you can, coming straight down onto the fingerboard. Standing them up like this keeps them from touching the strings next to them.</figcaption></figure>
     <figure class="lh-photo"><img src="img/palm-gap.webp" alt="Left hand fretting the guitar, with a red arrow showing the gap between the palm and the underside of the neck" loading="lazy"><figcaption>The red arrow shows the gap between your palm and the neck. Keep that space open.</figcaption></figure>
-</section>
+
+    <figure class="lh-photo"><img src="${'{{IMG.hands}}'}" alt="Finger numbers: left hand fingers 1 to 4 plus thumb; right hand p i m a"><figcaption>Finger numbers. Left-hand fingers are 1–4 from index to pinky.</figcaption></figure></section>
   <section class="block"><h3>How hard to press</h3><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
   <section class="block"><h3>Mini quiz</h3><div data-w="qz"></div></section>`,
  mount(r){mount(r,'fb',Fretboard({frets:12,phoneFrets:5}).el);mount(r,'pl',Placement());mount(r,'pr',Pressure());mount(r,'qz',MapQuiz());}},
@@ -1200,7 +1200,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v35';
+window.APP_VERSION = 'v36';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
