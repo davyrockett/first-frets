@@ -354,8 +354,9 @@ const ORD=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th
 const NOTES=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
 const freqOf=(s,f)=>STR[s].freq*Math.pow(2,f/12);
 const noteOf=(s,f)=>NOTES[Math.round(69+12*Math.log2(freqOf(s,f)/440))%12];
-const pill=s=>`<span class="pill" style="background:${STR[s].color}">${STR[s].name}</span>`;
-const strDesc=s=>`string ${s} (${STR[s].name})`;
+// Strings are labelled 1–6 everywhere except the Tuning page, which teaches the letter names (pill(s,true)).
+const pill=(s,name)=>`<span class="pill" style="background:${STR[s].color}">${name?STR[s].name:s}</span>`;
+const strDesc=s=>`string ${s}`;
 
 /* ---------- storage (per-viewer convenience only) ---------- */
 const store={get(k,d){try{const v=localStorage.getItem('bg.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
@@ -411,7 +412,7 @@ function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,
   for(let f=1;f<=frets;f++)s+=`<line class="fb-wire" x1="${fx(f)}" x2="${fx(f)}" y1="${top}" y2="${bot}"/>`;
   s+=`<rect class="fb-nut" x="${x0-7}" y="${top-2}" width="8" height="${bot-top+4}" rx="2"/>`;
   for(let k=1;k<=6;k++)s+=`<line class="fb-str" x1="34" x2="${x1}" y1="${sy(k)}" y2="${sy(k)}" stroke-width="${(.9+(k-1)*.5).toFixed(2)}"/>`;
-  for(let k=1;k<=6;k++)s+=`<circle cx="15" cy="${sy(k)}" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="15" y="${sy(k)}">${STR[k].name}</text>`;
+  for(let k=1;k<=6;k++)s+=`<circle cx="15" cy="${sy(k)}" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="15" y="${sy(k)}">${k}</text>`;
   s+=`<text class="fb-num" x="56" y="${H-8}">open</text>`;
   for(let f=1;f<=frets;f++)s+=`<text class="fb-num" x="${(fx(f-1)+fx(f))/2}" y="${H-8}">${f}</text>`;
   for(let k=1;k<=6;k++)for(let f=0;f<=frets;f++){
@@ -449,7 +450,7 @@ function Tab(events,{onCol}={}){
   const colW=44,x0=48,hasCh=events.some(e=>e.c),top=hasCh?40:18,ly=s=>top+(s-1)*20,W=x0+events.length*colW+14,H=ly(6)+16;
   let s=`<svg class="tab" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Tab">`;
   events.forEach((e,i)=>{s+=`<rect class="cur" data-c="${i}" x="${x0+i*colW+3}" y="${ly(1)-12}" width="${colW-6}" height="${ly(6)-ly(1)+24}" rx="6"/>`;});
-  for(let k=1;k<=6;k++){s+=`<line class="l" x1="${x0-12}" x2="${W-10}" y1="${ly(k)}" y2="${ly(k)}"/><text class="tl" x="18" y="${ly(k)}">${STR[k].name}</text>`;}
+  for(let k=1;k<=6;k++){s+=`<line class="l" x1="${x0-12}" x2="${W-10}" y1="${ly(k)}" y2="${ly(k)}"/><text class="tl" x="18" y="${ly(k)}">${k}</text>`;}
   s+=`<line class="bar" x1="${x0-12}" x2="${x0-12}" y1="${ly(1)}" y2="${ly(6)}"/><line class="bar" x1="${W-10}" x2="${W-10}" y1="${ly(1)}" y2="${ly(6)}"/>`;
   events.forEach((e,i)=>{
     const cx=x0+i*colW+colW/2;
@@ -507,7 +508,7 @@ function Chord({name,frets,fingers={},barre=null}){
     if(f==='x'){const x=xs(k),y=ny-16;s+=`<line class="xm" x1="${x-5}" y1="${y-5}" x2="${x+5}" y2="${y+5}"/><line class="xm" x1="${x+5}" y1="${y-5}" x2="${x-5}" y2="${y+5}"/>`;}
     else if(f===0)s+=`<circle class="om" cx="${xs(k)}" cy="${ny-16}" r="6"/>`;
     else s+=`<circle class="dot" cx="${xs(k)}" cy="${fy(f)-17}" r="10"/><text class="fn" x="${xs(k)}" y="${fy(f)-17}">${fingers[k]||''}</text>`;}
-  for(let k=1;k<=6;k++)s+=`<text class="sn" x="${xs(k)}" y="${fy(4)+20}" fill="${STR[k].color}">${STR[k].name}</text>`;
+  for(let k=1;k<=6;k++)s+=`<text class="sn" x="${xs(k)}" y="${fy(4)+20}" fill="${STR[k].color}">${k}</text>`;
   s+=`</svg>`;
   const notes=Object.entries(frets).filter(([k,f])=>f!=='x').map(([k,f])=>[+k,f]);
   const el=h(`<button type="button" class="chordcard" aria-label="Strum ${name}">${s}<span class="cap">Tap to strum</span></button>`);
@@ -643,7 +644,7 @@ function StrumPad(){
     <div class="cap">Drawn as if you're looking at the front of your guitar with the headstock to the left: thickest string on the bottom. Swipe from the thickest string to the thinnest, the same order your thumb's downward stroke hits them, or tap one string.</div></div>`);
   const pad=el.querySelector('.pad'),Y=s=>28+(s-1)*35,lines={};
   for(let s=6;s>=1;s--){const l=h(`<div class="s" style="top:${Y(s)}px;border-top-width:${(1+(s-1)*.6).toFixed(1)}px"></div>`);pad.append(l);lines[s]=l;
-    pad.append(h(`<span class="sl" style="top:${Y(s)}px;background:${STR[s].color}">${STR[s].name}</span>`));}
+    pad.append(h(`<span class="sl" style="top:${Y(s)}px;background:${STR[s].color}">${s}</span>`));}
   let lastY=null;
   const hitS=s=>{playNote(s,0,{vol:.42});const l=lines[s];l.classList.remove('v');void l.offsetWidth;l.classList.add('v');};
   const rel=e=>e.clientY-pad.getBoundingClientRect().top;
@@ -685,11 +686,11 @@ function Headstock(){
   const light=k=>el.querySelectorAll('.hstr').forEach(p=>{const on=+p.dataset.hs===k;p.classList.toggle('on',on);p.style.stroke=on?STR[k].color:'';});
   const label=(k,show)=>{const t=el.querySelector(`.knob[data-k="${k}"] text`);t.textContent=show?STR[k].name:'?';t.parentNode.querySelector('circle').style.fill=show?STR[k].color:'';};
   const ask=()=>{let n;do{n=1+Math.floor(Math.random()*6);}while(n===target);target=n;for(let k=1;k<=6;k++)label(k,false);light(0);
-    fbk.className='feedback';fbk.innerHTML=`Tap the peg that turns the ${pill(n)} string (string ${n}).`;};
+    fbk.className='feedback';fbk.innerHTML=`Tap the peg that turns the ${pill(n,true)} string (string ${n}).`;};
   const tap=k=>{light(k);playNote(k,0);label(k,true);
     if(!target)return;
     if(k===target){fbk.className='feedback ok';fbk.innerHTML=`Yes. That peg turns the ${STR[k].name} string. Follow the colored line down to see it.`;target=0;}
-    else{fbk.className='feedback no';fbk.innerHTML=`That one turns the ${pill(k)} string. Turning it won't change the ${STR[target].name} string, so don't force it. Trace again.`;}};
+    else{fbk.className='feedback no';fbk.innerHTML=`That one turns the ${pill(k,true)} string. Turning it won't change the ${STR[target].name} string, so don't force it. Trace again.`;}};
   el.addEventListener('click',e=>{const k=e.target.closest('.knob');if(k)return tap(+k.dataset.k);
     const a=e.target.closest('[data-a]');if(!a)return;if(a.dataset.a==='next')ask();else{for(let i=1;i<=6;i++)label(i,true);target=0;fbk.className='feedback';fbk.textContent='All six labeled. Tap any peg to hear and trace its string.';}});
   el.addEventListener('keydown',e=>{const k=e.target.closest('.knob');if(k&&(e.key==='Enter'||e.key===' ')){e.preventDefault();tap(+k.dataset.k);}});
@@ -885,7 +886,7 @@ function Placement(){
   let s=`<svg class="pl" viewBox="-44 30 810 210" style="width:100%;height:auto;display:block" role="img" aria-label="Photo of a guitar neck. The fingertip goes on string 4 in the middle of the 5th fret space, right next to the dot.">
     <image href="img/neck.webp" x="0" y="0" width="760" height="215"/>
     <rect class="pl-space" x="${wires[4]+3}" y="38" width="${wires[5]-wires[4]-6}" height="146" rx="6"/>`;
-  for(let k=1;k<=6;k++)s+=`<circle cx="-22" cy="${sy[k]}" r="12" fill="${STR[k].color}"/><text class="fb-lbl" x="-22" y="${sy[k]}" style="font-size:15px">${STR[k].name}</text>`;
+  for(let k=1;k<=6;k++)s+=`<circle cx="-22" cy="${sy[k]}" r="12" fill="${STR[k].color}"/><text class="fb-lbl" x="-22" y="${sy[k]}" style="font-size:15px">${k}</text>`;
   for(let f=1;f<=7;f++)s+=`<text class="pl-num${f===5?' on':''}" x="${mid(f)}" y="218">${f}</text>`;
   s+=`<circle class="pl-target" cx="${mid(5)}" cy="${sy[4]}" r="15"/></svg>`;
   return h(`<figure class="card" style="display:flex;flex-direction:column;gap:10px">${s}
@@ -926,7 +927,7 @@ function TabQuiz(seq){
       else setTimeout(show,650);
     }else{
       fb.flash(s,f);fbk.className='feedback no';
-      fbk.innerHTML=s!==ts?`That's the ${STR[s].name} string. Check which line the number is on: top line is the thinnest string.`
+      fbk.innerHTML=s!==ts?`That's string ${s}. Check which line the number is on: top line is the thinnest string.`
         :`Right string! That's ${f?`fret ${f}`:'open'}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`;
     }
   }
@@ -939,7 +940,7 @@ function MapQuiz(){
   const Q=[
     {q:'Find the first dot on the neck. Which fret is it?',choices:[3,5,7],a:5,ok:'Right. The first dot is on the 5th fret.'},
     {q:'Tap anywhere on the 2nd fret.',check:(s,f)=>f===2,ok:'Yes. Any string works; the 2nd fret runs across all six.',no:(s,f)=>f===0?'That\'s an open string (fret 0). Move toward the body.':`That's fret ${f}. Count the spaces from the nut.`},
-    {q:'Tap the 3rd string, 4th fret.',hint:'The 3rd string is the 3rd thinnest.',check:(s,f)=>s===3&&f===4,ok:'Got it: the G string, 4th fret.',no:(s,f)=>s!==3?`That's ${strDesc(s)}. Count from the thinnest string: e is 1, B is 2, G is 3.`:`Right string. That's fret ${f}, though; you want 4.`},
+    {q:'Tap the 3rd string, 4th fret.',hint:'The 3rd string is the 3rd thinnest.',check:(s,f)=>s===3&&f===4,ok:'Got it: string 3, 4th fret.',no:(s,f)=>s!==3?`That's ${strDesc(s)}. Count from the thinnest string: that's string 1.`:`Right string. That's fret ${f}, though; you want 4.`},
     {q:'Tap the thickest string, open.',check:(s,f)=>s===6&&f===0,ok:'Yes. Open means no finger down: fret 0, at the nut.',no:(s,f)=>s!==6?`That's ${strDesc(s)}. The thickest string is string 6, at the bottom of this picture.`:'Right string. Open means no finger at all; tap the "open" column to the left of the nut.'},
     {q:'Now play that note. Even with no finger down, you still pluck it.',pluck:true}
   ];
@@ -954,7 +955,7 @@ function MapQuiz(){
     el.querySelector('.qh').textContent=q.hint||'';fbk.className='feedback';fbk.textContent='';nx.hidden=true;fb.setMarks([]);
     const qc=el.querySelector('.qc');qc.innerHTML='';
     if(q.choices)q.choices.forEach(c=>{const b=h(`<button type="button" class="btn">Fret ${c}</button>`);b.onclick=()=>{if(c===q.a){fbk.className='feedback ok';fbk.textContent=q.ok;nx.hidden=false;}else{fbk.className='feedback no';fbk.textContent=`Not quite. Look for the first dot after the nut, then count the spaces from the nut.`;}};qc.append(b);});
-    if(q.pluck){fb.setMarks([{s:6,f:0}]);const b=h(`<button type="button" class="btn primary">Pluck the open E string</button>`);b.onclick=()=>{playNote(6,0);fbk.className='feedback ok';fbk.textContent='That\'s the open E. Quiz done.';};qc.append(b);
+    if(q.pluck){fb.setMarks([{s:6,f:0}]);const b=h(`<button type="button" class="btn primary">Pluck open string 6</button>`);b.onclick=()=>{playNote(6,0);fbk.className='feedback ok';fbk.textContent='That\'s open string 6. Quiz done.';};qc.append(b);
       const r=h(`<button type="button" class="btn">Start over</button>`);r.onclick=()=>{i=0;show();};qc.append(r);}
   };
   nx.onclick=()=>{i=Math.min(Q.length-1,i+1);show();};
@@ -978,7 +979,7 @@ const L=[
   </div>
   <section class="block"><h3>Quick check</h3><div data-w="q"></div></section>`,
  mount(r){mount(r,'q',TermQuiz([
-   {q:'Which is the right way to describe the E string with the big fat sound?',o:['the thickest string','the lowest string'],a:0,why:'Right. Strings are always thicker or thinner.',no:'"Lowest" could mean pitch or position. Strings are thicker or thinner.'},
+   {q:'Which is the right way to describe string 6, the one with the big fat sound?',o:['the thickest string','the lowest string'],a:0,why:'Right. Strings are always thicker or thinner.',no:'"Lowest" could mean pitch or position. Strings are thicker or thinner.'},
    {q:'Your teacher says "move to a higher fret." Which way do you go?',o:['toward the headstock','toward the body'],a:1,why:'Yes. Higher fret numbers are toward the body, and higher in pitch.'}]));}},
 
 {t:'Holding the Guitar',html:`
@@ -1034,8 +1035,7 @@ const L=[
   <section class="block"><h3>Left hand shape</h3><ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li><li>Leave a little space between your palm and the underside of the neck. Your hand shouldn't squeeze or rest against the neck.</li></ul>
     <figure class="lh-photo"><img src="img/fret-space.webp" alt="Close-up of two fingertips pressing strings, fingers arched tall and coming straight down onto the fingerboard" loading="lazy"><figcaption>Keep your fingers as tall as you can, coming straight down onto the fingerboard. Standing them up like this keeps them from touching the strings next to them.</figcaption></figure>
     <figure class="lh-photo"><img src="img/palm-gap.webp" alt="Left hand fretting the guitar, with a red arrow showing the gap between the palm and the underside of the neck" loading="lazy"><figcaption>The red arrow shows the gap between your palm and the neck. Keep that space open.</figcaption></figure>
-
-    <figure class="lh-photo"><img src="${'{{IMG.hands}}'}" alt="Finger numbers: left hand fingers 1 to 4 plus thumb; right hand p i m a"><figcaption>Finger numbers. Left-hand fingers are 1–4 from index to pinky.</figcaption></figure></section>
+</section>
   <section class="block"><h3>How hard to press</h3><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
   <section class="block"><h3>Mini quiz</h3><div data-w="qz"></div></section>`,
  mount(r){mount(r,'fb',Fretboard({frets:12,phoneFrets:5}).el);mount(r,'pl',Placement());mount(r,'pr',Pressure());mount(r,'qz',MapQuiz());}},
@@ -1054,14 +1054,14 @@ const L=[
 
 {t:'Your First Songs',html:`
   <p class="lead">Four short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
-  <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, the D string (string 4) and the A string (string 5). It starts on the open D string.</p><div data-w="s1"></div></div>
+  <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, string 4 and string 5. It starts on open string 4.</p><div data-w="s1"></div></div>
   <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">No left-hand fingers at all. With the thumb of your right hand, move from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
-  <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put <button type="button" class="fpop">finger 2</button> on the A string, 2nd fret, and <button type="button" class="fpop">finger 3</button> on the D string, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
+  <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put your middle finger on string 5, 2nd fret, and your ring finger on string 4, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
   <div class="song"><span class="eyebrow">All six at once</span><h3>One sweep of the thumb</h3><p class="sub">Same two fingers, same strings. Now sweep your thumb across all six in one motion. Stacked numbers in tab mean "play these together."</p><div data-w="s4"></div></div>
   <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
     <p class="prose">Here's a map of what your fingers were doing. A chord diagram is a picture of the neck standing up: headstock at the top, thicker strings on the left.</p>
-    <div class="chords"><div data-w="em"></div><ul class="points" style="flex:1;min-width:220px"><li>Circle above a string: play it open.</li><li>Dot: put a finger here. The number is which finger.</li><li>Finger 2 on the A string, finger 3 on the D string, both at the 2nd fret. Exactly what you just did.</li></ul></div></div></section>`,
- mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord(CH.Em));}},
+    <div class="chords"><div data-w="em"></div><ul class="points" style="flex:1;min-width:220px"><li>Circle above a string: play it open.</li><li>Dot: put a finger here.</li><li>Middle finger on string 5, ring finger on string 4, both at the 2nd fret. Exactly what you just did.</li></ul></div></div></section>`,
+ mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord({...CH.Em,fingers:{}}));}},
 
 {t:'Chord Diagrams',html:`
   <p class="lead">Tab and chord diagrams show the same notes two different ways. Tab is the order in time. A chord diagram is a snapshot of your hand at a given moment.</p>
@@ -1069,8 +1069,9 @@ const L=[
     <li>Headstock at the top; the thick bar is the nut.</li>
     <li>Thicker strings on the left, thinner on the right.</li>
     <li>Circle: play open. ✕: don't strum that string. Number in a dot: which finger.</li></ul>
+    <figure class="lh-photo"><img src="${'{{IMG.hands}}'}" alt="Finger numbers: left hand fingers 1 to 4 plus thumb; right hand p i m a"><figcaption>Finger numbers. Left-hand fingers are 1–4 from index to pinky.</figcaption></figure>
     <div class="chords"><div data-w="em"></div><div data-w="am"></div></div>
-    <p class="cap">See the ✕ above the thickest string in the Am diagram? That means don't strum it. Start your thumb sweep on the A string instead.</p></section>
+    <p class="cap">See the ✕ above the thickest string in the Am diagram? That means don't strum it. Start your thumb sweep on string 5 instead.</p></section>
   <section class="block"><h3>Em to Am</h3><p class="prose">Chord names sit above the tab. Each stack of numbers is one sweep of the thumb. Four sweeps, then change.</p><div data-w="ea"></div></section>`,
  mount(r){mount(r,'em',Chord(CH.Em));mount(r,'am',Chord(CH.Am));mount(r,'ea',Player(SONGS.emAm,{frets:3,bpm:70}));}},
 
@@ -1203,7 +1204,7 @@ const hm=/^#s(\d+)$/.exec(location.hash);go(hm?(+hm[1]-1):store.get('cur',0),fal
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v40';
+window.APP_VERSION = 'v41';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
