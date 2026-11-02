@@ -65,7 +65,8 @@ website repo, `Claude Apps/website`): icon, name and one-line description, in th
 ## This app
 - Tuner (pop-up from the header): the same tuner as Page Fright (McLeod pitch detection, mic filtered to the guitar's
   range, adaptive level gate, steady median readings, Play pitch drone). It listens as soon as it opens, on Auto; no
-  Start button. Keep the two apps' tuner code in step; Page Fright's CLAUDE.md has the details.
+  Start button. Keep the two apps' tuner code in step; Page Fright's CLAUDE.md has the details. Since v45 the pitch
+  reader is a top-level `pitchDetect(x,sr,floor)` (same code, moved out of `Tuner` so `Listener` can share it).
 
 David's interactive guitar method for absolute beginners: an app version of his method book, used by his
 students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a section). See README.md.
@@ -76,7 +77,21 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   and caches before re-checking).
 - `index.html` is the whole app: lessons, fretboard and chord diagrams, Karplus-Strong plucked-string sounds,
   tuner, chord chart pop-up, Settings (appearance, fretboard dot labels, playback speed, volume, text size,
-  reset progress, share link + QR code for students, check for updates). localStorage keys start with `bg.`.
+  share link + QR code for students, check for updates). localStorage keys start with `bg.`.
+- **Tab first, chords later (David, 2026-11-02):** a student found Chord Diagrams came too soon, so v45 added tab-only
+  sections before it: Same String, Both Hands (7), Tab Practice (9), One Finger per Fret (11), Melodies (12),
+  Riffs (13), Two Notes at Once (14). Chord Diagrams and Em and Am Songs are now 15–16.
+- **No progress ticks (David, 2026-11-02):** no section checkmarks, progress bar or "Reset progress". The open
+  section is saved by name (`bg.sec`); old saved numbers map through `OLD_ORDER`.
+- **Plucking the fretted string:** Same String, Both Hands teaches it (FollowString picture, the lift test) and
+  `NoteCheck` listens with the mic (`Listener`, `judgeNote`): it names the string it heard and which way to move
+  the thumb ("toward the floor/your face"). The same note an octave off counts as right, because the pitch reader
+  can slip an octave. Tab Practice's drill has the same "Play on my guitar" mode. The mic ignores the app's own
+  sounds (`SOUND_UNTIL`).
+- **Note lengths (David, 2026-11-02):** in players, a note lasts as long as it's written (a finger lifting);
+  `ring:true` players (arpeggios with fingers held down) let each note ring until its string is played again;
+  chords last until the next chord; the last note rings out; Stop silences everything (`hush`). `count` adds
+  count-in clicks; `finger:true` names the finger (one finger per fret).
 - Students are absolute beginners: keep wording simple and friendly.
 - Sections 1 and 4 use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
   lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is
