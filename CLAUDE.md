@@ -92,6 +92,13 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   `ring:true` players (arpeggios with fingers held down) let each note ring until its string is played again;
   chords last until the next chord; the last note rings out; Stop silences everything (`hush`). `count` adds
   count-in clicks; `finger:true` names the finger (one finger per fret).
+- **Reference + Metronome (David, 2026-11-06, v47):** the header is Tuner · Metronome · Reference · ⚙. Both live in
+  `reference.js` (loaded after the main script; uses its helpers). Reference tabs: Chords (the old chord chart plus
+  7ths, more minors, sus/add9/maj7), Barre (E/A shapes, major/minor/7/m7/power, same shapes as Raise the Barre),
+  Scales (minor/major pentatonic, 5 boxes + whole neck, any key), Strumming (7 patterns, chord, speed, click),
+  Neck (every note, find a note), Capo (shape → sounds as, and which capo for a song's key), Keys (I ii iii IV V vi in
+  G C D A E + famous progressions). Each tab has a link: `#scales`, `#metronome` etc. (`START_HASH` is read before
+  `go()` replaces the hash). `Chord()` takes `base` (top fret, shows "5fr") and `roots` (orange ring).
 - Students are absolute beginners: keep wording simple and friendly.
 - Sections 1 and 4 use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
   lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is

@@ -10,12 +10,19 @@ iPhone and iPad Home Screens and the Mac's Dock, and works with no signal once i
 | File | What it does |
 |---|---|
 | `index.html` | The whole app: lessons, diagrams, sounds, photos |
+| `reference.js` | The **Reference** pop-up (chord chart, barre chords, scales, strumming, notes on the neck, capo, chords in a key) and the **Metronome** |
 | `sw.js` | The "service worker": saves the app on the device so it works offline |
 | `manifest.webmanifest` | Tells the device the app's name, icon, and to open full-screen |
 | `icons/` | App icons (redraw with `python3 tools/make-icons.py`) |
 | `img/neck.webp` | Neck close-up in Section 6, cut from the same Martin D-28 photo (same credit and license as below) |
 | `img/guitar-lines.png` | Guitar line drawing in Sections 1 and 4, supplied by David (white lines on black, used as a mask so the lines follow light/dark mode). |
 | `Start First Frets.command` | Double-click to run a local test copy on this Mac |
+
+## Links straight to a reference page
+
+Send a student any of these to open the app on that page:
+`#chords` · `#barre` · `#scales` · `#strumming` · `#neck` · `#capo` · `#keys` · `#metronome`
+(for example https://www.davyrockett.com/first-frets/#scales).
 
 ## Installing it
 

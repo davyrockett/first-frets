@@ -105,7 +105,7 @@ ul.points li::marker{color:var(--accent)}
 .tuner-live .tl-msg{min-height:3.9em;line-height:1.3}   /* room for the longest message, so nothing below it jumps */
 .tuner-live .gauge{max-width:360px}
 .tuner-live .strpick .btn.heard{box-shadow:0 0 0 3px var(--hl)}
-.tools{display:flex;gap:8px;margin-top:6px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .tools .btn{padding:7px 14px;font-size:14px}
 .tools .btn.icon{padding:6px 8px;display:inline-flex;align-items:center}
 .settings{display:flex;flex-direction:column;gap:16px}
@@ -205,6 +205,8 @@ svg text{font-family:var(--f-body)}
 .chord .xm{stroke:var(--ink);stroke-width:2.2}
 .chord .sn{font-size:13px;font-weight:700;text-anchor:middle}
 .chord .lab{font-size:11px;fill:var(--muted);text-anchor:middle;letter-spacing:.08em;text-transform:uppercase}
+.chord .frl{font-size:12px;font-weight:700;fill:var(--muted);text-anchor:end;dominant-baseline:central}
+.chord .rootring{fill:none;stroke:var(--accent);stroke-width:3}
 .chord .name{font-family:var(--f-display);font-weight:800;font-size:30px;fill:var(--ink);text-anchor:middle}
 .chords{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
 .chordcard{display:flex;flex-direction:column;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 14px;cursor:pointer}
@@ -321,6 +323,93 @@ figcaption{font-size:14px;color:var(--muted)}
 .big-idea{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px}
 .big-idea h3{font-size:34px;text-transform:uppercase}
 .soon{background:var(--surface);border:1.5px dashed var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:8px}
+/* Reference pop-up and metronome (reference.js) */
+.ref{display:flex;flex-direction:column;gap:16px}
+.ref-tabs{padding-bottom:14px;border-bottom:1px solid var(--line)}
+.ref-tabs .btn{padding:7px 12px;font-size:14px}
+.ref-sec{display:flex;flex-direction:column;gap:14px}
+.ref-sec>h3{font-size:30px;text-transform:uppercase}
+.ref-sec .chn,.capo-card .chn,.capo-opt .chn{text-transform:none}
+.ref-notes{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px}
+.ref-notes .btn{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0;min-width:0}
+.ref-notes small{font-size:11px;font-weight:400;opacity:.75;line-height:1.1}
+@media (max-width:640px){.ref-notes{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.ref-qnote{min-height:2.6em}
+.ref-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.ref-shape{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.ref-shape .cap{max-width:30ch}
+.ref-table{border-collapse:collapse;font-size:15px;max-width:420px}
+.ref-table th{text-align:left;font-size:14px;line-height:1.2;vertical-align:bottom}
+.ref-table th,.ref-table td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line)}
+.nkbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:6px 4px}
+.nk{display:block;width:100%;height:auto;margin:0 auto;touch-action:manipulation}
+.nk-open{fill:var(--sunk)} .nk-board{fill:var(--board)} .nk-wire{stroke:var(--wire);stroke-width:3} .nk-nut{fill:var(--nut)}
+.nk-inlay{fill:var(--nut);opacity:.55} .nk-str{stroke:var(--metal)}
+.nk-sl{font-size:12px;font-weight:700;text-anchor:middle;dominant-baseline:central;fill:#1E1B18}
+.nk-num{fill:var(--muted);font-size:13px;text-anchor:middle;font-variant-numeric:tabular-nums}
+.nk-hit{fill:transparent;cursor:pointer}
+.nk-read{font-size:15px;min-height:3em}
+.nk-m{pointer-events:none}
+.nk-m circle{fill:#F4EFE6;stroke:#1E1B18;stroke-opacity:.45;stroke-width:1.5}
+.nk-m text{font-size:13px;font-weight:700;text-anchor:middle;dominant-baseline:central;fill:#1E1B18}
+.nk-m.k-root circle{fill:var(--accent);stroke-opacity:.6}
+.nk-m.k-hl circle{fill:var(--accent);stroke-opacity:.6}
+.nk-m.k-sharp circle{fill:#C9C1B4}
+.nk-m.k-sharp text{font-size:11px}
+.nk-m.k-dim{opacity:.28}
+.nk-m.on circle{stroke:var(--hl);stroke-opacity:1;stroke-width:4}
+.st-ctl{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center}
+.st-ctl select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.st-ctl input[type=range]{width:140px;accent-color:var(--accent)}
+.st-ctl input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+.st-bpm{min-width:4.6em;font-variant-numeric:tabular-nums}
+.st-list{display:flex;flex-direction:column;gap:12px}
+.st-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.st-head{display:flex;align-items:center;gap:10px}
+.st-head b{font-family:var(--f-display);font-size:24px;text-transform:uppercase;line-height:1}
+.st-head .btn{margin-left:auto;min-width:86px}
+.st-head .cap{white-space:nowrap}
+.st-grid{display:grid;gap:4px;max-width:520px}
+.st-slot{display:flex;flex-direction:column;align-items:center;padding:6px 0 4px;border-radius:8px}
+.st-slot.on{background:var(--accent-soft)}
+.st-a{font-size:28px;font-weight:800;line-height:1;height:32px;display:flex;align-items:center}
+.st-a.chop{font-size:18px}
+.st-a.rest{color:var(--muted);opacity:.5}
+.st-a.bass{font-family:var(--f-display);font-size:24px;color:var(--accent-ink)}
+.st-c{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.st-slot:nth-child(odd) .st-c{color:var(--ink);font-weight:700}
+.capo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.capo-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:0}
+.capo-card b{font-family:var(--f-display);font-size:26px;line-height:1.05}
+.capo-card .to{color:var(--accent-ink)}
+.capo-opts{display:flex;flex-direction:column;gap:6px}
+.capo-opt{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;display:grid;grid-template-columns:5.2em minmax(0,1fr);align-items:baseline;gap:12px}
+.capo-opt>b:first-child{font-family:var(--f-display);font-size:24px;text-transform:uppercase}
+.chordchart.kc-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:600px}
+@media (max-width:480px){.chordchart.kc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kc{display:flex;flex-direction:column;align-items:center;gap:4px}
+.kc .chordcard{width:100%}
+.kn{font-family:var(--f-display);font-size:24px;font-weight:800;color:var(--muted);line-height:1}
+.kn.main{color:var(--accent-ink)}
+.progs{display:flex;flex-direction:column}
+.prog{display:flex;align-items:center;gap:14px;padding:10px 0;border-top:1px solid var(--line)}
+.prog .pg-go{width:46px;height:46px;padding:0;flex:none;font-size:16px}
+.pg-names{font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.1}
+.pg-names .pc.on{color:var(--accent-ink);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.pg-names .dash{color:var(--muted);padding:0 6px}
+.mt{display:flex;flex-direction:column;gap:16px}
+.mt-bpm{display:flex;align-items:center;justify-content:center;gap:22px}
+.mt-step{width:58px;height:58px;padding:0;font-size:30px;border-radius:50%;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.mt-read{display:flex;flex-direction:column;align-items:center}
+.mt-n{font-family:var(--f-display);font-weight:800;font-size:84px;line-height:.95;font-variant-numeric:tabular-nums;min-width:2.1ch;text-align:center}
+.mt-range{width:100%;accent-color:var(--accent)}
+.mt-word{text-align:center;margin-top:-8px}
+.mt-lights{display:flex;justify-content:center;gap:14px;min-height:26px}
+.mt-lights span{width:24px;height:24px;border-radius:50%;background:var(--line);transition:background .05s}
+.mt-lights span.on{background:var(--ink)}
+.mt-lights span.first.on{background:var(--accent)}
+.mt-btns{justify-content:center}
+.mt-btns .btn{min-width:130px;padding:12px 16px}
 @media (max-width:860px){
   .app{grid-template-columns:minmax(0,1fr)}
   .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;height:auto;border-right:0;border-bottom:1px solid var(--line);background:var(--bg);padding:12px 16px;gap:10px}
@@ -342,7 +431,7 @@ figcaption{font-size:14px;color:var(--muted)}
 <body>
 <div class="app">
   <aside class="rail">
-    <div class="brand"><h1>First Frets</h1><p>A guitar method for absolute beginners</p><div class="tools"><button type="button" class="btn" id="tuner-open">Tuner</button><button type="button" class="btn" id="chords-open">Chords</button><button type="button" class="btn icon" id="settings-open" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.5 7.5 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.5 7.5 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.5 7.5 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.5 7.5 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button></div>
+    <div class="brand"><h1>First Frets</h1><p>A guitar method for absolute beginners</p><div class="tools"><button type="button" class="btn" id="tuner-open">Tuner</button><button type="button" class="btn" id="metro-open">Metronome</button><button type="button" class="btn" id="ref-open">Reference</button><button type="button" class="btn icon" id="settings-open" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.5 7.5 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.5 7.5 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.5 7.5 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.5 7.5 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button></div>
     </div>
     <ul class="nav" id="nav"></ul>
   </aside>
@@ -543,19 +632,23 @@ function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=f
 }
 
 /* ---------- chord diagram (headstock at top, thicker strings on the left) ---------- */
-function Chord({name,frets,fingers={},barre=null}){
-  const xs=k=>28+(6-k)*24,ny=58,fy=j=>ny+j*34;
-  let s=`<svg class="chord" viewBox="0 0 176 236" role="img" aria-label="${name} chord diagram">`;
-  s+=`<text class="name" x="88" y="28">${name}</text>`;
+// base: the fret shown on the top row (1 = open position, with the nut). Higher up the neck the nut bar becomes a
+// thin line, the grid moves right a little and "5fr" sits beside the top row. roots: strings whose note is the chord's root (orange ring).
+function Chord({name,frets,fingers={},barre=null,base=1,roots=[]}){
+  const ox=base>1?14:0,xs=k=>28+ox+(6-k)*24,ny=58,fy=j=>ny+j*34,ry=f=>fy(f-base+1)-17;
+  let s=`<svg class="chord" viewBox="0 0 176 236" role="img" aria-label="${name} chord diagram${base>1?`, starting at fret ${base}`:''}">`;
+  s+=`<text class="name" x="${88+ox}" y="28">${name}</text>`;
   s+=`<g class="grid">`;for(let k=1;k<=6;k++)s+=`<line x1="${xs(k)}" x2="${xs(k)}" y1="${ny}" y2="${fy(4)}" stroke-width="${(.8+(k-1)*.35).toFixed(2)}"/>`;
-  for(let j=1;j<=4;j++)s+=`<line x1="${xs(6)}" x2="${xs(1)}" y1="${fy(j)}" y2="${fy(j)}"/>`;s+=`</g>`;
-  s+=`<rect class="nutbar" x="${xs(6)-1}" y="${ny-5}" width="${xs(1)-xs(6)+2}" height="6"/>`;
+  for(let j=base>1?0:1;j<=4;j++)s+=`<line x1="${xs(6)}" x2="${xs(1)}" y1="${fy(j)}" y2="${fy(j)}"/>`;s+=`</g>`;
+  if(base>1)s+=`<text class="frl" x="${xs(6)-13}" y="${ry(base)}">${base}fr</text>`;
+  else s+=`<rect class="nutbar" x="${xs(6)-1}" y="${ny-5}" width="${xs(1)-xs(6)+2}" height="6"/>`;
   // One finger pressing two or more strings (e.g. F's index finger on the B and e strings).
-  if(barre)s+=`<rect class="dot" x="${xs(barre.from)-10}" y="${fy(barre.fret)-27}" width="${xs(barre.to)-xs(barre.from)+20}" height="20" rx="10"/>`;
+  if(barre)s+=`<rect class="dot" x="${xs(barre.from)-10}" y="${ry(barre.fret)-10}" width="${xs(barre.to)-xs(barre.from)+20}" height="20" rx="10"/>`;
   for(let k=1;k<=6;k++){const f=frets[k];
     if(f==='x'){const x=xs(k),y=ny-16;s+=`<line class="xm" x1="${x-5}" y1="${y-5}" x2="${x+5}" y2="${y+5}"/><line class="xm" x1="${x+5}" y1="${y-5}" x2="${x-5}" y2="${y+5}"/>`;}
     else if(f===0)s+=`<circle class="om" cx="${xs(k)}" cy="${ny-16}" r="6"/>`;
-    else s+=`<circle class="dot" cx="${xs(k)}" cy="${fy(f)-17}" r="10"/><text class="fn" x="${xs(k)}" y="${fy(f)-17}">${fingers[k]||''}</text>`;}
+    else s+=`<circle class="dot" cx="${xs(k)}" cy="${ry(f)}" r="10"/><text class="fn" x="${xs(k)}" y="${ry(f)}">${fingers[k]||''}</text>`;
+    if(roots.includes(k)&&f!=='x')s+=`<circle class="rootring" cx="${xs(k)}" cy="${f===0?ny-16:ry(f)}" r="${f===0?9:13.5}"/>`;}
   for(let k=1;k<=6;k++)s+=`<text class="sn" x="${xs(k)}" y="${fy(4)+20}" fill="${STR[k].color}">${k}</text>`;
   s+=`</svg>`;
   const notes=Object.entries(frets).filter(([k,f])=>f!=='x').map(([k,f])=>[+k,f]);
@@ -1476,7 +1569,7 @@ function go(i,scroll=true){
   art.querySelector('.next')?.addEventListener('click',()=>go(cur+1));
   renderNav();if(scroll)window.scrollTo({top:0});
 }
-// Pop-ups available from every page: the tuner and the chord chart.
+// Pop-ups available from every page: the tuner, metronome, reference charts and settings.
 function Popup(title,build,onClose=()=>{},wide=false){
   const m=h(`<div class="tmodal" role="dialog" aria-modal="true" aria-label="${title}" hidden><div class="tmodal-card${wide?' wide':''}"><div class="row" style="justify-content:space-between"><h2>${title}</h2><button type="button" class="btn tmodal-x">Close</button></div><div class="tmodal-slot"></div></div></div>`);
   document.body.append(m);let built=false;
@@ -1489,7 +1582,6 @@ function Popup(title,build,onClose=()=>{},wide=false){
 let theTuner=null;
 let tunerOpen=false;
 const tunerPop=Popup('Tuner',()=>(theTuner=Tuner()).el,()=>{tunerOpen=false;if(theTuner)theTuner.stop();});
-const chordPop=Popup('Chords',()=>h(`<div class="chordchart">${''}</div>`),()=>{},true);
 document.getElementById('tuner-open').onclick=()=>{tunerPop.open();tunerOpen=true;theTuner.open();};
 document.addEventListener('visibilitychange',()=>{if(!theTuner)return;if(document.hidden)theTuner.stop();else if(tunerOpen)theTuner.resume();});
 // Settings: appearance (saved on this device).
@@ -1551,7 +1643,7 @@ const settingsPop=Popup('Settings',()=>{
   mark();return el;
 },()=>{},true);
 document.getElementById('settings-open').onclick=()=>settingsPop.open();
-document.getElementById('chords-open').onclick=()=>{chordPop.open();const g=document.querySelector('.chordchart');if(g&&!g.childElementCount){COWBOY.forEach(k=>g.append(Chord(CH[k])));g.insertAdjacentHTML('afterend','<p class="cap">Tap a chord to hear it. Numbers in the dots are left-hand fingers. ✕ means don\'t strum that string; ○ means play it open.</p>');}};
+// The Reference pop-up (chords, barre chords, scales, strumming…) and the metronome live in reference.js.
 
 // "finger 2" style reminders: tap to see the finger-number picture.
 const fpop=h(`<div class="fpop-card" role="dialog" aria-label="Finger numbers" hidden><div class="fpop-img"><img src="${IMG.hands}" alt="Left hand with fingers numbered 1 index, 2 middle, 3 ring, 4 pinky"></div><p><b>Left-hand fingers:</b> 1 index · 2 middle · 3 ring · 4 pinky</p></div>`);
@@ -1566,15 +1658,17 @@ document.addEventListener('click',e=>{
 nav.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b)go(+b.dataset.i);});
 // The open section is remembered by name (before v45 it was a number, from the old 10-section order).
 const OLD_ORDER=['Parts of the Guitar','Words We Use','Holding the Guitar','Right Hand Basics','Tuning','The Guitar\'s Map','Reading Tab','Your First Songs','Chord Diagrams','Em and Am Songs'];
+const START_HASH=location.hash; // reference.js opens #scales etc. after go() replaces the hash
 const hm=/^#s(\d+)$/.exec(location.hash),saved=store.get('sec',OLD_ORDER[store.get('cur',0)]);
 go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 </script>
+<script src="reference.js"></script>
 
 <div class="update" id="update-banner" role="status" hidden><span>A new version is ready.</span><button type="button" class="btn primary" id="update-btn">Update</button></div>
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v46';
+window.APP_VERSION = 'v47';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

@@ -2,7 +2,7 @@
 //
 // IMPORTANT: whenever any file below changes, bump VERSION.
 // That is how phones and iPads learn there's an update to download.
-const VERSION = 'v46';
+const VERSION = 'v47';
 const CACHE = `firstfrets-${VERSION}`;
 const FONTS = 'guitar-fonts';
 
@@ -11,6 +11,7 @@ const ASSETS = [
   './index.html',
   './move.js',
   './suite.js',
+  './reference.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
