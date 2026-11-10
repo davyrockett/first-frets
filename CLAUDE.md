@@ -81,6 +81,16 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
 - **Tab first, chords later (David, 2026-11-02):** a student found Chord Diagrams came too soon, so v45 added tab-only
   sections before it: Same String, Both Hands (7), Tab Practice (9), One Finger per Fret (11), Melodies (12),
   Riffs (13), Two Notes at Once (14). Chord Diagrams and Em and Am Songs are now 15–16.
+- **Lap first (David, 2026-11-10, v48):** students struggled to match tab to the guitar from their own view (looking
+  down, the thickest string looks like it's on top; tab has the thinnest on top). So sections 2–6 have the guitar flat
+  on the lap, face up, neck left, which looks exactly like tab, pressing with the left pointer finger. Order: Parts of
+  the Guitar (Words We Use merged in) · Right Hand Basics · Tuning · **Which String?** (new: open-string tab only,
+  `LapView`, `SONGS.open`, Nothing Else Matters intro) · The Guitar's Map · Reading Tab · **Pick It Up** (old Holding
+  the Guitar + left-hand shape moved from the Map + `LapView({toggle:true})` flip + "Lost? Lap check") · Same String,
+  Both Hands · Tab Practice · then as before. The address is "which string, which fret, then pluck that same string".
+  "String 6 is always nearest you" works in both positions. `NoteCheck(targets,{lap:true})` / `judgeNote(…,lap)` say
+  "toward you / away from you" instead of "toward your face / the floor". Old saved section names map through
+  `RENAMED`. `#sN` links shifted with the new order. David may film short POV / overhead clips for these sections later.
 - **No progress ticks (David, 2026-11-02):** no section checkmarks, progress bar or "Reset progress". The open
   section is saved by name (`bg.sec`); old saved numbers map through `OLD_ORDER`.
 - **Plucking the fretted string:** Same String, Both Hands teaches it (FollowString picture, the lift test) and
@@ -100,7 +110,7 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   G C D A E + famous progressions). Each tab has a link: `#scales`, `#metronome` etc. (`START_HASH` is read before
   `go()` replaces the hash). `Chord()` takes `base` (top fret, shows "5fr") and `roots` (orange ring).
 - Students are absolute beginners: keep wording simple and friendly.
-- Sections 1 and 4 use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
+- Parts of the Guitar and Right Hand Basics use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
   lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is
   CC BY-SA (credit in README); keep that credit.
 - The first version is tagged `v1-original`. The old address www.davyrockett.com/beginner-guitar/ forwards
