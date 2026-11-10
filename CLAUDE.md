@@ -86,7 +86,7 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   on the lap, face up, neck left, which looks exactly like tab, pressing with the left pointer finger. Order: Parts of
   the Guitar (Words We Use merged in) · Right Hand Basics · Tuning · **Which String?** (new: open-string tab only,
   `LapView`, `SONGS.open`, Nothing Else Matters intro) · The Guitar's Map · Reading Tab · **Pick It Up** (old Holding
-  the Guitar + left-hand shape moved from the Map + `LapView({toggle:true})` flip + "Lost? Lap check") · Same String,
+  the Guitar + left-hand shape moved from the Map + "Lost? Lap check"; David removed the view-flip block 2026-11-10) · Same String,
   Both Hands · Tab Practice · then as before. The address is "which string, which fret, then pluck that same string".
   "String 6 is always nearest you" works in both positions. `NoteCheck(targets,{lap:true})` / `judgeNote(…,lap)` say
   "toward you / away from you" instead of "toward your face / the floor". Old saved section names map through

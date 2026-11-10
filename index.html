@@ -1550,8 +1550,6 @@ const L=[
     <li><b>Looking at your fingers is fine.</b> You'll need to lean your head forward to check where your fingers are going, especially at first. Keep it to a minimum and move your head, not the guitar.</li></ul></section>
   <section class="block"><div class="photo-wrap"><figure><img src="${'{{IMG.mistake}}'}" alt="Player tilting the guitar up toward himself, with the left wrist bent sharply"><figcaption>Common mistake: guitar tilted up, left wrist bent.</figcaption></figure>
     <div class="callout warn"><b class="t">Common mistake</b><p>Pointing the guitar up so you can see the fingerboard. It feels helpful, but it bends your left wrist into a strained angle and makes every note harder.</p></div></div></section>
-  <section class="block"><h3>Your view flips</h3><p class="prose">Sitting up, look down at the strings. Now the thickest string looks like it's on top, because it's the one nearest your face. Tab still has the thinnest string on top. Switch between the two views below and watch the strings.</p><div data-w="vf"></div>
-    <div class="callout tip"><b class="t">String 6 is always nearest you</b><p>On your lap it's nearest your belly. Sitting up, it's nearest your face. Either way, the string closest to you is string 6, the bottom line of the tab.</p></div></section>
   <section class="block"><h3>Left hand shape</h3><p class="prose">On your lap, your pointer finger reached over the neck. Now your hand comes up from underneath.</p><ul class="points"><li>Thumb behind the neck, roughly behind your middle finger.</li><li>Fingers curved, coming down perpendicular to the fingerboard.</li><li>Leave a little space between your palm and the underside of the neck. Your hand shouldn't squeeze or rest against the neck.</li></ul>
     <figure class="lh-photo"><img src="img/fret-space.webp" alt="Close-up of two fingertips pressing strings, fingers arched tall and coming straight down onto the fingerboard" loading="lazy"><figcaption>Keep your fingers as tall as you can, coming straight down onto the fingerboard. Standing them up like this keeps them from touching the strings next to them.</figcaption></figure>
     <figure class="lh-photo"><img src="img/palm-gap.webp" alt="Left hand fretting the guitar, with a red arrow showing the gap between the palm and the underside of the neck" loading="lazy"><figcaption>The red arrow shows the gap between your palm and the neck. Keep that space open.</figcaption></figure>
@@ -1561,9 +1559,7 @@ const L=[
   <section class="block"><h3>Play it sitting up</h3><p class="prose">Same addresses, now sitting up. Your thumb stroke still goes from the thicker strings toward the thinner ones, which now means down toward the floor. If you miss, the app tells you which way to move your thumb: toward your face or toward the floor.</p><div data-w="nc"></div></section>
   <section class="block"><h3>Quick check</h3><div data-w="q"></div></section>
   <section class="block"><h3>Posture check</h3><p class="prose">Run through this each time you pick up the guitar.</p><div data-w="ck"></div></section>`,
- mount(r){mount(r,'vf',LapView({toggle:true}));mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]]));mount(r,'q',TermQuiz([
-   {q:'Sitting up and looking down, which string looks like it\'s on top?',o:['string 6, the thickest','string 1, the thinnest'],a:0,why:'Right. It\'s nearest your face, so it looks like the top one.',no:'Look down at your guitar: the thick string is nearest your face, so it looks like the top one.'},
-   {q:'Which line of tab is string 6?',o:['the top line','the bottom line'],a:1,why:'Yes. Tab always has the thinnest string on top, however you hold the guitar.',no:'Tab never changes: the thinnest string is the top line, and string 6 is the bottom line.'},
+ mount(r){mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]]));mount(r,'q',TermQuiz([
    {q:'You can\'t work out where a note goes. What do you do?',o:['tilt the guitar up to look','lay it on your lap and find it there'],a:1,why:'Yes, a lap check. Find it there, then sit back up and play it.',no:'Tilting bends your wrist. Lay it on your lap instead: there it looks just like the tab.'}]));mount(r,'ck',Checklist(['Guitar\'s waist on my right leg','Right forearm resting over the top of the body','I can let go with my left hand and the guitar stays put','Guitar upright, not tilted toward me','Shoulders loose, not hunched'],'posture'));}},
 
 {t:'Tab Practice',html:`
@@ -1767,7 +1763,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v56';
+window.APP_VERSION = 'v57';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
