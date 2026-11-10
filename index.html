@@ -1507,7 +1507,7 @@ const L=[
 
   <section class="block"><span class="eyebrow">Step 1</span><h3>Which string</h3><p class="prose">Tab has six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Tap a string to hear it.</p><div data-w="lv"></div>
     <ul class="points"><li><b>Top line:</b> string 1, the thinnest string, farthest from you.</li><li><b>Bottom line:</b> string 6, the thickest string, nearest you.</li><li><b>Tab goes by pitch:</b> the higher the line, the higher the sound.</li></ul>
-    <h4 class="subhead">0 means open</h4><p class="prose">The numbers on the lines are frets. A <b>0</b> means an open string: only your right hand plays it. Your left hand's only job is to stay out of the way, off the string being plucked, so it can ring.</p>
+    <h4 class="subhead">0 means open</h4><p class="prose">For now, every note in the tab is a <b>0</b>. A 0 means an open string: only your right hand plays it. Your left hand's only job is to stay out of the way, off the string being plucked, so it can ring.</p>
     <p class="prose">The highlighted number is your next note. Tap that string on the picture. Get it right and the tab moves on.</p><div data-w="tq"></div>
     <div class="callout tip"><b class="t">Lost? Count from the thick side</b><p>Put your thumb on string 6, the thickest one, nearest you. Move away from you one string at a time, counting 6, 5, 4… until you reach the line you want.</p></div>
     <div class="song"><span class="eyebrow">Open strings only</span><h3>Nothing Else Matters · intro</h3><p class="sub">Your first piece. Every note is a 0, so your left hand stays out of the way. Read the lines, and move your thumb from the thicker strings to the thinner ones and back. Press Play to hear it first.</p><div data-w="s"></div></div></section>
@@ -1771,7 +1771,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v53';
+window.APP_VERSION = 'v54';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
