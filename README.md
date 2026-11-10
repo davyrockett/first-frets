@@ -16,6 +16,7 @@ iPhone and iPad Home Screens and the Mac's Dock, and works with no signal once i
 | `icons/` | App icons (redraw with `python3 tools/make-icons.py`) |
 | `img/neck.webp` | Neck close-up in The Guitar's Map, cut from the same Martin D-28 photo (same credit and license as below) |
 | `img/guitar-lines.png` | Guitar line drawing in Parts of the Guitar and Right Hand Basics, supplied by David (white lines on black, used as a mask so the lines follow light/dark mode). |
+| `img/lap-player.png` | Drawing of a player with the guitar on their lap (Right Hand Basics), supplied by David. Stored as white lines on black and used as a mask, like the guitar drawing. |
 | `Start First Frets.command` | Double-click to run a local test copy on this Mac |
 
 ## Links straight to a reference page

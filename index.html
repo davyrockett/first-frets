@@ -260,6 +260,7 @@ figure{margin:0;display:flex;flex-direction:column;gap:8px}
 figure img{border-radius:var(--r);background:#fff;display:block}
 figcaption{font-size:14px;color:var(--muted)}
 .lh-photo{max-width:560px}
+.lap-art{width:100%;height:auto;display:block}
 .lh-photo img{width:100%;height:auto;border-radius:var(--r)}
 .photo-wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
 .annot{display:flex;flex-direction:column;gap:12px}
@@ -1432,11 +1433,13 @@ const L=[
 
 {t:'Right Hand Basics',html:`
   <p class="lead">For now the right hand does one thing: a stroke with the thumb, from a thicker string toward a thinner one.</p>
-  <section class="block"><h3>Guitar on your lap</h3><p class="prose">For the first few sections, lay the guitar flat on your lap. You'll soon see why: lying like this, it looks exactly like the music you'll read.</p><ul class="points">
+  <section class="block"><h3>Guitar on your lap</h3><p class="prose">For the first few sections, lay the guitar flat on your lap. You'll soon see why: lying like this, it looks exactly like the music you'll read.</p>
+    <div class="photo-wrap"><figure><svg class="lap-art" viewBox="0 0 900 822" role="img" aria-label="Drawing of a player sitting cross-legged with the guitar on their lap, looking down at it, left hand reaching over the top of the neck"><defs><mask id="gl-lap" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="822"><image href="img/lap-player.png" x="0" y="0" width="900" height="822"/></mask></defs><rect class="g-ink" x="0" y="0" width="900" height="822" mask="url(#gl-lap)"/></svg><figcaption>Guitar on your lap, left hand reaching over the top of the neck.</figcaption></figure>
+    <ul class="points">
     <li><b>Face up:</b> strings toward the ceiling, the back of the guitar on your legs.</li>
     <li><b>Neck to your left,</b> headstock pointing left.</li>
     <li><b>Thickest string nearest you,</b> thinnest string farthest away.</li>
-    <li><b>Neck drooping?</b> Rest it on a cushion, or lay the guitar on a bed or table instead.</li></ul></section>
+    <li><b>Neck drooping?</b> Rest it on a cushion, or lay the guitar on a bed or table instead.</li></ul></div></section>
   <section class="block"><div data-w="diag"></div><ul class="points">
     <li><b>Where:</b> pluck over the soundhole area.</li>
     <li><b>Anchor:</b> rest your wrist near the bridge. It keeps your hand steady.</li>
@@ -1742,7 +1745,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v49';
+window.APP_VERSION = 'v50';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
