@@ -586,7 +586,7 @@ function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,
   return api;
 }
 
-// Open strings only (Which String?): the strings where the thumb plucks them, over the soundhole, instead of the
+// Open strings only (Reading Tab, step 1): the strings where the thumb plucks them, over the soundhole, instead of the
 // neck. Lap view: neck to the left, thinnest string on top. Same API as Fretboard (setMarks, flash, say); every tap is fret 0.
 function Soundhole({onTap=null,readout=true,hint='Tap a string to hear it.'}={}){
   const W=640,gy=30,sy=k=>40+(k-1)*gy,H=sy(6)+40,cx=330,cy=(sy(1)+sy(6))/2;
@@ -742,7 +742,7 @@ const SONGS={
   emAm:[...Array.from({length:4},(_,i)=>({n:EM,b:1,c:'Em',bar:i===3})),...Array.from({length:4},(_,i)=>({n:AM,b:1,c:'Am',bar:i===3})),
         ...Array.from({length:4},(_,i)=>({n:EM,b:1,c:'Em',bar:i===3})),...Array.from({length:2},()=>({n:AM,b:1,c:'Am'})),{n:EM,b:2,c:'Em'}],
   // Builds up slowly: four notes on the thinnest string, then the B string joins, then the rest. Frets 0-3 only.
-  // Which String?: open strings only, so the line is the only thing to read.
+  // Reading Tab step 1: open strings only, so the line is the only thing to read.
   open:[N(1,0),N(2,0),N(1,0),N(3,0,1,{bar:true}),N(6,0),N(5,0),N(6,0),N(4,0,1,{bar:true}),N(2,0),N(4,0),N(3,0),N(5,0,1,{bar:true}),N(1,0),N(6,0),N(2,0),N(5,0)],
   tq:[N(1,3),N(1,1),N(1,0),N(2,1,1,{bar:true}),N(2,3),N(1,2),N(3,2),N(3,0,1,{bar:true}),N(4,2),N(5,3),N(6,0),N(6,1)],
   zig:[N(1,3),N(1,1),N(1,0),N(1,2,1,{bar:true}),
@@ -1502,38 +1502,42 @@ const L=[
     <div class="callout tip"><b class="t">This app has a tuner</b><p>When you're ready to tune your guitar for real, tap the <b>Tuner</b> button at the top of any page. Allow the microphone, then pluck one string at a time.</p></div></section>`,
  mount(r){mount(r,'mn',Mnemonic());mount(r,'hs',Headstock());mount(r,'tt',TunerTrainer());}},
 
-{t:'Which String?',html:`
-  <p class="lead">Every note has an address: which string, which fret, then pluck that same string. Start with the string.</p>
-  <section class="block"><h3>Your guitar looks like tab</h3><p class="prose">Guitar music for beginners is usually written in <b>tab</b>: six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Tap a string to hear it.</p><div data-w="lv"></div>
-    <ul class="points"><li><b>Top line:</b> string 1, the thinnest string, farthest from you.</li><li><b>Bottom line:</b> string 6, the thickest string, nearest you.</li><li><b>Tab goes by pitch:</b> the higher the line, the higher the sound.</li></ul></section>
-  <section class="block"><h3>Open strings</h3><p class="prose">The numbers on the lines are frets. For now every number is <b>0</b>: no finger down, just pluck that string open. The line tells you which string.</p><p class="prose">The highlighted number is your next note. Tap that string on the picture. Get it right and the tab moves on.</p><div data-w="tq"></div>
-    <div class="callout tip"><b class="t">Lost? Count from the thick side</b><p>Put your thumb on string 6, the thickest one, nearest you. Move away from you one string at a time, counting 6, 5, 4… until you reach the line you want.</p></div></section>
-  <section class="block"><h3>Play it on your guitar</h3><p class="prose">Now pluck each string on your own guitar. The app listens and tells you if you found the right one. If you didn't, it tells you which way to move your thumb.</p><div data-w="nc"></div></section>
-  <section class="block"><div class="song"><span class="eyebrow">Your first piece · open strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">No left-hand fingers at all. Read the lines, and move your thumb from the thicker strings to the thinner ones and back. Press Play to hear it first.</p><div data-w="s"></div></div></section>`,
- mount(r){mount(r,'lv',LapView({hole:true}));mount(r,'tq',TabQuiz(SONGS.open,{hole:true}));mount(r,'nc',NoteCheck([[1,0],[6,0],[3,0],[5,0],[2,0],[4,0],[1,0],[3,0],[6,0],[2,0],[5,0],[4,0]],{lap:true,hole:true,listen:'Listening… find the string, then pluck it.'}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true,hole:true}));}},
-
-{t:'The Guitar\'s Map',html:`
-  <p class="lead">Every note has an address: a string and a fret. You know the strings. Now the frets.</p>
-  <section class="block"><h3>The fretboard</h3><p class="prose">Drawn the way your guitar looks on your lap, headstock to the left: thinnest string on top, thickest on the bottom, just like tab. Strings are numbered 1 (thinnest, highest pitch) to 6 (thickest, lowest pitch). Tap any spot to hear it.</p><div data-w="fb"></div></section>
-  <section class="block"><h3>How frets are counted</h3><ul class="points">
-    <li>The nut is fret 0, the same as an open string.</li>
-    <li>When we say "fret," we mean the <b>area between two metal wires</b>, not a wire. The 2nd fret is the area between the 1st and 2nd wires; it's named for the wire on its body side.</li>
-    <li>Find the dots on your neck. They're called <b>fret markers</b>. Some guitars also have a dot on the 3rd fret.</li>
-    <li>Higher fret numbers are toward the body and higher in pitch. Lower numbers are toward the headstock and lower in pitch.</li></ul></section>
-  <section class="block"><h3>Where exactly to put your finger</h3><p class="prose">Keep the guitar on your lap. Reach over the neck with your left pointer finger and press straight down onto the string, with your fingertip in the middle of the fret space, between the two wires. The dots sit in the middle of their spaces, so they make a handy guide: for string 4, fret 5, your finger goes right next to the dot.</p><div data-w="pl"></div></section>
-  <section class="block"><h3>How hard to press</h3><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
-  <section class="block"><h3>Mini quiz</h3><div data-w="qz"></div></section>
-  <section class="block"><h3>Find it on your guitar</h3><p class="prose">Press each note with your pointer finger and pluck that string with your thumb. The app listens and tells you if you got it.</p><div data-w="nc"></div></section>`,
- mount(r){mount(r,'fb',Fretboard({frets:12,phoneFrets:5}).el);mount(r,'pl',Placement());mount(r,'pr',Pressure());mount(r,'qz',MapQuiz());mount(r,'nc',NoteCheck([[1,3],[2,1],[3,2],[6,3],[4,2],[1,1],[5,3],[2,3],[3,1],[6,1],[4,3],[5,2]],{lap:true,listen:'Listening… string, fret, pluck.'}));}},
-
 {t:'Reading Tab',html:`
-  <p class="lead">Tab tells you which string and which fret. It's the quickest way to start playing real music.</p>
-  <section class="block"><h3>The six lines</h3><p class="prose">Six lines for six strings. The <b>thinnest string is the top line</b>, the thickest is the bottom line. The numbers are fret numbers; 0 means an open string, which you still pluck.</p>
-    <div class="callout tip"><b class="t">Keep it on your lap</b><p>For this section, keep the guitar flat on your lap with the neck to the left, and press with your pointer finger. It looks just like the tab: the top line is the string farthest from you.</p></div></section>
-  <section class="block"><h3>Try it</h3><p class="prose">Press Play and follow along, on the screen or on your guitar. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div></section>
-  <section class="block"><h3>Your turn</h3><p class="prose">The highlighted number in the tab is your next note. Tap that spot on the fretboard: the line tells you the string, and the number tells you the fret. Get it right and the tab moves on to the next note.</p><div data-w="tq"></div></section>
-  <section class="block"><h3>Check in</h3><p class="prose">Read tab from left to right, like a sentence: each number is the next note to play. Left to right tells you <b>when</b>. The line and the number tell you <b>where</b>.</p><p class="prose">This is the idea most likely to get tangled. Make sure it's solid before moving on. Next, you'll sit up with the guitar.</p><div data-w="q"></div></section>`,
- mount(r){mount(r,'zig',Player(SONGS.zig,{frets:3,bpm:40}));mount(r,'tq',TabQuiz(SONGS.tq));mount(r,'q',TermQuiz([
+  <p class="lead">Tab is the quickest way to start playing real music. Every note in it has an address: which string, which fret, then pluck that same string. Learn it one step at a time, with the guitar flat on your lap.</p>
+
+  <section class="block"><span class="eyebrow">Step 1</span><h3>Which string</h3><p class="prose">Tab has six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Tap a string to hear it.</p><div data-w="lv"></div>
+    <ul class="points"><li><b>Top line:</b> string 1, the thinnest string, farthest from you.</li><li><b>Bottom line:</b> string 6, the thickest string, nearest you.</li><li><b>Tab goes by pitch:</b> the higher the line, the higher the sound.</li></ul>
+    <h4 class="subhead">0 means open</h4><p class="prose">The numbers on the lines are frets. A <b>0</b> means an open string: only your right hand plays it. Your left hand's only job is to stay out of the way, off the string being plucked, so it can ring.</p>
+    <p class="prose">The highlighted number is your next note. Tap that string on the picture. Get it right and the tab moves on.</p><div data-w="tq"></div>
+    <div class="callout tip"><b class="t">Lost? Count from the thick side</b><p>Put your thumb on string 6, the thickest one, nearest you. Move away from you one string at a time, counting 6, 5, 4… until you reach the line you want.</p></div>
+    <div class="song"><span class="eyebrow">Open strings only</span><h3>Nothing Else Matters · intro</h3><p class="sub">Your first piece. Every note is a 0, so your left hand stays out of the way. Read the lines, and move your thumb from the thicker strings to the thinner ones and back. Press Play to hear it first.</p><div data-w="s"></div></div></section>
+
+  <section class="block"><span class="eyebrow">Step 2</span><h3>Which fret</h3><p class="prose">The second part of the address is the fret: the number on the line. A 3 on the top line is the address <b>string 1, fret 3</b>. A 2 on the bottom line is <b>string 6, fret 2</b>.</p>
+    <ul class="points">
+      <li><b>A fret is a space,</b> the area between two metal wires, not a wire. Fret 2 is the space between the 1st and 2nd wires.</li>
+      <li><b>Count from the nut.</b> The nut is fret 0, the open string. Fret 1 is the first space after it, toward the body.</li>
+      <li><b>Higher numbers</b> are toward the body and higher in pitch.</li></ul>
+    <h4 class="subhead">Where exactly to put your finger</h4><p class="prose">Reach over the neck with your left pointer finger and press straight down, with your fingertip in the middle of the fret space. In the photo the address is <b>string 4, fret 5</b>. The dots sit in the middle of their spaces, so your finger goes right beside the dot.</p><div data-w="pl"></div>
+    <h4 class="subhead">How hard to press</h4><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
+
+  <section class="block"><span class="eyebrow">Step 3</span><h3>Pluck that same string</h3><p class="prose">Your left hand chooses the note. Your right hand has to pluck that same string, or your finger does nothing at all. Each string runs all the way from the headstock to the bridge: your finger presses it near one end, and your thumb plucks it over the soundhole. Tap a spot on the neck to light up its string all the way to where your thumb plucks it.</p><div data-w="fs"></div>
+    <h4 class="subhead">Press, follow, touch, pluck</h4><ul class="points">
+      <li><b>Press.</b> Put your finger on the address and say it out loud: "string 3, fret 2."</li>
+      <li><b>Follow.</b> Trace that string with your eyes, from your fingertip to the soundhole.</li>
+      <li><b>Touch.</b> Rest your thumb on that string before you play. You can feel it's the right one.</li>
+      <li><b>Pluck.</b> Push through it, away from you, with the same thumb stroke as Right Hand Basics.</li></ul>
+    <h4 class="subhead">The lift test</h4><p class="prose">A quick way to check yourself, any time. Pluck the note and let it ring, then lift your finger off the string.</p><ul class="points">
+    <li><b>The sound changes or stops:</b> you plucked the string you were pressing. That's right.</li>
+    <li><b>The sound keeps ringing, exactly the same:</b> your thumb is on a different string. Follow the string again.</li></ul>
+    <div class="callout warn"><b class="t">Common mistake</b><p>Plucking the string next door. Your fingertip and your thumb are far apart and the strings are close together, so it's an easy slip. If your note sounds like an open string, check that your thumb is on the string your finger is pressing.</p></div>
+    <h4 class="subhead">Check it with the microphone</h4><p class="prose">Play each address on your guitar. The app listens and tells you if you got it. If you plucked the wrong string, it tells you which way to move your thumb.</p><div data-w="nc"></div></section>
+
+  <section class="block"><span class="eyebrow">Put it together</span><h3>Follow the tab</h3><p class="prose">Press Play and follow along, on the screen or on your guitar. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div>
+    <h4 class="subhead">Check in</h4><p class="prose">Read tab from left to right, like a sentence: each number is the next note to play. Left to right tells you <b>when</b>. The line and the number tell you <b>where</b>.</p><p class="prose">This is the idea most likely to get tangled. Make sure it's solid before moving on. Next, you'll sit up with the guitar.</p><div data-w="q"></div></section>`,
+ mount(r){mount(r,'lv',LapView({hole:true}));mount(r,'tq',TabQuiz(SONGS.open,{hole:true}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true,hole:true}));
+   mount(r,'pl',Placement());mount(r,'pr',Pressure());
+   mount(r,'fs',FollowString());mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]],{lap:true,listen:'Listening… string, fret, pluck.'}));
+   mount(r,'zig',Player(SONGS.zig,{frets:3,bpm:40}));mount(r,'q',TermQuiz([
    {q:'In tab, a number further to the right means…',o:['play it later','play it closer to the body'],a:0,why:'Yes. Left to right is the order in time.',no:'That\'s the trap. Position on the neck comes only from the number.'},
    {q:'The top line of tab is…',o:['the thickest string','the thinnest string'],a:1,why:'Right. Top line, thinnest string.'},
    {q:'A 0 on the bottom line means…',o:['rest, don\'t play','pluck the thickest string open'],a:1,why:'Yes. 0 is the nut: no finger down, but you still pluck.'}]));}},
@@ -1556,36 +1560,20 @@ const L=[
     <figure class="lh-photo"><img src="img/fret-space.webp" alt="Close-up of two fingertips pressing strings, fingers arched tall and coming straight down onto the fingerboard" loading="lazy"><figcaption>Keep your fingers as tall as you can, coming straight down onto the fingerboard. Standing them up like this keeps them from touching the strings next to them.</figcaption></figure>
     <figure class="lh-photo"><img src="img/palm-gap.webp" alt="Left hand fretting the guitar, with a red arrow showing the gap between the palm and the underside of the neck" loading="lazy"><figcaption>The red arrow shows the gap between your palm and the neck. Keep that space open.</figcaption></figure>
 </section>
-  <div class="callout tip"><b class="t">Lost? Lap check</b><p>Any time you can't work out where a note goes, lay the guitar back on your lap. Find the note there with your pointer finger, where it looks just like the tab. Then sit back up and play it.</p></div>
+  <div class="callout tip"><b class="t">Lost? Two ways back</b><p><b>Count with your thumb:</b> put it on string 6, nearest your face, and count 6, 5, 4… until you reach the string you want. <b>Or do a lap check:</b> lay the guitar back on your lap, where it looks just like the tab. Find the note there, then sit back up and play it.</p></div>
   <div class="callout calm"><b class="t">Stay relaxed</b><p>You'll see this all through the course. Tension works against technique in almost every way. If something hurts or feels like a fight, stop, shake out your hands, and loosen up before trying again.</p></div>
+  <section class="block"><h3>Play it sitting up</h3><p class="prose">Same addresses, now sitting up. Your thumb stroke still goes from the thicker strings toward the thinner ones, which now means down toward the floor. If you miss, the app tells you which way to move your thumb: toward your face or toward the floor.</p><div data-w="nc"></div></section>
   <section class="block"><h3>Quick check</h3><div data-w="q"></div></section>
   <section class="block"><h3>Posture check</h3><p class="prose">Run through this each time you pick up the guitar.</p><div data-w="ck"></div></section>`,
- mount(r){mount(r,'vf',LapView({toggle:true}));mount(r,'q',TermQuiz([
+ mount(r){mount(r,'vf',LapView({toggle:true}));mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]]));mount(r,'q',TermQuiz([
    {q:'Sitting up and looking down, which string looks like it\'s on top?',o:['string 6, the thickest','string 1, the thinnest'],a:0,why:'Right. It\'s nearest your face, so it looks like the top one.',no:'Look down at your guitar: the thick string is nearest your face, so it looks like the top one.'},
    {q:'Which line of tab is string 6?',o:['the top line','the bottom line'],a:1,why:'Yes. Tab always has the thinnest string on top, however you hold the guitar.',no:'Tab never changes: the thinnest string is the top line, and string 6 is the bottom line.'},
    {q:'You can\'t work out where a note goes. What do you do?',o:['tilt the guitar up to look','lay it on your lap and find it there'],a:1,why:'Yes, a lap check. Find it there, then sit back up and play it.',no:'Tilting bends your wrist. Lay it on your lap instead: there it looks just like the tab.'}]));mount(r,'ck',Checklist(['Guitar\'s waist on my right leg','Right forearm resting over the top of the body','I can let go with my left hand and the guitar stays put','Guitar upright, not tilted toward me','Shoulders loose, not hunched'],'posture'));}},
 
-{t:'Same String, Both Hands',html:`
-  <p class="lead">Your left hand chooses the note. Your right hand has to pluck that same string, or your finger does nothing at all.</p>
-  <section class="block"><h3>Follow the string</h3><p class="prose">Each string runs all the way from the headstock to the bridge. Your finger presses it near one end; your thumb plucks it over the soundhole. Tap a spot on the neck: the string you'd be pressing lights up all the way to where your thumb plucks it.</p><div data-w="fs"></div>
-    <p class="cap">Drawn the way your guitar looks on your lap, like tab: thinnest string on top.</p></section>
-  <section class="block"><h3>Press, follow, touch, pluck</h3><ul class="points">
-    <li><b>Press.</b> Put your finger down and say the string number out loud.</li>
-    <li><b>Follow.</b> Trace that string with your eyes, from your fingertip down to the soundhole.</li>
-    <li><b>Touch.</b> Rest your thumb on that string before you play. You can feel it's the right one.</li>
-    <li><b>Pluck.</b> Push through it with the same thumb stroke as Right Hand Basics. Sitting up, it moves down toward the floor.</li></ul>
-    <div class="callout tip"><b class="t">Lost? Count with your thumb</b><p>Put your thumb on string 6, the thickest one, nearest your face. Step down one string at a time, counting 6, 5, 4… until you reach the string your finger is on. Still stuck? Do a lap check.</p></div></section>
-  <section class="block"><h3>The lift test</h3><p class="prose">A quick way to check yourself, any time. Pluck the note and let it ring, then lift your finger off the string.</p><ul class="points">
-    <li><b>The sound changes or stops:</b> you plucked the string you were pressing. That's right.</li>
-    <li><b>The sound keeps ringing, exactly the same:</b> your thumb is on a different string. Follow the string again.</li></ul>
-    <div class="callout warn"><b class="t">Common mistake</b><p>Plucking the string next door. Your fingertip and your thumb are far apart and the strings are close together, so it's an easy slip. If your note sounds like an open string, check that your thumb is on the string your finger is pressing.</p></div></section>
-  <section class="block"><h3>Check it with the microphone</h3><p class="prose">Play each note on your guitar. The app listens and tells you if you plucked the string you're pressing. If you didn't, it tells you which string it heard and which way to move your thumb.</p><div data-w="nc"></div></section>`,
- mount(r){mount(r,'fs',FollowString());mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]]));}},
-
 {t:'Tab Practice',html:`
   <p class="lead">Reading tab gets easy with lots of short practice. Come back to this page any time, for as long or as short as you like.</p>
   <section class="block"><h3>Read it: tab to fretboard</h3><p class="prose">Four notes at a time, as many as you want. Start with one string and add more when it feels easy. Tap each note on the fretboard, or choose <b>Play on my guitar</b> and let the microphone check you.</p><div data-w="dr"></div>
-    <div class="callout tip"><b class="t">Lost? Lap check</b><p>Can't tell which string a line means? Lay the guitar on your lap, neck to the left, and it matches the tab. Find the note there, then sit back up.</p></div></section>
+    <div class="callout tip"><b class="t">Lost? Lap check</b><p>Lay the guitar on your lap: it matches the tab.</p></div></section>
   <section class="block"><h3>Write it: fretboard to tab</h3><p class="prose">Now the other way round. A note lights up on the fretboard. Tap the tab line for its string, then pick its fret number.</p><div data-w="wt"></div></section>
   <section class="block"><h3>Play along</h3><p class="prose">Press Play, listen to the four clicks, and play each note on your guitar as it lights up. Start at Very slow. When you can play it all the way through without stopping, try the next speed.</p>
     <div class="callout tip"><b class="t">Keep going</b><p>Made a mistake? Don't stop: skip to the next note in time with the music. Staying with the beat matters more than getting every note.</p></div>
@@ -1596,7 +1584,7 @@ const L=[
 {t:'Your First Songs',html:`
   <p class="lead">Four short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
   <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, string 4 and string 5. It starts on open string 4.</p><div data-w="s1"></div></div>
-  <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">You played this on your lap in Which String?. Now play it sitting up. No left-hand fingers: move your thumb from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
+  <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">You played this on your lap in Reading Tab. Now play it sitting up. No left-hand fingers: move your thumb from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
   <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put your middle finger on string 5, 2nd fret, and your ring finger on string 4, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
   <div class="song"><span class="eyebrow">All six at once</span><h3>One sweep of the thumb</h3><p class="sub">Same two fingers, same strings. Now sweep your thumb across all six in one motion. Stacked numbers in tab mean "play these together."</p><div data-w="s4"></div></div>
   <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
@@ -1773,7 +1761,7 @@ nav.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b
 const OLD_ORDER=['Parts of the Guitar','Words We Use','Holding the Guitar','Right Hand Basics','Tuning','The Guitar\'s Map','Reading Tab','Your First Songs','Chord Diagrams','Em and Am Songs'];
 const START_HASH=location.hash; // reference.js opens #scales etc. after go() replaces the hash
 // Sections renamed or merged in v48 (lap-first order).
-const RENAMED={'Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up'};
+const RENAMED={'Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up','Which String?':'Reading Tab','The Guitar\'s Map':'Reading Tab','Same String, Both Hands':'Reading Tab'};
 const hm=/^#s(\d+)$/.exec(location.hash),saved0=store.get('sec',OLD_ORDER[store.get('cur',0)]),saved=RENAMED[saved0]||saved0;
 go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 </script>
@@ -1783,7 +1771,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v52';
+window.APP_VERSION = 'v53';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
