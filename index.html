@@ -300,13 +300,13 @@ figcaption{font-size:14px;color:var(--muted)}
 .tl-auto{padding:8px 22px}
 .strsel .btn{flex:1 1 0;min-width:0;padding:9px 0;font-size:14px;text-align:center}
 .strsel .btn[aria-pressed="true"]{color:var(--ink)}
-.hs{width:100%;max-width:300px;display:block;margin:0 auto}
+.hs{width:100%;max-width:260px;height:auto;display:block;margin:0 auto}
 .hs .knob{cursor:pointer}
-.hs .knob circle{fill:var(--metal);stroke:var(--surface);stroke-width:2}
-.hs .knob:hover circle{fill:var(--wire)}
-.hs .knob text{font-size:14px;font-weight:800;text-anchor:middle;dominant-baseline:central;fill:#1E1B18;pointer-events:none}
-.hs .hstr{stroke:var(--metal);stroke-width:1.6;fill:none;transition:stroke-width .15s}
-.hs .hstr.on{stroke-width:4.5}
+.hs .knob .hit{fill:transparent}
+.hs .knob .face{fill:transparent;transition:fill .15s}
+.hs .knob:hover .face{fill:var(--accent-soft)}
+.hs .knob text{font-size:15px;font-weight:800;text-anchor:middle;dominant-baseline:central;fill:var(--ink);pointer-events:none}
+.hs .hstr{stroke:transparent;stroke-width:3.5;fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .diag-lbl{fill:var(--ink);font-size:14px;font-weight:700}
 .diag-sub{fill:var(--muted);font-size:12px}
 .diag-lead{stroke:var(--accent);stroke-width:1.5;fill:none}
@@ -848,25 +848,23 @@ function Mnemonic(){
 }
 
 function Headstock(){
-  // 3+3 headstock. Left pegs D, A, E (top to bottom); right pegs G, B, e.
-  const posts={4:[118,60],5:[118,110],6:[118,160],3:[182,60],2:[182,110],1:[182,160]};
-  const slot={6:124,5:134,4:144,3:156,2:166,1:176};
-  let s=`<svg class="hs" viewBox="0 0 300 360" role="img" aria-label="Headstock with six tuning pegs">
-   <path class="hs-wood" d="M96 18 L204 18 Q214 20 212 32 L196 240 L104 240 L88 32 Q86 20 96 18Z"/>
-   <rect x="116" y="246" width="68" height="114" fill="var(--board)"/><line x1="116" x2="184" y1="318" y2="318" stroke="var(--wire)" stroke-width="3"/>
-   <rect class="fb-nut" x="112" y="238" width="76" height="9" rx="2"/>`;
-  for(let k=1;k<=6;k++){const [px,py]=posts[k];s+=`<path class="hstr" data-hs="${k}" d="M${px} ${py} L${slot[k]} 242 L${slot[k]} 360"/>`;}
-  for(let k=1;k<=6;k++){const [px,py]=posts[k],left=px<150,kx=left?42:258;
-    s+=`<g class="knob" data-k="${k}" role="button" tabindex="0" aria-label="Peg ${k}"><rect x="${left?kx:px}" y="${py-3}" width="${Math.abs(px-kx)}" height="6" fill="var(--metal)"/><circle cx="${kx}" cy="${py}" r="20"/><text x="${kx}" y="${py}">?</text></g>
-      <circle class="post" cx="${px}" cy="${py}" r="6"/>`;}
+  // The headstock of the Section 1 drawing (img/guitar-lines.png, same pixel space as Anatomy). 3+3 pegs:
+  // left D, A, E (top to bottom), right G, B, e. Each string runs from its post down past the nut.
+  const knob={4:[331,68],5:[331,106],6:[331,145],3:[451,68],2:[451,106],1:[451,145]};
+  const post={4:[362,65],5:[363,104],6:[363,143],3:[420,65],2:[419,104],1:[418,143]};
+  const nutX={6:367,5:376,4:385,3:395.5,2:405,1:414};
+  let s=`<svg class="hs" viewBox="300 12 182 252" role="img" aria-label="Headstock with six tuning pegs, from the guitar drawing in Parts of the Guitar">${guitarLines('hs')}`;
+  for(let k=1;k<=6;k++){const [px,py]=post[k];s+=`<path class="hstr" data-hs="${k}" d="M${px} ${py} L${nutX[k]} 191 L${nutX[k]} 264"/>`;}
+  for(let k=1;k<=6;k++){const [kx,ky]=knob[k];
+    s+=`<g class="knob" data-k="${k}" role="button" tabindex="0" aria-label="Peg ${k}"><circle class="hit" cx="${kx}" cy="${ky}" r="19"/><circle class="face" cx="${kx}" cy="${ky}" r="13"/><text x="${kx}" y="${ky}">?</text></g>`;}
   s+=`</svg>`;
   const el=h(`<div class="twocol"><div>${s}</div><div style="display:flex;flex-direction:column;gap:12px">
      <div class="card" style="display:flex;flex-direction:column;gap:10px"><b>Find the peg</b><div class="feedback" aria-live="polite"></div>
        <div class="row"><button type="button" class="btn" data-a="reveal">Show all labels</button><button type="button" class="btn" data-a="next">New string</button></div></div>
-     <p class="cap">Guitar shown face-on with the headstock pointing up, like the photo in Parts of the Guitar. Trace each string from the bridge up past the nut to the post it winds around.</p></div></div>`);
+     <p class="cap">Guitar shown face-on with the headstock pointing up, the same drawing as Parts of the Guitar. Trace each string from the bridge up past the nut to the post it winds around.</p></div></div>`);
   const fbk=el.querySelector('.feedback');let target=0;
   const light=k=>el.querySelectorAll('.hstr').forEach(p=>{const on=+p.dataset.hs===k;p.classList.toggle('on',on);p.style.stroke=on?STR[k].color:'';});
-  const label=(k,show)=>{const t=el.querySelector(`.knob[data-k="${k}"] text`);t.textContent=show?STR[k].name:'?';t.parentNode.querySelector('circle').style.fill=show?STR[k].color:'';};
+  const label=(k,show)=>{const t=el.querySelector(`.knob[data-k="${k}"] text`);t.textContent=show?STR[k].name:'?';t.style.fill=show?'#1E1B18':'';t.parentNode.querySelector('.face').style.fill=show?STR[k].color:'';};
   const ask=()=>{let n;do{n=1+Math.floor(Math.random()*6);}while(n===target);target=n;for(let k=1;k<=6;k++)label(k,false);light(0);
     fbk.className='feedback';fbk.innerHTML=`Tap the peg that turns the ${pill(n,true)} string (string ${n}).`;};
   const tap=k=>{light(k);playNote(k,0);label(k,true);
@@ -1744,7 +1742,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v48';
+window.APP_VERSION = 'v49';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
