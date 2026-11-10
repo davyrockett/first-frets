@@ -195,6 +195,8 @@ svg text{font-family:var(--f-body)}
 .fs-body{fill:var(--sunk);stroke:var(--line);stroke-width:2}
 .fs-hole{fill:var(--bg);stroke:var(--line);stroke-width:3}
 .fs-bridge{fill:var(--nut)}
+.sh-wood{fill:var(--wood)}
+.sh-hole{fill:var(--hole);stroke:var(--wood-edge);stroke-width:8}
 .fs-str{stroke:var(--metal);transition:opacity .2s}
 .fs-str.dim{opacity:.3}
 .fs-lit{stroke-width:5;stroke-linecap:round;stroke-dasharray:14 10;animation:fs-flow .9s linear infinite;pointer-events:none}
@@ -532,7 +534,8 @@ const h=html=>{const t=document.createElement('template');t.innerHTML=html.trim(
 const mount=(root,name,node)=>{const slot=root.querySelector(`[data-w="${name}"]`);if(slot)slot.replaceWith(node);};
 
 /* ---------- fretboard (player's view: headstock left, thinnest string on top) ---------- */
-function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,hint='Tap anywhere on the neck to hear that note.'}={}){
+function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,hint='Tap anywhere on the neck to hear that note.',hole=false}={}){
+  if(hole)return Soundhole({onTap,readout,hint:hint==='Tap anywhere on the neck to hear that note.'?'Tap a string to hear it.':hint});
   // On phone-width screens, a long neck shows fewer frets so it fits without sideways scrolling.
   if(phoneFrets&&window.matchMedia('(max-width: 600px)').matches)frets=Math.min(frets,phoneFrets);
   const W=frets<=7?640:900,x0=86,x1=W-14,gy=30,sy=s=>24+(s-1)*gy,top=10,bot=sy(6)+14,H=bot+28;
@@ -583,6 +586,39 @@ function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,
   return api;
 }
 
+// Open strings only (Which String?): the strings where the thumb plucks them, over the soundhole, instead of the
+// neck. Lap view: neck to the left, thinnest string on top. Same API as Fretboard (setMarks, flash, say); every tap is fret 0.
+function Soundhole({onTap=null,readout=true,hint='Tap a string to hear it.'}={}){
+  const W=640,gy=30,sy=k=>40+(k-1)*gy,H=sy(6)+40,cx=360,cy=(sy(1)+sy(6))/2;
+  let s=`<svg class="fb sh" viewBox="0 0 ${W} ${H}" role="img" aria-label="The strings over the soundhole, neck on the left, thinnest string on top.">`;
+  s+=`<rect class="sh-wood" x="34" y="4" width="${W-34}" height="${H-8}" rx="10"/>`;
+  s+=`<rect class="fb-board" x="34" y="${sy(1)-16}" width="160" height="${sy(6)-sy(1)+32}"/>`;
+  [84,140].forEach(x=>{s+=`<line class="fb-wire" x1="${x}" x2="${x}" y1="${sy(1)-16}" y2="${sy(6)+16}"/>`;});
+  s+=`<circle class="sh-hole" cx="${cx}" cy="${cy}" r="${cy-14}"/><rect class="fs-bridge" x="${W-30}" y="${sy(1)-12}" width="14" height="${sy(6)-sy(1)+24}" rx="3"/>`;
+  for(let k=1;k<=6;k++)s+=`<line class="fb-str" x1="34" x2="${W-23}" y1="${sy(k)}" y2="${sy(k)}" stroke-width="${(.9+(k-1)*.5).toFixed(2)}"/>`;
+  for(let k=1;k<=6;k++)s+=`<circle cx="15" cy="${sy(k)}" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="15" y="${sy(k)}">${k}</text>`;
+  for(let k=1;k<=6;k++)s+=`<rect class="fb-hit" data-s="${k}" data-f="0" x="0" y="${sy(k)-gy/2}" width="${W}" height="${gy}"><title>${strDesc(k)}, open</title></rect>`;
+  s+=`<g class="fb-marks"></g></svg>`;
+  const el=h(`<div class="fbw"><div class="scroll">${s}</div>${readout?`<div class="fb-readout" aria-live="polite">${hint}</div>`:''}</div>`);
+  const marksG=el.querySelector('.fb-marks'),ro=el.querySelector('.fb-readout');
+  let base=[],tmo;
+  function draw(list,popKey){
+    marksG.innerHTML=list.map(m=>{const y=sy(m.s);
+      return `<g class="fb-mark open${popKey&&m.pop?' pop':''}"><circle class="halo" cx="${cx}" cy="${y}" r="15" fill="${STR[m.s].color}"/><circle class="dot" cx="${cx}" cy="${y}" r="14.5" fill="${STR[m.s].color}"/><text x="${cx}" y="${y}">${m.label??(store.get('dots','fret')==='note'?noteOf(m.s,0):0)}</text></g>`;}).join('');
+  }
+  const api={el,
+    setMarks(list){base=list.map(m=>({...m,pop:true}));draw(base,true);},
+    flash(s){clearTimeout(tmo);draw([...base.filter(m=>m.s!==s),{s,f:0,pop:true}],true);tmo=setTimeout(()=>draw(base),900);},
+    say(t){if(ro)ro.innerHTML=t;}
+  };
+  el.querySelector('svg').addEventListener('click',e=>{
+    const t=e.target.closest('[data-s]');if(!t)return;const s=+t.dataset.s;
+    if(onTap&&onTap(s,0,api)===false)return;
+    playNote(s,0);api.flash(s);api.say(`${pill(s)} ${strDesc(s)} · open (fret 0) · note ${noteOf(s,0)}`);
+  });
+  return api;
+}
+
 /* ---------- tab ---------- */
 function Tab(events,{onCol}={}){
   const colW=44,x0=48,hasCh=events.some(e=>e.c),top=hasCh?40:18,ly=s=>top+(s-1)*20,W=x0+events.length*colW+14,H=ly(6)+16;
@@ -613,7 +649,7 @@ let STOP_ALL=[];
 // until the next chord or note; the last note always rings out. A note can set its own: ring:true, or hold (beats).
 // count: beats of count-in clicks before the first note. finger: say which finger plays each fretted note
 // (one finger per fret, so in frets 1–4 the finger number is the fret number).
-function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=false}={}){
+function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=false,hole=false}={}){
   const el=h(`<div class="player">
     <div class="row"><button class="btn primary play" type="button">▶ Play</button>
       <label class="row" style="gap:6px">Speed <select aria-label="Speed"><option value="40">Very slow</option><option value="55">Slow</option><option value="70">Medium</option><option value="95">Full</option></select></label>
@@ -621,7 +657,7 @@ function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=f
     <div class="scroll tabbox"></div><div class="fbbox"></div></div>`);
   const sel=el.querySelector('select');sel.value=String(bpm<=45?40:bpm<=60?55:bpm<=80?70:95);
   const sp=store.get('speed','lesson');if(sp!=='lesson')sel.value=String(sp);
-  const fb=Fretboard({frets,phoneFrets,orient:false,hint:''});
+  const fb=Fretboard({frets,phoneFrets,orient:false,hint:'',hole});
   const fing=f=>finger&&f>0&&f<5?` · finger ${f}`:'';
   const describe=e=>e.n.length>1?`${e.c?`<b>${e.c}</b> · `:''}${e.n.length} strings together, thickest to thinnest in one stroke`:`${pill(e.n[0][0])} ${strDesc(e.n[0][0])} · ${e.n[0][1]?`fret ${e.n[0][1]}${fing(e.n[0][1])}`:'open (0) — still pluck it'}`;
   const show=i=>{const e=song[i];tab.setCur(i);fb.setMarks(e.n.map(([s,f])=>({s,f})));fb.say(describe(e));};
@@ -1087,16 +1123,16 @@ function Pressure(){
 }
 
 // Read-the-tab game: the highlighted tab number is the target; tap it on the fretboard to move on.
-function TabQuiz(seq){
+function TabQuiz(seq,{hole=false}={}){
   const el=h(`<div class="card" style="display:flex;flex-direction:column;gap:12px">
-    <div class="row" style="justify-content:space-between"><b>Tap this note on the fretboard</b><span class="cap tq-n"></span></div>
+    <div class="row" style="justify-content:space-between"><b>${hole?'Tap this string':'Tap this note on the fretboard'}</b><span class="cap tq-n"></span></div>
     <div class="scroll tabbox"></div><div class="fbbox"></div>
     <div class="feedback" aria-live="polite"></div>
     <div class="row"><button type="button" class="btn tq-hint">Show me</button><button type="button" class="btn tq-reset">Start over</button></div></div>`);
   const fbk=el.querySelector('.feedback'),cnt=el.querySelector('.tq-n'),hint=el.querySelector('.tq-hint');
   let i=0,busy=false;
   const tab=Tab(seq);
-  const fb=Fretboard({frets:3,readout:false,orient:false,onTap:(s,f)=>{tap(s,f);return false;}});
+  const fb=Fretboard({frets:3,readout:false,orient:false,hole,onTap:(s,f)=>{tap(s,f);return false;}});
   el.querySelector('.tabbox').append(tab.el);el.querySelector('.fbbox').append(fb.el);
   const show=()=>{busy=false;tab.setCur(i);fb.setMarks([]);cnt.textContent=`Note ${i+1} of ${seq.length}`;hint.hidden=false;};
   function tap(s,f){
@@ -1264,16 +1300,17 @@ function FollowString(){
 
 // Tab next to the guitar lying on your lap: the strings line up with the tab lines. toggle:true adds "Sitting up",
 // which flips the strings to how they look from the player's seat (thickest on top). Tap a string to hear it.
-function LapView({toggle=false}={}){
+function LapView({toggle=false,hole=false}={}){
   const y=k=>40+(k-1)*30;
   let tab=`<svg viewBox="0 0 300 236" role="img" aria-label="Tab: six lines, string 1 on top, string 6 on the bottom">`;
   for(let k=1;k<=6;k++)tab+=`<g data-k="${k}" class="vf-row"><rect class="vf-hit" x="0" y="${y(k)-15}" width="300" height="30"/><line class="vf-tab" x1="40" x2="290" y1="${y(k)}" y2="${y(k)}"/><circle cx="20" cy="${y(k)}" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="20" y="${y(k)}">${k}</text></g>`;
   [[1,110],[3,170],[6,230]].forEach(([k,x])=>{tab+=`<rect class="vf-zb" x="${x-10}" y="${y(k)-10}" width="20" height="20"/><text class="vf-zero" x="${x}" y="${y(k)}">0</text>`;});
   tab+=`<line class="vf-tab" x1="40" x2="40" y1="${y(1)}" y2="${y(6)}"/></svg>`;
-  let gt=`<svg viewBox="0 0 300 236" role="img" aria-label="Your guitar's neck, headstock on the left"><text class="vf-side vf-top" x="172" y="14"></text><text class="vf-side vf-bot" x="172" y="226"></text>
-    <rect class="fb-open" x="4" y="${y(1)-16}" width="40" height="${y(6)-y(1)+32}" rx="6"/><rect class="fb-board" x="50" y="${y(1)-16}" width="250" height="${y(6)-y(1)+32}"/>`;
-  [112,170,224,274].forEach(x=>{gt+=`<line class="fb-wire" x1="${x}" x2="${x}" y1="${y(1)-16}" y2="${y(6)+16}"/>`;});
-  gt+=`<rect class="fb-nut" x="44" y="${y(1)-18}" width="8" height="${y(6)-y(1)+36}" rx="2"/>`;
+  let gt=`<svg viewBox="0 0 300 236" role="img" aria-label="${hole?'Your guitar\'s strings over the soundhole, neck on the left':'Your guitar\'s neck, headstock on the left'}"><text class="vf-side vf-top" x="172" y="14"></text><text class="vf-side vf-bot" x="172" y="226"></text>`;
+  if(hole){gt+=`<rect class="sh-wood" x="4" y="22" width="296" height="192" rx="8"/><rect class="fb-board" x="4" y="${y(1)-16}" width="70" height="${y(6)-y(1)+32}"/><line class="fb-wire" x1="40" x2="40" y1="${y(1)-16}" y2="${y(6)+16}"/><circle class="sh-hole" cx="190" cy="${(y(1)+y(6))/2}" r="84"/>`;}
+  else{gt+=`<rect class="fb-open" x="4" y="${y(1)-16}" width="40" height="${y(6)-y(1)+32}" rx="6"/><rect class="fb-board" x="50" y="${y(1)-16}" width="250" height="${y(6)-y(1)+32}"/>`;
+    [112,170,224,274].forEach(x=>{gt+=`<line class="fb-wire" x1="${x}" x2="${x}" y1="${y(1)-16}" y2="${y(6)+16}"/>`;});
+    gt+=`<rect class="fb-nut" x="44" y="${y(1)-18}" width="8" height="${y(6)-y(1)+36}" rx="2"/>`;}
   for(let k=1;k<=6;k++)gt+=`<g data-k="${k}" class="vf-row vf-s" style="transform:translateY(${y(k)}px)"><rect class="vf-hit" x="0" y="-15" width="300" height="30"/><line class="fb-str" x1="4" x2="300" y1="0" y2="0" stroke-width="${(.9+(k-1)*.5).toFixed(2)}"/><circle cx="22" cy="0" r="11" fill="${STR[k].color}"/><text class="fb-lbl" x="22" y="0">${k}</text></g>`;
   gt+=`</svg>`;
   const el=h(`<div class="card vf">
@@ -1301,7 +1338,7 @@ function LapView({toggle=false}={}){
 
 // Play the shown note on your own guitar; the microphone checks it was the right string and fret.
 // lap: the guitar is flat on the student's lap, so directions are toward / away from you.
-function NoteCheck(targets,{lap=false,listen='Listening… press, follow, touch, pluck.'}={}){
+function NoteCheck(targets,{lap=false,hole=false,listen='Listening… press, follow, touch, pluck.'}={}){
   const el=h(`<div class="card nc">
     <div class="row" style="justify-content:space-between"><b>Play this note on your guitar</b><span class="cap nc-n"></span></div>
     <div class="nc-target"></div><div class="fbbox"></div>
@@ -1309,7 +1346,7 @@ function NoteCheck(targets,{lap=false,listen='Listening… press, follow, touch,
     <div class="row"><button type="button" class="btn primary nc-mic"></button><button type="button" class="btn nc-hear">Hear it</button><button type="button" class="btn nc-skip">Next note</button></div>
     <p class="cap">Uses your microphone. Nothing is recorded or sent anywhere. Play one note at a time and let it ring.</p></div>`);
   const fbk=el.querySelector('.feedback'),cnt=el.querySelector('.nc-n'),tgt=el.querySelector('.nc-target');
-  const fb=Fretboard({frets:4,readout:false,orient:false,onTap:()=>false});
+  const fb=Fretboard({frets:4,readout:false,orient:false,hole,onTap:()=>false});
   el.querySelector('.fbbox').append(fb.el);
   let i=0,streak=0,busy=false;
   const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
@@ -1472,7 +1509,7 @@ const L=[
     <div class="callout tip"><b class="t">Lost? Count from the thick side</b><p>Put your thumb on string 6, the thickest one, nearest you. Move away from you one string at a time, counting 6, 5, 4… until you reach the line you want.</p></div></section>
   <section class="block"><h3>Play it on your guitar</h3><p class="prose">Now pluck each string on your own guitar. The app listens and tells you if you found the right one. If you didn't, it tells you which way to move your thumb.</p><div data-w="nc"></div></section>
   <section class="block"><div class="song"><span class="eyebrow">Your first piece · open strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">No left-hand fingers at all. Read the lines, and move your thumb from the thicker strings to the thinner ones and back. Press Play to hear it first.</p><div data-w="s"></div></div></section>`,
- mount(r){mount(r,'lv',LapView());mount(r,'tq',TabQuiz(SONGS.open));mount(r,'nc',NoteCheck([[1,0],[6,0],[3,0],[5,0],[2,0],[4,0],[1,0],[3,0],[6,0],[2,0],[5,0],[4,0]],{lap:true,listen:'Listening… find the string, then pluck it.'}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true}));}},
+ mount(r){mount(r,'lv',LapView({hole:true}));mount(r,'tq',TabQuiz(SONGS.open,{hole:true}));mount(r,'nc',NoteCheck([[1,0],[6,0],[3,0],[5,0],[2,0],[4,0],[1,0],[3,0],[6,0],[2,0],[5,0],[4,0]],{lap:true,hole:true,listen:'Listening… find the string, then pluck it.'}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true,hole:true}));}},
 
 {t:'The Guitar\'s Map',html:`
   <p class="lead">Every note has an address: a string and a fret. You know the strings. Now the frets.</p>
@@ -1745,7 +1782,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v50';
+window.APP_VERSION = 'v51';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
