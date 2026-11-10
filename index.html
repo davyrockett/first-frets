@@ -1566,12 +1566,11 @@ const L=[
   <p class="lead">Reading tab gets easy with lots of short practice. Come back to this page any time, for as long or as short as you like.</p>
   <section class="block"><h3>Read it: tab to fretboard</h3><p class="prose">Four notes at a time, as many as you want. Start with one string and add more when it feels easy. Tap each note on the fretboard, or choose <b>Play on my guitar</b> and let the microphone check you.</p><div data-w="dr"></div>
     <div class="callout tip"><b class="t">Lost? Lap check</b><p>Lay the guitar on your lap: it matches the tab.</p></div></section>
-  <section class="block"><h3>Write it: fretboard to tab</h3><p class="prose">Now the other way round. A note lights up on the fretboard. Tap the tab line for its string, then pick its fret number.</p><div data-w="wt"></div></section>
   <section class="block"><h3>Play along</h3><p class="prose">Press Play, listen to the four clicks, and play each note on your guitar as it lights up. Start at Very slow. When you can play it all the way through without stopping, try the next speed.</p>
     <div class="callout tip"><b class="t">Keep going</b><p>Made a mistake? Don't stop: skip to the next note in time with the music. Staying with the beat matters more than getting every note.</p></div>
     <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Back and forth</h3><div data-w="pa1"></div></div>
     <div class="song"><span class="eyebrow">Strings 1, 2 and 3</span><h3>Three strings</h3><div data-w="pa2"></div></div></section>`,
- mount(r){mount(r,'dr',TabDrill());mount(r,'wt',WriteTab());mount(r,'pa1',Player(SONGS.pa1,{frets:3,bpm:40,count:4}));mount(r,'pa2',Player(SONGS.pa2,{frets:3,bpm:40,count:4}));}},
+ mount(r){mount(r,'dr',TabDrill());mount(r,'pa1',Player(SONGS.pa1,{frets:3,bpm:40,count:4}));mount(r,'pa2',Player(SONGS.pa2,{frets:3,bpm:40,count:4}));}},
 
 {t:'Your First Songs',html:`
   <p class="lead">Four short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
@@ -1763,7 +1762,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v57';
+window.APP_VERSION = 'v58';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
