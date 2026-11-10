@@ -96,12 +96,12 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
 - **One Reading Tab section (David, 2026-11-10, v53):** Which String?, The Guitar's Map and Same String, Both Hands were
   merged into **Reading Tab** (section 4), in steps that follow the address: Step 1 Which string (soundhole pictures,
   "a 0 means only your right hand plays; the left hand stays out of the way"), Step 2 Which fret (worded as the
-  address, e.g. "string 1, fret 3"), Step 3 Pluck that same string (follow the string, lift test, mic check), then
+  address, e.g. "string 1, fret 3"), Step 3 Pluck that same string (follow the string, mic check; David removed the lift test), then
   Put it together. Pick It Up (5) has one "Lost? Two ways back" tip and the sitting-up mic check. 13 sections now; the
   old names map to Reading Tab through `RENAMED`. `MapQuiz` is no longer used.
 - **No progress ticks (David, 2026-11-02):** no section checkmarks, progress bar or "Reset progress". The open
   section is saved by name (`bg.sec`); old saved numbers map through `OLD_ORDER`.
-- **Plucking the fretted string:** Same String, Both Hands teaches it (FollowString picture, the lift test) and
+- **Plucking the fretted string:** Reading Tab step 3 teaches it (FollowString picture) and
   `NoteCheck` listens with the mic (`Listener`, `judgeNote`): it names the string it heard and which way to move
   the thumb ("toward the floor/your face"). The same note an octave off counts as right, because the pitch reader
   can slip an octave. Tab Practice's drill has the same "Play on my guitar" mode. The mic ignores the app's own

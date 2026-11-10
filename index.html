@@ -1526,10 +1526,6 @@ const L=[
       <li><b>Follow.</b> Trace that string with your eyes, from your fingertip to the soundhole.</li>
       <li><b>Touch.</b> Rest your right thumb on that string before you play. You can feel it's the right one.</li>
       <li><b>Pluck.</b> Push through it, away from you, with the same thumb stroke as Right Hand Basics.</li></ul>
-    <h4 class="subhead">The lift test</h4><p class="prose">A quick way to check yourself, any time. Pluck the note and let it ring, then lift your finger off the string.</p><ul class="points">
-    <li><b>The sound changes or stops:</b> you plucked the string you were pressing. That's right.</li>
-    <li><b>The sound keeps ringing, exactly the same:</b> your thumb is on a different string. Follow the string again.</li></ul>
-    <div class="callout warn"><b class="t">Common mistake</b><p>Plucking the string next door. Your fingertip and your thumb are far apart and the strings are close together, so it's an easy slip. If your note sounds like an open string, check that your thumb is on the string your finger is pressing.</p></div>
     <h4 class="subhead">Check it with the microphone</h4><p class="prose">Play each address on your guitar. The app listens and tells you if you got it. If you plucked the wrong string, it tells you which way to move your thumb.</p><div data-w="nc"></div></section>
 
   <section class="block"><span class="eyebrow">Put it together</span><h3>Follow the tab</h3><p class="prose">Press Play and follow along, on the screen or on your guitar. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div>
@@ -1771,7 +1767,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v55';
+window.APP_VERSION = 'v56';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
