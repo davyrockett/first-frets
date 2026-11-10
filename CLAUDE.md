@@ -92,7 +92,7 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   "toward you / away from you" instead of "toward your face / the floor". Old saved section names map through
   `RENAMED`. `#sN` links shifted with the new order.
   Which String? shows the strings over the soundhole, never the neck (David, 2026-11-10): `Soundhole()` has
-  Fretboard's API, and `hole:true` on Fretboard / Player / TabQuiz / NoteCheck / LapView switches to it. David may film short POV / overhead clips for these sections later.
+  Fretboard's API, and `hole:true` on Fretboard / Player / TabQuiz / NoteCheck / LapView switches to it. String numbers sit on the right in soundhole pictures. David may film short POV / overhead clips for these sections later.
 - **No progress ticks (David, 2026-11-02):** no section checkmarks, progress bar or "Reset progress". The open
   section is saved by name (`bg.sec`); old saved numbers map through `OLD_ORDER`.
 - **Plucking the fretted string:** Same String, Both Hands teaches it (FollowString picture, the lift test) and
