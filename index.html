@@ -1558,7 +1558,7 @@ const L=[
    mount(r,'m1',Player(SONGS.mary,o));mount(r,'m2',Player(SONGS.ode,o));mount(r,'m3',Player(SONGS.twinkle,o));mount(r,'m4',Player(SONGS.bday,{...o,count:3}));
    mount(r,'r1',Player(SONGS.gunn,{frets:7,bpm:55,count:4}));mount(r,'r2',Player(SONGS.smoke,{frets:7,bpm:55,count:4}));}},
 
-{t:'Two Notes at Once',html:`
+{t:'Two Notes at Once',hide:'Your First Songs',html:`
   <p class="lead">Stacked numbers in tab mean "play these strings together." Two notes together on the thick strings is the sound of a lot of rock music.</p>
   <section class="block"><h3>One shape, three places</h3><ul class="points">
     <li>One open string, plus <b>finger 1</b> on the next thinner string at the 2nd fret.</li>
@@ -1587,11 +1587,15 @@ const L=[
  mount(r){mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70,ring:true,listen:true}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70,ring:true}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'emr',Chord({...CH.Em,fingers:{}}));
    mount(r,'em',Chord(CH.Em));mount(r,'am',Chord(CH.Am));mount(r,'ea',Player(SONGS.emAm,{frets:3,bpm:70}));}},
 
-{t:'Em and Am Songs',html:`
+{t:'Em and Am Songs',hide:'Chord Diagrams',html:`
   <p class="lead">Real songs built from the two chords you know.</p>
   <div class="soon"><b>Still being written</b><p>This section is next in the book. The Em–Am exercise in Chord Diagrams is the warm-up for it.</p></div>`,
  mount(){}}
 ];
+// Sections hidden for now (David, 2026-11-11): hide:'<name>' leaves the section out and sends anyone saved on it to <name>.
+// Delete the hide:'…' to bring it back.
+const HIDDEN=Object.fromEntries(L.filter(l=>l.hide).map(l=>[l.t,l.hide]));
+for(let k=L.length-1;k>=0;k--)if(L[k].hide)L.splice(k,1);
 
 /* ---------- shell ---------- */
 const nav=document.getElementById('nav'),main=document.getElementById('main');
@@ -1708,7 +1712,7 @@ const START_HASH=location.hash; // reference.js opens #scales etc. after go() re
 // v61: Right Hand Basics and Reading Tab became Reading Tab: Right Hand / Left Hand; Tuning moved to section 2.
 const RENAMED={'One Finger per Fret':'Your First Songs','Melodies':'Your First Songs','Riffs':'Your First Songs','Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up','Right Hand Basics':'Reading Tab: Right Hand','Reading Tab':'Reading Tab: Right Hand','Which String?':'Reading Tab: Right Hand','The Guitar\'s Map':'Reading Tab: Left Hand','Same String, Both Hands':'Reading Tab: Left Hand',
   'Reading Tab – Right Hand':'Reading Tab: Right Hand','Reading Tab – Left Hand':'Reading Tab: Left Hand'}; // v61 names
-const hm=/^#s(\d+)$/.exec(location.hash),saved0=store.get('sec',OLD_ORDER[store.get('cur',0)]),saved=RENAMED[saved0]||saved0;
+const hm=/^#s(\d+)$/.exec(location.hash),saved0=store.get('sec',OLD_ORDER[store.get('cur',0)]),saved1=RENAMED[saved0]||saved0,saved=HIDDEN[saved1]||saved1;
 go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 </script>
 <script src="reference.js"></script>
@@ -1717,7 +1721,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v75';
+window.APP_VERSION = 'v76';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

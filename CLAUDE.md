@@ -139,6 +139,10 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   Then (v73) One Finger per Fret moved in too, condensed to one paragraph + left-hand photo + Up and back only (v75 dropped Crossing over and All the way across; `SONGS.ff2`/`ff3` kept unused), as Part 2
   between Seven Nation Army and Melodies (Melodies Part 3, Riffs Part 4). 10 sections now: … Tab Practice · Your First
   Songs · Two Notes at Once · Chord Diagrams · Em and Am Songs.
+- **Hidden for now (David, 2026-11-11, v76):** Two Notes at Once and Em and Am Songs are hidden with `hide:'<fallback>'`
+  on their entries in `L` (code kept; David plans to use Two Notes at Once later). Students saved on them open the
+  fallback (Your First Songs / Chord Diagrams). 8 sections show: … Tab Practice · Your First Songs · Chord Diagrams.
+  Remove the `hide:` to bring a section back.
 - **YouTube clips (David, 2026-11-11, v65):** Good Guitarist's "Learn How To Read TAB in 5 Minutes"
   (youtube.com/watch?v=pQC3JsbgaTw) matches the lap-first method. Two embeds (youtube-nocookie, `start`/`end`):
   0:07–0:55 under Step 1 Which string, 0:58–2:16 under Step 2 Which fret. They need internet (not cached). David
