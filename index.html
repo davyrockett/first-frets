@@ -1534,15 +1534,10 @@ const L=[
  mount(r){mount(r,'dr',TabDrill());mount(r,'pa1',Player(SONGS.pa1,{frets:3,bpm:40,count:4}));mount(r,'pa2',Player(SONGS.pa2,{frets:3,bpm:40,count:4}));}},
 
 {t:'Your First Songs',html:`
-  <p class="lead">Four short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
+  <p class="lead">Your first song, a famous riff. Press Play and play along, or tap Start listening and play it at your own pace while the app checks each note.</p>
   <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, string 4 and string 5. It starts on open string 4.</p><div data-w="s1"></div></div>
-  <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">You played this on your lap in Reading Tab: Right Hand. Now play it sitting up. No left-hand fingers: move your thumb from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
-  <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put your middle finger on string 5, 2nd fret, and your ring finger on string 4, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
-  <div class="song"><span class="eyebrow">All six at once</span><h3>One sweep of the thumb</h3><p class="sub">Same two fingers, same strings. Now sweep your thumb across all six in one motion. Stacked numbers in tab mean "play these together."</p><div data-w="s4"></div></div>
-  <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
-    <p class="prose">Here's a map of what your fingers were doing. A chord diagram is a picture of the neck standing up: headstock at the top, thicker strings on the left.</p>
-    <div class="chords"><div data-w="em"></div><ul class="points" style="flex:1;min-width:220px"><li>Circle above a string: play it open.</li><li>Dot: put a finger here.</li><li>Middle finger on string 5, ring finger on string 4, both at the 2nd fret. Exactly what you just did.</li></ul></div></div></section>`,
- mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95,listen:true}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70,ring:true,listen:true}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70,ring:true}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord({...CH.Em,fingers:{}}));}},
+`,
+ mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95,listen:true}));}},
 
 {t:'One Finger per Fret',html:`
   <p class="lead">Give each finger its own fret: finger 1 on fret 1, finger 2 on fret 2, finger 3 on fret 3. Your hand stays in one place, and every note is ready.</p>
@@ -1584,8 +1579,13 @@ const L=[
  mount(r){mount(r,'p1',Player(SONGS.pc1,{frets:3,bpm:55,count:4}));mount(r,'p2',Player(SONGS.pc2,{frets:3,bpm:55,count:4}));}},
 
 {t:'Chord Diagrams',html:`
-  <p class="lead">Tab and chord diagrams show the same notes two different ways. Tab is the order in time. A chord diagram is a snapshot of your hand at a given moment.</p>
-  <section class="block"><h3>Reading a diagram</h3><ul class="points">
+  <p class="lead">Three short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
+  <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">You played this on your lap in Reading Tab: Right Hand. Now play it sitting up. No left-hand fingers: move your thumb from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
+  <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put your middle finger on string 5, 2nd fret, and your ring finger on string 4, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
+  <div class="song"><span class="eyebrow">All six at once</span><h3>One sweep of the thumb</h3><p class="sub">Same two fingers, same strings. Now sweep your thumb across all six in one motion. Stacked numbers in tab mean "play these together."</p><div data-w="s4"></div></div>
+  <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
+    <p class="prose">Here's a map of what your fingers were doing. A chord diagram is a picture of the neck standing up: headstock at the top, thicker strings on the left.</p>
+    <div class="chords"><div data-w="emr"></div><ul class="points" style="flex:1;min-width:220px"><li>Circle above a string: play it open.</li><li>Dot: put a finger here.</li><li>Middle finger on string 5, ring finger on string 4, both at the 2nd fret. Exactly what you just did.</li></ul></div></div></section>  <section class="block"><h3>Reading a diagram</h3><p class="prose">Tab and chord diagrams show the same notes two different ways. Tab is the order in time. A chord diagram is a snapshot of your hand at a given moment.</p><ul class="points">
     <li>Headstock at the top; the thick bar is the nut.</li>
     <li>Thicker strings on the left, thinner on the right.</li>
     <li>Circle: play open. ✕: don't strum that string. Number in a dot: which finger.</li></ul>
@@ -1593,7 +1593,8 @@ const L=[
     <div class="chords"><div data-w="em"></div><div data-w="am"></div></div>
     <p class="cap">See the ✕ above the thickest string in the Am diagram? That means don't strum it. Start your thumb sweep on string 5 instead.</p></section>
   <section class="block"><h3>Em to Am</h3><p class="prose">Chord names sit above the tab. Each stack of numbers is one sweep of the thumb. Four sweeps, then change.</p><div data-w="ea"></div></section>`,
- mount(r){mount(r,'em',Chord(CH.Em));mount(r,'am',Chord(CH.Am));mount(r,'ea',Player(SONGS.emAm,{frets:3,bpm:70}));}},
+ mount(r){mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70,ring:true,listen:true}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70,ring:true}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'emr',Chord({...CH.Em,fingers:{}}));
+   mount(r,'em',Chord(CH.Em));mount(r,'am',Chord(CH.Am));mount(r,'ea',Player(SONGS.emAm,{frets:3,bpm:70}));}},
 
 {t:'Em and Am Songs',html:`
   <p class="lead">Real songs built from the two chords you know.</p>
@@ -1725,7 +1726,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v70';
+window.APP_VERSION = 'v71';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

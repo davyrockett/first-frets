@@ -130,6 +130,9 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   after 1.5 s). NoteCheck's target line does the same. `Player(…,{listen:true})` adds Start listening to a song
   (single notes only): Seven Nation Army and Nothing Else Matters in Your First Songs. Reading Tab: Left Hand no longer
   has "Where exactly to put your finger" (the video covers it); `Placement()` and `img/neck.webp` are unused now.
+- **Chords start from the lap piece (David, 2026-11-11, v71):** Nothing Else Matters (sitting up), the two-fingers piece, the
+  thumb sweep and the "You just played an Em chord!" reveal moved from Your First Songs to the start of Chord Diagrams.
+  Your First Songs now holds only Seven Nation Army.
 - **YouTube clips (David, 2026-11-11, v65):** Good Guitarist's "Learn How To Read TAB in 5 Minutes"
   (youtube.com/watch?v=pQC3JsbgaTw) matches the lap-first method. Two embeds (youtube-nocookie, `start`/`end`):
   0:07–0:55 under Step 1 Which string, 0:58–2:16 under Step 2 Which fret. They need internet (not cached). David
