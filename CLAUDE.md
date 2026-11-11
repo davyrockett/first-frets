@@ -136,7 +136,7 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
 - **Songs in one place (David, 2026-11-11, v72):** Melodies and Riffs were merged into Your First Songs (7) as Part 2 and
   Part 3, after Seven Nation Army. 11 sections now: … Tab Practice · Your First Songs · One Finger per Fret · Two Notes at
   Once · Chord Diagrams · Em and Am Songs. Old saved names map through `RENAMED`; `#sN` links after 7 shifted down by two.
-  Then (v73) One Finger per Fret moved in too, condensed to one paragraph + photo + its three exercises, as Part 2
+  Then (v73) One Finger per Fret moved in too, condensed to one paragraph + left-hand photo + Up and back only (v75 dropped Crossing over and All the way across; `SONGS.ff2`/`ff3` kept unused), as Part 2
   between Seven Nation Army and Melodies (Melodies Part 3, Riffs Part 4). 10 sections now: … Tab Practice · Your First
   Songs · Two Notes at Once · Chord Diagrams · Em and Am Songs.
 - **YouTube clips (David, 2026-11-11, v65):** Good Guitarist's "Learn How To Read TAB in 5 Minutes"
