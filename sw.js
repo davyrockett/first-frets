@@ -2,7 +2,7 @@
 //
 // IMPORTANT: whenever any file below changes, bump VERSION.
 // That is how phones and iPads learn there's an update to download.
-const VERSION = 'v62';
+const VERSION = 'v63';
 const CACHE = `firstfrets-${VERSION}`;
 const FONTS = 'guitar-fonts';
 
@@ -22,6 +22,9 @@ const ASSETS = [
   './img/fret-space.webp',
   './img/palm-gap.webp',
   './img/lap-player.png',
+  './img/hold.jpg',
+  './img/mistake.jpg',
+  './img/hands.jpg',
 ];
 
 self.addEventListener('install', (event) => {

@@ -113,6 +113,11 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   the thumb ("toward the floor/your face"). The same note an octave off counts as right, because the pitch reader
   can slip an octave. Tab Practice's drill has the same "Play on my guitar" mode. The mic ignores the app's own
   sounds (`SOUND_UNTIL`).
+- **Out-of-tune hint (v63):** if `NoteCheck` hears the same 1–2 semitone miss three times running, it adds "your
+  guitar may be out of tune" and an "Open the tuner" button (stops the mic, opens the Tuner pop-up).
+- **Photos are files (v63):** the three photos that were inline base64 (`IMG.hold`, `IMG.mistake`, `IMG.hands`) are
+  now `img/hold.jpg`, `img/mistake.jpg`, `img/hands.jpg` (listed in sw.js ASSETS). Don't paste images into index.html.
+  `MapQuiz`, `WriteTab` and the LapView "Sitting up" toggle were removed as unused.
 - **Note lengths (David, 2026-11-02):** in players, a note lasts as long as it's written (a finger lifting);
   `ring:true` players (arpeggios with fingers held down) let each note ring until its string is played again;
   chords last until the next chord; the last note rings out; Stop silences everything (`hush`). `count` adds
