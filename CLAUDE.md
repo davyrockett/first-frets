@@ -67,6 +67,11 @@ website repo, `Claude Apps/website`): icon, name and one-line description, in th
   range, adaptive level gate, steady median readings, Play pitch drone). It listens as soon as it opens, on Auto; no
   Start button. Keep the two apps' tuner code in step; Page Fright's CLAUDE.md has the details. Since v45 the pitch
   reader is a top-level `pitchDetect(x,sr,floor)` (same code, moved out of `Tuner` so `Listener` can share it).
+  v67 (2026-11-11), tested on David's 20 real iPhone clips (`record.html`): `humNotch()` (120 Hz notch, Q 5) in the Tuner
+  and `Listener` mic chains (a mains hum was as loud as the strings); the Tuner takes up a NEW note only within 1.5 s
+  of a pluck, folds a settled note's octave readings back, treats an octave jump lasting 3+ readings as real, and
+  shows the first note on Auto after 2 agreeing readings. Result on the clips: right note shown 142 s → 220 s, wrong
+  62 s → 8 s (most of what's left is two strings ringing at once). Page Fright has the same changes (v147).
 
 David's interactive guitar method for absolute beginners: an app version of his method book, used by his
 students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a section). See README.md.

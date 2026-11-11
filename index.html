@@ -894,6 +894,10 @@ function Headstock(){
    peaks at the string's period; its first peak within 7% of the highest one is the pitch, which avoids the
    octave-low and octave-high mistakes, and the peak's height (0–1) says how clear the note is. The mic signal is
    filtered to the guitar's range first (see the Tuner's start). floor is the room's background level. Returns [Hz, clarity, level] or null. */
+// Mains hum: in the US, lights, fridges and chargers hum at 120 Hz, which a phone mic picks up about as loud as a
+// guitar string at arm's length (David's clips, 2026-11-11). A notch takes it out; the notes near it (A, A♯, B on the
+// low strings) lose a little of their lowest tone but keep their overtones, so they still read.
+function humNotch(c){const n=c.createBiquadFilter();n.type='notch';n.frequency.value=120;n.Q.value=5;return n;}
 function pitchDetect(x,sr,floor){
   const N=x.length;let ss=0;for(let i=0;i<N;i++)ss+=x[i]*x[i];const rms=Math.sqrt(ss/N);
   if(rms<Math.max(.00012,floor*1.4))return [0,0,rms];
@@ -932,7 +936,7 @@ function Tuner(){
   needle.style.transformOrigin='150px 150px';
   const play=el.querySelector('.tl-play');
   let target=0,stream=null,srcNode=null,chain=[],an=null,buf=null,timer=0,running=false;
-  let hist=[],shownStr=0,pendStr=0,pendN=0,needleC=0,lastHeard=0,lastF=0,medF=0,noteClar=0,rmsAvg=0,floor=.002,lastMsg='';
+  let hist=[],shownStr=0,pendStr=0,pendN=0,needleC=0,lastHeard=0,lastF=0,medF=0,noteClar=0,rmsAvg=0,floor=.002,lastMsg='',lastPluck=-9e9,octN=0;
   const say=(t,cls='')=>{if(t+cls===lastMsg)return;lastMsg=t+cls;msg.className='feedback tl-msg '+cls;msg.textContent=t;};
   const setNeedle=(c,dim)=>{needle.style.transform=`rotate(${Math.max(-62,Math.min(62,c/50*60))}deg)`;needle.style.opacity=dim?.35:1;};
   const detect=(x,sr)=>pitchDetect(x,sr,floor);
@@ -958,19 +962,29 @@ function Tuner(){
     // While a string is ringing, a slightly less clear reading still counts if it's within 15 cents of the steady
     // reading (so a quiet or fading string keeps reading, but the shaky tail of a fading note can't drag it off);
     // a new note needs a clear reading.
-    const agrees=f&&medF&&now-lastHeard<600&&Math.abs(1200*Math.log2(f/medF))<15;
     // A new pluck (a jump in level) starts a fresh note.
-    if(rms>rmsAvg*1.8+.0002)noteClar=0;
+    if(rms>rmsAvg*1.8+.0002){noteClar=0;lastPluck=now;lastF=0;octN=0;}
     rmsAvg=rmsAvg*.8+rms*.2;
-    if(f&&clar>=(agrees?.7:.84)&&f>62&&f<1050){
+    // A different note is only taken up just after a pluck. Without this, a steady hum (lights, a fridge) or a string
+    // ringing along in sympathy took over the display as the plucked string faded (found with David's iPhone clips).
+    const fresh=now-lastPluck<1500;
+    // Once the note has settled (not just after a pluck), the same note an octave up or down also agrees: as a string
+    // fades, its first overtone often takes over half the readings (the G string in David's clips); fold it back.
+    const dc=f&&medF?1200*Math.log2(f/medF):0,oc=fresh?0:Math.round(dc/1200);
+    const agrees=f&&medF&&now-lastHeard<600&&Math.abs(oc)<=1&&Math.abs(dc-1200*oc)<15;
+    if(agrees&&oc)f/=Math.pow(2,oc);
+    if(f&&(agrees||fresh)&&clar>=(agrees?.7:.84)&&f>62&&f<1050){
       // Octave mistakes: with a string picked, fold the reading into that string's octave. On Auto, a jump of
       // exactly one octave from the note just heard is a mistake (no two strings are an octave apart).
       if(target){const r=STR[target].freq;while(f/r>1.5)f/=2;while(r/f>1.5)f*=2;}
-      else if(lastF&&now-lastHeard<600){const o=Math.log2(f/lastF);if(Math.abs(o-1)<.06)f/=2;else if(Math.abs(o+1)<.06)f*=2;}
+      // A jump that lasts (more than two readings in a row) is real, though: before, one octave-low reading at the start of
+      // a pluck could lock the whole note an octave low (the B string read as a very sharp A).
+      else if(lastF&&now-lastHeard<600){const o=Math.log2(f/lastF);if(Math.abs(Math.abs(o)-1)<.06&&++octN<=2)f=o>0?f/2:f*2;else octN=0;}
       lastF=f;
       // Auto: switch strings only after the new string is heard a few times in a row.
       let s=target;
-      if(!s){const n=nearest(f);if(!shownStr||n===shownStr){s=n;pendN=0;}else if(n===pendStr&&++pendN>=3){s=n;pendN=0;hist=[];}else{if(n!==pendStr){pendStr=n;pendN=1;}s=shownStr;}}
+      if(!s){const n=nearest(f);if(n===shownStr){s=n;pendN=0;}else if(n===pendStr&&++pendN>=(shownStr?3:2)){s=n;pendN=0;hist=[];}else{if(n!==pendStr){pendStr=n;pendN=1;}s=shownStr;}}
+      if(!s)return;                                 // the first note shows after two readings agree
       if(s!==shownStr){hist=[];medF=0;noteClar=0;needleC=1200*Math.log2(f/STR[s].freq);}
       shownStr=s;
       const c=1200*Math.log2(f/STR[s].freq);
@@ -1002,8 +1016,9 @@ function Tuner(){
     const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=60;hp.Q.value=.7;
     const hp2=c.createBiquadFilter();hp2.type='highpass';hp2.frequency.value=60;hp2.Q.value=.7;
     const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1100;lp.Q.value=.7;
+    const hum=humNotch(c);
     an=c.createAnalyser();an.fftSize=4096;buf=new Float32Array(an.fftSize);
-    srcNode.connect(hp);hp.connect(hp2);hp2.connect(lp);lp.connect(an);chain=[hp,hp2,lp];
+    srcNode.connect(hp);hp.connect(hp2);hp2.connect(lp);lp.connect(hum);hum.connect(an);chain=[hp,hp2,lp,hum];
     running=true;lastHeard=-1;hist=[];shownStr=0;lastF=0;medF=0;floor=.001;lastMsg='';
     say('Listening… pluck one string and let it ring.');
     timer=setInterval(tick,45);                      // ~22 readings a second
@@ -1178,8 +1193,9 @@ function Listener({onNote,onMsg,onStop=()=>{}}){
       const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=60;hp.Q.value=.7;
       const hp2=c.createBiquadFilter();hp2.type='highpass';hp2.frequency.value=60;hp2.Q.value=.7;
       const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1100;lp.Q.value=.7;
+      const hum=humNotch(c);
       an=c.createAnalyser();an.fftSize=4096;buf=new Float32Array(an.fftSize);
-      src.connect(hp);hp.connect(hp2);hp2.connect(lp);lp.connect(an);chain=[hp,hp2,lp];
+      src.connect(hp);hp.connect(hp2);hp2.connect(lp);lp.connect(hum);hum.connect(an);chain=[hp,hp2,lp,hum];
       floor=.001;reads=[];armed=true;api.on=true;MICS.add(api);timer=setInterval(tick,45);return true;
     },
     stop(){
@@ -1668,7 +1684,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v66';
+window.APP_VERSION = 'v67';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
