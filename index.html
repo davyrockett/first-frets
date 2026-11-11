@@ -165,6 +165,15 @@ svg text{font-family:var(--f-body)}
 .tab .tb{fill:var(--surface)}
 .tab .cur{fill:var(--accent-soft);opacity:0;transition:opacity .1s}
 .tab .cur.on{opacity:1}
+.tab .cur.ok,.tab .cur.no{transition:none;stroke-width:2}
+.tab .cur.on.ok{fill:var(--good-soft);stroke:var(--good)}
+.tab .cur.on.no{fill:var(--bad-soft);stroke:var(--bad)}
+.tab .mk{opacity:0;pointer-events:none;transform-box:fill-box;transform-origin:center}
+.tab .mk.ok,.tab .mk.no{opacity:1;animation:pop .25s ease-out}
+.tab .mk circle{stroke:var(--surface);stroke-width:2}
+.tab .mk.ok circle{fill:var(--good)} .tab .mk.no circle{fill:var(--bad)}
+.tab .mk path{fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;display:none}
+.tab .mk.ok .tick,.tab .mk.no .x{display:inline}
 .tab .col{cursor:pointer}
 .tab .ch{font-family:var(--f-display);font-weight:800;font-size:20px;fill:var(--accent-ink)}
 .player{display:flex;flex-direction:column;gap:12px}
@@ -177,7 +186,11 @@ svg text{font-family:var(--f-body)}
 .nc-tune{display:block;margin-top:10px}
 .nc-tune .btn{display:block;margin-top:8px}
 .drill .tabbox,.nc .fbbox{background:var(--surface)}
-.nc-target{display:flex;align-items:center;gap:8px;font-size:20px}
+.nc-target{display:flex;align-items:center;gap:8px;font-size:20px;padding:8px 10px;margin:0 -10px;border-radius:8px}
+.nc-target.ok{background:var(--good-soft);box-shadow:inset 0 0 0 2px var(--good)}
+.nc-target.no{background:var(--bad-soft);box-shadow:inset 0 0 0 2px var(--bad)}
+.nc-target.ok::after,.nc-target.no::after{margin-left:auto;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:16px;font-weight:800;line-height:1;animation:pop .25s ease-out}
+.nc-target.ok::after{content:'✓';background:var(--good)} .nc-target.no::after{content:'✕';background:var(--bad)}
 .fs{display:block;width:100%;height:auto;touch-action:manipulation}
 .fsw{display:flex;flex-direction:column;gap:10px}
 .vf{display:flex;flex-direction:column;gap:12px}
@@ -614,8 +627,8 @@ function Soundhole({onTap=null,readout=true,hint='Tap a string to hear it.'}={})
 }
 
 /* ---------- tab ---------- */
-function Tab(events,{onCol}={}){
-  const colW=44,x0=48,hasCh=events.some(e=>e.c),top=hasCh?40:18,ly=s=>top+(s-1)*20,W=x0+events.length*colW+14,H=ly(6)+16;
+function Tab(events,{onCol,badge=false}={}){
+  const colW=44,x0=48,hasCh=events.some(e=>e.c),top=hasCh?40:badge?38:18,ly=s=>top+(s-1)*20,W=x0+events.length*colW+14,H=ly(6)+16;
   let s=`<svg class="tab" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Tab">`;
   events.forEach((e,i)=>{s+=`<rect class="cur" data-c="${i}" x="${x0+i*colW+3}" y="${ly(1)-12}" width="${colW-6}" height="${ly(6)-ly(1)+24}" rx="6"/>`;});
   for(let k=1;k<=6;k++){s+=`<line class="l" x1="${x0-12}" x2="${W-10}" y1="${ly(k)}" y2="${ly(k)}"/><text class="tl" x="18" y="${ly(k)}">${k}</text>`;}
@@ -628,10 +641,21 @@ function Tab(events,{onCol}={}){
     e.n.forEach(([st,f])=>{s+=`<rect class="tb" x="${cx-11}" y="${ly(st)-9}" width="22" height="18"/><text class="tn" x="${cx}" y="${ly(st)}">${f}</text>`;});
     s+=`</g>`;
   });
+  // Right/wrong badge over each column (tick or cross), shown by mark().
+  if(badge)events.forEach((e,i)=>{const cx=x0+i*colW+colW/2,cy=ly(1)-24;
+    s+=`<g class="mk" data-c="${i}"><circle cx="${cx}" cy="${cy}" r="10"/><path class="tick" d="M${cx-4.5} ${cy} l3 3.2 l6 -6.6"/><path class="x" d="M${cx-3.5} ${cy-3.5} l7 7 M${cx+3.5} ${cy-3.5} l-7 7"/></g>`;});
   s+=`</svg>`;
   const el=h(s);
   el.addEventListener('click',e=>{const g=e.target.closest('.col');if(g&&onCol)onCol(+g.dataset.i);});
-  return {el,setCur(i){el.querySelectorAll('.cur').forEach(r=>r.classList.toggle('on',+r.dataset.c===i));
+  let markT;
+  return {el,
+    // Turns the highlight bar green ('ok') or red ('no') the moment a note is judged. Red fades back to orange for another try.
+    mark(kind){const r=el.querySelector('.cur.on');if(!r)return;clearTimeout(markT);
+      const els=[r,el.querySelector(`.mk[data-c="${r.dataset.c}"]`)].filter(Boolean);
+      els.forEach(x=>x.classList.remove('ok','no'));void r.getBoundingClientRect();
+      els.forEach(x=>x.classList.add(kind));if(kind==='no')markT=setTimeout(()=>els.forEach(x=>x.classList.remove('no')),1500);},
+    setCur(i){clearTimeout(markT);el.querySelectorAll('.mk').forEach(m=>m.classList.remove('ok','no'));
+      el.querySelectorAll('.cur').forEach(r=>{r.classList.remove('ok','no');r.classList.toggle('on',+r.dataset.c===i);});
     const r=el.querySelector(`.cur[data-c="${i}"]`);const sc=el.closest('.scroll');
     if(r&&sc&&sc.scrollWidth>sc.clientWidth){const x=+r.getAttribute('x');sc.scrollTo({left:Math.max(0,x-sc.clientWidth/3),behavior:'smooth'});}}};
 }
@@ -1124,26 +1148,26 @@ function TabQuiz(seq,{hole=false,lap=false}={}){
   const fbk=el.querySelector('.feedback'),cnt=el.querySelector('.tq-n'),hint=el.querySelector('.tq-hint');
   let i=0,busy=false;
   const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
-  const tab=Tab(seq);
+  const tab=Tab(seq,{badge:true});
   const fb=Fretboard({frets:3,readout:false,orient:false,hole,onTap:(s,f)=>{tap(s,f);return false;}});
   el.querySelector('.tabbox').append(tab.el);el.querySelector('.fbbox').append(fb.el);
   const show=()=>{busy=false;tab.setCur(i);fb.setMarks([]);cnt.textContent=`Note ${i+1} of ${seq.length}`;hint.hidden=false;};
   function right(s,f,delay){
-    fb.setMarks([{s,f}]);say(`Yes! ${pill(s)} ${strDesc(s)}, ${f?`fret ${f}`:'open'}.`,'ok');
+    fb.setMarks([{s,f}]);tab.mark('ok');say(`Yes! ${pill(s)} ${strDesc(s)}, ${f?`fret ${f}`:'open'}.`,'ok');
     i++;busy=true;
-    if(i>=seq.length){cnt.textContent='Done';hint.hidden=true;say('You read the whole line of tab. Nice work!','ok');tab.setCur(-1);busy=false;mic.stop();}
+    if(i>=seq.length){cnt.textContent='Done';hint.hidden=true;say('You read the whole line of tab. Nice work!','ok');busy=false;mic.stop();}
     else setTimeout(show,delay);
   }
   function tap(s,f){
     if(busy||i>=seq.length)return;
     const [ts,tf]=seq[i].n[0];playNote(s,f);
     if(s===ts&&f===tf)return right(s,f,650);
-    fb.flash(s,f);
+    fb.flash(s,f);tab.mark('no');
     say(s!==ts?`That's string ${s}. Check which line the number is on: top line is the thinnest string.`
       :`Right string! That's ${f?`fret ${f}`:'open'}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`,'no');
   }
   const mic=Listener({onNote:m=>{if(busy||i>=seq.length)return;const [ts,tf]=seq[i].n[0],r=judgeNote(m,ts,tf,lap);
-      if(r.ok)right(ts,tf,1200);else say(r.t,'no');},
+      if(r.ok)right(ts,tf,1200);else{tab.mark('no');say(r.t,'no');}},
     onMsg:t=>say(t,'no'),onStop:()=>label()});
   const label=micToggle(mic,el.querySelector('.tq-mic'),{onStart:()=>say('Listening… pluck the highlighted note on your guitar.')});
   hint.onclick=()=>{if(i<seq.length){const [ts,tf]=seq[i].n[0];fb.setMarks([{s:ts,f:tf}]);say('Here it is. Pluck it on your guitar, or tap it here to keep going.');}};
@@ -1307,8 +1331,10 @@ function NoteCheck(targets,{lap=false,hole=false,listen='Listening… press, fol
   const fb=Fretboard({frets:4,readout:false,orient:false,hole,onTap:()=>false});
   el.querySelector('.fbbox').append(fb.el);
   let i=0,streak=0,busy=false,lastD=null,sameD=0;
-  const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
-  const show=()=>{busy=false;const [s,f]=targets[i%targets.length];fb.setMarks([{s,f}]);
+  let tgtT;const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;
+    // The target line turns green or red with the verdict; red clears after a moment for another try.
+    clearTimeout(tgtT);tgt.className='nc-target '+cls;if(cls==='no')tgtT=setTimeout(()=>tgt.classList.remove('no'),1500);};
+  const show=()=>{busy=false;tgt.className='nc-target';const [s,f]=targets[i%targets.length];fb.setMarks([{s,f}]);
     tgt.innerHTML=`${pill(s)} <b>String ${s}, ${f?`fret ${f}`:'open'}</b>`;cnt.textContent=streak?`${streak} in a row`:'';};
   const mic=Listener({onNote:m=>{if(busy)return;const [s,f]=targets[i%targets.length],r=judgeNote(m,s,f,lap);
       if(r.ok){streak++;busy=true;lastD=null;sameD=0;say(r.t,'ok');cnt.textContent=`${streak} in a row`;setTimeout(()=>{i++;show();},1600);}
@@ -1316,7 +1342,7 @@ function NoteCheck(targets,{lap=false,hole=false,listen='Listening… press, fol
         // The same small miss (1 or 2 frets' worth) three times running: the guitar may be out of tune.
         const d=m-midiOf(s,f);if(Math.abs(d)>=1&&Math.abs(d)<=2){sameD=d===lastD?sameD+1:1;lastD=d;}else{lastD=null;sameD=0;}
         say(r.t+(sameD>=3?`<span class="nc-tune"><b>Still off by the same amount?</b> If your finger really is on string ${s}, fret ${f}, your guitar may be out of tune. <button type="button" class="btn nc-tuner">Open the tuner</button></span>`:''),'no');}},
-    onMsg:t=>say(t,'no'),onStop:()=>label()});
+    onMsg:t=>{say(t,'no');tgt.className='nc-target';},onStop:()=>label()});
   const label=micToggle(mic,el.querySelector('.nc-mic'),{onStart:()=>say(listen)});
   el.querySelector('.nc-hear').onclick=()=>{const [s,f]=targets[i%targets.length];playNote(s,f,{hold:1.2});};
   el.querySelector('.nc-skip').onclick=()=>{i++;say('');show();};
@@ -1348,19 +1374,19 @@ function TabDrill(){
   const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
   const fb=Fretboard({frets:3,readout:false,orient:false,onTap:(s,f)=>{tap(s,f);return false;}});
   el.querySelector('.fbbox').append(fb.el);
-  const newLine=()=>{line=randomNotes(TAB_LEVELS[lvl].s,4,line[line.length-1]);i=0;tab=Tab(line.map(([s,f])=>N(s,f)));tabbox.replaceChildren(tab.el);show();};
+  const newLine=()=>{line=randomNotes(TAB_LEVELS[lvl].s,4,line[line.length-1]);i=0;tab=Tab(line.map(([s,f])=>N(s,f)),{badge:true});tabbox.replaceChildren(tab.el);show();};
   const show=()=>{busy=false;tab.setCur(i);fb.setMarks([]);cnt.textContent=streak?`${streak} in a row`:'';};
-  const right=(s,f,delay=600)=>{streak++;busy=true;fb.setMarks([{s,f}]);say(`Yes! ${pill(s)} string ${s}, ${where(s,f)}.`,'ok');cnt.textContent=`${streak} in a row`;
+  const right=(s,f,delay=600)=>{streak++;busy=true;fb.setMarks([{s,f}]);tab.mark('ok');say(`Yes! ${pill(s)} string ${s}, ${where(s,f)}.`,'ok');cnt.textContent=`${streak} in a row`;
     setTimeout(()=>{i++;if(i>=line.length)newLine();else show();},delay);};
   function tap(s,f){
     if(busy)return;const [ts,tf]=line[i];playNote(s,f,{hold:.9});
     if(s===ts&&f===tf)return right(s,f);
-    streak=0;cnt.textContent='';fb.flash(s,f);
+    streak=0;cnt.textContent='';fb.flash(s,f);tab.mark('no');
     say(s!==ts?`That's string ${s}. Check which line the number is on: the top line is string 1, the thinnest.`
       :`Right string! That's ${where(s,f)}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`,'no');
   }
   const mic=Listener({onNote:m=>{if(busy)return;const [ts,tf]=line[i],r=judgeNote(m,ts,tf);
-      if(r.ok)right(ts,tf,1200);else{streak=0;cnt.textContent='';say(r.t,'no');}},
+      if(r.ok)right(ts,tf,1200);else{streak=0;cnt.textContent='';tab.mark('no');say(r.t,'no');}},
     onMsg:t=>say(t,'no'),onStop:()=>label()});
   const label=micToggle(mic,micBtn,{onStart:()=>say('Listening… play the highlighted note.')});
   const mark=()=>{el.querySelectorAll('[data-l]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.l===lvl));
@@ -1684,7 +1710,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v68';
+window.APP_VERSION = 'v69';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
