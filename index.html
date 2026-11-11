@@ -879,17 +879,19 @@ function RightHandDiagram(){
   const marks=`
     <rect class="rh-zone" x="330" y="652" width="116" height="92" rx="18"/>
     <ellipse class="rh-anchor" cx="318" cy="872" rx="58" ry="30"/>`;
-  const items=[['Pluck zone','over the soundhole area',446,652],['Wrist anchor','rests near the bridge',380,848]];
+  // Turned 90° counterclockwise (neck to the left, like the guitar on the lap): (x,y) in the drawing lands at (y,-x).
+  const turned=x=>`<g transform="rotate(-90)">${x}</g>`;
+  const items=[['Pluck zone','over the soundhole area',652,-446],['Wrist anchor','rests near the bridge',848,-380]];
   if(narrow){
-    return h(`<figure class="card"><svg class="rh" viewBox="140 525 500 600" style="width:100%;height:auto;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
-      ${guitarLines('rh')}${marks}
+    return h(`<figure class="card"><svg class="rh" viewBox="525 -650 600 520" style="width:100%;height:auto;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
+      ${turned(guitarLines('rh')+marks)}
       ${items.map(([,,x,y],i)=>`<circle class="rh-badge" cx="${x}" cy="${y}" r="22"/><text class="rh-badge-n" x="${x}" y="${y}">${i+1}</text>`).join('')}
     </svg><ol class="rh-key">${items.map(([t,d],i)=>`<li><span class="rh-key-n">${i+1}</span><span><b>${t}</b> ${d}</span></li>`).join('')}</ol></figure>`);
   }
-  return h(`<figure class="card"><svg class="rh" viewBox="140 525 880 600" style="width:100%;height:auto;display:block" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
-    ${guitarLines('rh')}${marks}
-    <path class="rh-lead" d="M446 698 L652 690"/><text class="rh-lbl" x="660" y="690">Pluck zone</text><text class="rh-sub" x="660" y="718">over the soundhole area</text>
-    <path class="rh-lead" d="M340 900 L400 960 L652 960"/><text class="rh-lbl" x="660" y="960">Wrist anchor</text><text class="rh-sub" x="660" y="988">rests near the bridge</text>
+  return h(`<figure class="card"><svg class="rh" viewBox="440 -650 690 640" style="width:100%;max-width:700px;height:auto;display:block;margin:0 auto" role="img" aria-label="Right hand position on a guitar drawing: pluck over the soundhole, wrist anchored near the bridge">
+    ${turned(guitarLines('rh')+marks)}
+    <path class="rh-lead" d="M698 -330 L698 -66 L690 -66"/><text class="rh-lbl" x="682" y="-66" text-anchor="end">Pluck zone</text><text class="rh-sub" x="682" y="-38" text-anchor="end">over the soundhole area</text>
+    <path class="rh-lead" d="M872 -260 L872 -66 L880 -66"/><text class="rh-lbl" x="888" y="-66">Wrist anchor</text><text class="rh-sub" x="888" y="-38">rests near the bridge</text>
   </svg></figure>`);
 }
 
@@ -1721,7 +1723,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v76';
+window.APP_VERSION = 'v77';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
