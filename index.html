@@ -1095,36 +1095,42 @@ function Pressure(){
   return el;
 }
 
-// Read-the-tab game: the highlighted tab number is the target; tap it on the fretboard to move on.
-function TabQuiz(seq,{hole=false}={}){
+// Read-the-tab game: the highlighted tab number is the target. The student plucks it on their guitar and the
+// microphone hears it; tapping it on the picture also works, as a backup.
+function TabQuiz(seq,{hole=false,lap=false}={}){
   const el=h(`<div class="card" style="display:flex;flex-direction:column;gap:12px">
-    <div class="row" style="justify-content:space-between"><b>${hole?'Tap this string':'Tap this note on the fretboard'}</b><span class="cap tq-n"></span></div>
+    <div class="row" style="justify-content:space-between"><b>${hole?'Play this string on your guitar':'Play this note on your guitar'}</b><span class="cap tq-n"></span></div>
     <div class="scroll tabbox"></div><div class="fbbox"></div>
     <div class="feedback" aria-live="polite"></div>
-    <div class="row"><button type="button" class="btn tq-hint">Show me</button><button type="button" class="btn tq-reset">Start over</button></div></div>`);
+    <div class="row"><button type="button" class="btn primary tq-mic"></button><button type="button" class="btn tq-hint">Show me</button><button type="button" class="btn tq-reset">Start over</button></div>
+    <p class="cap">The app listens through your microphone and moves on when it hears the right ${hole?'string':'note'}. Nothing is recorded or sent anywhere. Stuck? Tap it on the picture.</p></div>`);
   const fbk=el.querySelector('.feedback'),cnt=el.querySelector('.tq-n'),hint=el.querySelector('.tq-hint');
   let i=0,busy=false;
+  const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
   const tab=Tab(seq);
   const fb=Fretboard({frets:3,readout:false,orient:false,hole,onTap:(s,f)=>{tap(s,f);return false;}});
   el.querySelector('.tabbox').append(tab.el);el.querySelector('.fbbox').append(fb.el);
   const show=()=>{busy=false;tab.setCur(i);fb.setMarks([]);cnt.textContent=`Note ${i+1} of ${seq.length}`;hint.hidden=false;};
+  function right(s,f,delay){
+    fb.setMarks([{s,f}]);say(`Yes! ${pill(s)} ${strDesc(s)}, ${f?`fret ${f}`:'open'}.`,'ok');
+    i++;busy=true;
+    if(i>=seq.length){cnt.textContent='Done';hint.hidden=true;say('You read the whole line of tab. Nice work!','ok');tab.setCur(-1);busy=false;mic.stop();}
+    else setTimeout(show,delay);
+  }
   function tap(s,f){
     if(busy||i>=seq.length)return;
     const [ts,tf]=seq[i].n[0];playNote(s,f);
-    if(s===ts&&f===tf){
-      fb.setMarks([{s,f}]);fbk.className='feedback ok';
-      fbk.innerHTML=`Yes! ${pill(s)} ${strDesc(s)}, ${f?`fret ${f}`:'open'}.`;
-      i++;busy=true;
-      if(i>=seq.length){cnt.textContent='Done';hint.hidden=true;fbk.innerHTML='You read the whole line of tab. Nice work!';tab.setCur(-1);busy=false;}
-      else setTimeout(show,650);
-    }else{
-      fb.flash(s,f);fbk.className='feedback no';
-      fbk.innerHTML=s!==ts?`That's string ${s}. Check which line the number is on: top line is the thinnest string.`
-        :`Right string! That's ${f?`fret ${f}`:'open'}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`;
-    }
+    if(s===ts&&f===tf)return right(s,f,650);
+    fb.flash(s,f);
+    say(s!==ts?`That's string ${s}. Check which line the number is on: top line is the thinnest string.`
+      :`Right string! That's ${f?`fret ${f}`:'open'}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`,'no');
   }
-  hint.onclick=()=>{if(i<seq.length){const [ts,tf]=seq[i].n[0];fb.setMarks([{s:ts,f:tf}]);fbk.className='feedback';fbk.textContent='Here it is. Tap it to keep going.';}};
-  el.querySelector('.tq-reset').onclick=()=>{i=0;fbk.className='feedback';fbk.textContent='';show();};
+  const mic=Listener({onNote:m=>{if(busy||i>=seq.length)return;const [ts,tf]=seq[i].n[0],r=judgeNote(m,ts,tf,lap);
+      if(r.ok)right(ts,tf,1200);else say(r.t,'no');},
+    onMsg:t=>say(t,'no'),onStop:()=>label()});
+  const label=micToggle(mic,el.querySelector('.tq-mic'),{onStart:()=>say('Listening… pluck the highlighted note on your guitar.')});
+  hint.onclick=()=>{if(i<seq.length){const [ts,tf]=seq[i].n[0];fb.setMarks([{s:ts,f:tf}]);say('Here it is. Pluck it on your guitar, or tap it here to keep going.');}};
+  el.querySelector('.tq-reset').onclick=()=>{i=0;say('');show();};
   show();return el;
 }
 
@@ -1309,25 +1315,25 @@ function randomNotes(strings,n,prev=null){
     if(last&&last[0]===s&&last[1]===f)continue;out.push([s,f]);last=[s,f];}
   return out;
 }
-// Endless tab reading, four notes at a time. Tap each one on the fretboard, or play it on your guitar and let the
-// microphone check it.
+// Endless tab reading, four notes at a time. Play each one on your guitar and the microphone checks it; tapping it
+// on the fretboard also works, as a backup.
 function TabDrill(){
   const el=h(`<div class="card drill">
     <div class="seg dr-lvl" role="group" aria-label="Which strings">${TAB_LEVELS.map((l,i)=>`<button type="button" class="btn" data-l="${i}">${l.t}</button>`).join('')}</div>
-    <div class="seg dr-mode" role="group" aria-label="How to answer"><button type="button" class="btn" data-m="tap">Tap the fretboard</button><button type="button" class="btn" data-m="guitar">Play on my guitar</button></div>
     <div class="row" style="justify-content:space-between"><b class="dr-q"></b><span class="cap dr-n"></span></div>
     <div class="scroll tabbox"></div><div class="fbbox"></div>
     <div class="feedback" aria-live="polite"></div>
-    <div class="row"><button type="button" class="btn dr-hint">Show me</button><button type="button" class="btn dr-mic"></button></div></div>`);
+    <div class="row"><button type="button" class="btn primary dr-mic"></button><button type="button" class="btn dr-hint">Show me</button></div>
+    <p class="cap">The app listens through your microphone. Nothing is recorded or sent anywhere. Stuck? Tap the note on the fretboard.</p></div>`);
   const fbk=el.querySelector('.feedback'),cnt=el.querySelector('.dr-n'),q=el.querySelector('.dr-q'),tabbox=el.querySelector('.tabbox'),micBtn=el.querySelector('.dr-mic');
-  let lvl=store.get('drillLevel',0),mode='tap',line=[],i=0,tab=null,streak=0,busy=false;
+  let lvl=store.get('drillLevel',0),line=[],i=0,tab=null,streak=0,busy=false;
   const say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
-  const fb=Fretboard({frets:3,readout:false,orient:false,onTap:(s,f)=>{if(mode!=='tap')return;tap(s,f);return false;}});
+  const fb=Fretboard({frets:3,readout:false,orient:false,onTap:(s,f)=>{tap(s,f);return false;}});
   el.querySelector('.fbbox').append(fb.el);
   const newLine=()=>{line=randomNotes(TAB_LEVELS[lvl].s,4,line[line.length-1]);i=0;tab=Tab(line.map(([s,f])=>N(s,f)));tabbox.replaceChildren(tab.el);show();};
   const show=()=>{busy=false;tab.setCur(i);fb.setMarks([]);cnt.textContent=streak?`${streak} in a row`:'';};
-  const right=(s,f)=>{streak++;busy=true;fb.setMarks([{s,f}]);say(`Yes! ${pill(s)} string ${s}, ${where(s,f)}.`,'ok');cnt.textContent=`${streak} in a row`;
-    setTimeout(()=>{i++;if(i>=line.length)newLine();else show();},mode==='tap'?600:1200);};
+  const right=(s,f,delay=600)=>{streak++;busy=true;fb.setMarks([{s,f}]);say(`Yes! ${pill(s)} string ${s}, ${where(s,f)}.`,'ok');cnt.textContent=`${streak} in a row`;
+    setTimeout(()=>{i++;if(i>=line.length)newLine();else show();},delay);};
   function tap(s,f){
     if(busy)return;const [ts,tf]=line[i];playNote(s,f,{hold:.9});
     if(s===ts&&f===tf)return right(s,f);
@@ -1335,17 +1341,14 @@ function TabDrill(){
     say(s!==ts?`That's string ${s}. Check which line the number is on: the top line is string 1, the thinnest.`
       :`Right string! That's ${where(s,f)}. The number in the tab is the fret${tf===0?': 0 means open, no finger down':''}.`,'no');
   }
-  const mic=Listener({onNote:m=>{if(busy||mode!=='guitar')return;const [ts,tf]=line[i],r=judgeNote(m,ts,tf);
-      if(r.ok)right(ts,tf);else{streak=0;cnt.textContent='';say(r.t,'no');}},
+  const mic=Listener({onNote:m=>{if(busy)return;const [ts,tf]=line[i],r=judgeNote(m,ts,tf);
+      if(r.ok)right(ts,tf,1200);else{streak=0;cnt.textContent='';say(r.t,'no');}},
     onMsg:t=>say(t,'no'),onStop:()=>label()});
   const label=micToggle(mic,micBtn,{onStart:()=>say('Listening… play the highlighted note.')});
   const mark=()=>{el.querySelectorAll('[data-l]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.l===lvl));
-    el.querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===mode));
-    q.textContent=mode==='tap'?'Tap the highlighted note on the fretboard':'Play the highlighted note on your guitar';
-    micBtn.disabled=mode!=='guitar';if(mode!=='guitar')mic.stop();};
+    q.textContent='Play the highlighted note on your guitar';};
   el.querySelector('.dr-lvl').onclick=e=>{const b=e.target.closest('[data-l]');if(!b)return;lvl=+b.dataset.l;store.set('drillLevel',lvl);streak=0;say('');mark();newLine();};
-  el.querySelector('.dr-mode').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;mode=b.dataset.m;streak=0;say('');mark();show();};
-  el.querySelector('.dr-hint').onclick=()=>{const [s,f]=line[i];fb.setMarks([{s,f}]);playNote(s,f,{hold:1.2});say(`Here it is: string ${s}, ${where(s,f)}.`);};
+  el.querySelector('.dr-hint').onclick=()=>{const [s,f]=line[i];fb.setMarks([{s,f}]);playNote(s,f,{hold:1.2});say(`Here it is: string ${s}, ${where(s,f)}. Now play it on your guitar.`);};
   mark();newLine();return el;
 }
 
@@ -1354,7 +1357,8 @@ function TabDrill(){
 const IMG={hold:'img/hold.jpg',mistake:'img/mistake.jpg',hands:'img/hands.jpg'};
 const L=[
 {t:'Parts of the Guitar',html:`
-  <p class="lead">You only need to know a handful of parts. Tap the guitar or a name to learn each one.</p>
+  <div class="callout tip"><b class="t">Your guitar comes first</b><p>Keep your guitar in your hands whenever you use this app. Everything it asks you to do, you do <b>on your real guitar</b>. The pictures are there for when you're not sure: tap them to hear a note or see where something is.</p></div>
+  <p class="lead">You only need to know a handful of parts. Find each one on your own guitar. Not sure which is which? Tap the picture or a name.</p>
   <p class="prose">Acoustic or electric doesn't matter here: the parts you'll use, and everything in this course, work the same way on both.</p>
   <div data-w="anat"></div>
   <section class="block"><h3>Words we use</h3><p class="prose">Guitar talk gets confusing fast because "high" and "up" can mean different things. This course always uses these words the same way.</p>
@@ -1369,8 +1373,8 @@ const L=[
 
 {t:'Tuning',html:`
   <p class="lead">Every practice session starts here. A guitar that's slightly out of tune makes correct playing sound wrong.</p>
-  <section class="block"><h3>String names</h3><p class="prose">Thicker to thinner: E A D G B e. An easy way to remember the names of the strings is <b>Eddie Ate Dynamite, Good Bye Eddie</b>. Tap a letter to hear it.</p><div data-w="mn"></div></section>
-  <section class="block"><h3>Which peg turns which string</h3><p class="prose">Trace the string from the bridge, toward the headstock, past the nut, to the post it winds around. That peg is the one.</p><div data-w="hs"></div>
+  <section class="block"><h3>String names</h3><p class="prose">Thicker to thinner: E A D G B e. An easy way to remember the names of the strings is <b>Eddie Ate Dynamite, Good Bye Eddie</b>. Say each name as you pluck that string on your guitar. Tap a letter to hear how it should sound.</p><div data-w="mn"></div></section>
+  <section class="block"><h3>Which peg turns which string</h3><p class="prose">On your guitar, trace each string from the bridge, toward the headstock, past the nut, to the post it winds around. That peg is the one.</p><div data-w="hs"></div>
     <div class="callout warn"><b class="t">Common mistake</b><p>Turning the wrong peg. If the string you're plucking doesn't respond, stop. Don't keep cranking; you're tightening a different string.</p></div></section>
   <section class="block"><h3>Using a tuner</h3><ul class="points">
     <li><b>Phone tuner app</b> or <b>clip-on tuner</b>. There are a ton of free guitar tuner apps out there: just search "guitar tuner." I recommend the Fender Tune app. A clip-on attaches to the headstock and feels the vibration directly, so room noise doesn't confuse it.</li>
@@ -1397,18 +1401,18 @@ const L=[
     <li><b>How:</b> thumb only, with the fleshy pad of the thumb. Push through the string, moving from the thicker strings toward the thinner ones. On your lap, that's away from you.</li>
     <li><b>How hard:</b> firm enough for a clear tone. No harder.</li></ul>
     <p class="cap">Later, when you sit up with the guitar, this same stroke points down toward the floor.</p></section>
-  <section class="block"><h3>Try the stroke</h3><div data-w="pad"></div></section>
+  <section class="block"><h3>Try the stroke</h3><p class="prose">Try it on your guitar: one string at a time, then a slow sweep across all six. The pad below shows the same motion.</p><div data-w="pad"></div></section>
 
-  <section class="block"><span class="eyebrow">Step 1</span><h3>Which string</h3><p class="prose">Tab has six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Tap a string to hear it.</p><div data-w="lv"></div>
+  <section class="block"><span class="eyebrow">Step 1</span><h3>Which string</h3><p class="prose">Tab has six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Pluck string 1, then string 6, on your guitar and match each one to its line. Tap a string in the picture to hear it.</p><div data-w="lv"></div>
     <ul class="points"><li><b>Top line:</b> string 1, the thinnest string, farthest from you.</li><li><b>Bottom line:</b> string 6, the thickest string, nearest you.</li><li><b>Tab goes by pitch:</b> the higher the line, the higher the sound.</li></ul>
     <h4 class="subhead">0 means open</h4><p class="prose">For now, every note in the tab is a <b>0</b>. A 0 means an open string: only your right hand plays it. Your left hand's only job is to stay out of the way, off the string being plucked, so it can ring.</p>
-    <p class="prose">The highlighted number is your next note. Tap that string on the picture. Get it right and the tab moves on.</p><div data-w="tq"></div>
+    <p class="prose">The highlighted number is your next note. Tap <b>Start listening</b>, then pluck that string on your guitar. Get it right and the tab moves on.</p><div data-w="tq"></div>
     <div class="callout tip"><b class="t">Lost? Count from the thick side</b><p>Put your right thumb on string 6, the thickest one, nearest you. Move away from you one string at a time, counting 6, 5, 4… until you reach the line you want.</p></div>
-    <div class="song"><span class="eyebrow">Open strings only</span><h3>Nothing Else Matters · intro</h3><p class="sub">Your first piece. Every note is a 0, so your left hand stays out of the way. Read the lines, and move your thumb from the thicker strings to the thinner ones and back. Press Play to hear it first.</p><div data-w="s"></div></div>
+    <div class="song"><span class="eyebrow">Open strings only</span><h3>Nothing Else Matters · intro</h3><p class="sub">Your first piece. Every note is a 0, so your left hand stays out of the way. Read the lines, and move your thumb from the thicker strings to the thinner ones and back. Press Play to hear it first, then play it on your guitar.</p><div data-w="s"></div></div>
     <p class="prose">That's the right hand's part of the address: which string. Next, your left hand joins in and picks the fret.</p></section>
 `,
  mount(r){mount(r,'diag',RightHandDiagram());mount(r,'pad',StrumPad());
-   mount(r,'lv',LapView({hole:true}));mount(r,'tq',TabQuiz(SONGS.open,{hole:true}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true,hole:true}));}},
+   mount(r,'lv',LapView({hole:true}));mount(r,'tq',TabQuiz(SONGS.open,{hole:true,lap:true}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true,hole:true}));}},
 
 {t:'Reading Tab: Left Hand',html:`
   <p class="lead">Now your left hand joins in. It chooses the fret, the second part of the address. Keep the guitar flat on your lap, neck to the left.</p>
@@ -1421,7 +1425,7 @@ const L=[
     <h4 class="subhead">Where exactly to put your finger</h4><p class="prose">Reach over the neck with your left pointer finger and press straight down, with your fingertip in the middle of the fret space. In the photo the address is <b>string 4, fret 5</b>. The dots sit in the middle of their spaces, so your finger goes right beside the dot.</p><div data-w="pl"></div>
     <h4 class="subhead">How hard to press</h4><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
 
-  <section class="block"><span class="eyebrow">Step 3</span><h3>Pluck that same string</h3><p class="prose">Your left hand chooses the note. Your right hand has to pluck that same string, or your finger does nothing at all. Each string runs all the way from the headstock to the bridge: your finger presses it near one end, and your thumb plucks it over the soundhole. Tap a spot on the neck to light up its string all the way to where your thumb plucks it.</p><div data-w="fs"></div>
+  <section class="block"><span class="eyebrow">Step 3</span><h3>Pluck that same string</h3><p class="prose">Your left hand chooses the note. Your right hand has to pluck that same string, or your finger does nothing at all. Each string runs all the way from the headstock to the bridge: your finger presses it near one end, and your thumb plucks it over the soundhole. On your guitar, put a finger on a string and follow that string with your eyes to the soundhole. Not sure? Tap a spot on the neck in the picture to light up its string.</p><div data-w="fs"></div>
     <h4 class="subhead">Press, follow, touch, pluck</h4><ul class="points">
       <li><b>Press.</b> Put your left finger on the address and say it out loud: "string 4, fret 2."</li>
       <li><b>Follow.</b> Trace that string with your eyes, from your fingertip to the soundhole.</li>
@@ -1429,7 +1433,7 @@ const L=[
       <li><b>Pluck.</b> Push through it, away from you, with the same thumb stroke you've been using.</li></ul>
     <h4 class="subhead">Check it with the microphone</h4><p class="prose">Play each address on your guitar. The app listens and tells you if you got it. If you plucked the wrong string, it tells you which way to move your thumb.</p><div data-w="nc"></div></section>
 
-  <section class="block"><span class="eyebrow">Put it together</span><h3>Follow the tab</h3><p class="prose">Press Play and follow along, on the screen or on your guitar. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div>
+  <section class="block"><span class="eyebrow">Put it together</span><h3>Follow the tab</h3><p class="prose">Press Play and play along on your guitar. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div>
     <h4 class="subhead">Check in</h4><p class="prose">Read tab from left to right, like a sentence: each number is the next note to play. Left to right tells you <b>when</b>. The line and the number tell you <b>where</b>.</p><p class="prose">This is the idea most likely to get tangled. Make sure it's solid before moving on. Next, you'll sit up with the guitar.</p><div data-w="q"></div></section>`,
  mount(r){mount(r,'pl',Placement());mount(r,'pr',Pressure());
    mount(r,'fs',FollowString());mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]],{lap:true,listen:'Listening… string, fret, pluck.'}));
@@ -1462,7 +1466,7 @@ const L=[
 
 {t:'Tab Practice',html:`
   <p class="lead">Reading tab gets easy with lots of short practice. Come back to this page any time, for as long or as short as you like.</p>
-  <section class="block"><h3>Read it: tab to fretboard</h3><p class="prose">Four notes at a time, as many as you want. Start with one string and add more when it feels easy. Tap each note on the fretboard, or choose <b>Play on my guitar</b> and let the microphone check you.</p><div data-w="dr"></div>
+  <section class="block"><h3>Read it: tab to fretboard</h3><p class="prose">Four notes at a time, as many as you want. Start with one string and add more when it feels easy. Tap <b>Start listening</b> and play each note on your guitar: the microphone checks you.</p><div data-w="dr"></div>
     <div class="callout tip"><b class="t">Lost? Lap check</b><p>Lay the guitar on your lap: it matches the tab.</p></div></section>
   <section class="block"><h3>Play along</h3><p class="prose">Press Play, listen to the four clicks, and play each note on your guitar as it lights up. Start at Very slow. When you can play it all the way through without stopping, try the next speed.</p>
     <div class="callout tip"><b class="t">Keep going</b><p>Made a mistake? Don't stop: skip to the next note in time with the music. Staying with the beat matters more than getting every note.</p></div>
@@ -1494,7 +1498,7 @@ const L=[
 
 {t:'Melodies',html:`
   <p class="lead">Tunes you already know, written in tab. When you know how a tune goes, you can hear your own mistakes.</p>
-  <p class="prose">They all use one finger per fret: fret 1 is finger 1, fret 3 is finger 3. Start at Very slow.</p>
+  <p class="prose">They all use one finger per fret: fret 1 is finger 1, fret 3 is finger 3. Play along on your guitar, starting at Very slow.</p>
   <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Mary Had a Little Lamb</h3><div data-w="m1"></div></div>
   <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Ode to Joy</h3><p class="sub">Beethoven's tune. Same notes as Mary, plus fret 1 on string 1.</p><div data-w="m2"></div></div>
   <div class="song"><span class="eyebrow">Strings 1, 2 and 3</span><h3>Twinkle, Twinkle, Little Star</h3><p class="sub">String 3 joins in. Its 2nd fret is finger 2.</p><div data-w="m3"></div></div>
@@ -1662,7 +1666,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v63';
+window.APP_VERSION = 'v64';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

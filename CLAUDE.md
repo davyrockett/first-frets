@@ -113,6 +113,12 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   the thumb ("toward the floor/your face"). The same note an octave off counts as right, because the pitch reader
   can slip an octave. Tab Practice's drill has the same "Play on my guitar" mode. The mic ignores the app's own
   sounds (`SOUND_UNTIL`).
+- **Real guitar first (David, 2026-11-11, v64):** every instruction tells the student to do it on their own guitar;
+  tapping the pictures is the fallback "if you're not sure". Section 1 opens with a "Your guitar comes first" callout;
+  later lessons carry short reminders ("on your guitar"). The tab games listen: `TabQuiz` (Reading Tab: Right Hand,
+  `lap:true`) and `TabDrill` (Tab Practice) have a Start listening button and move on when the mic hears the right
+  note; tapping still works as a backup. TabDrill no longer has a Tap/Play mode switch. Keep new instructions
+  guitar-first.
 - **Out-of-tune hint (v63):** if `NoteCheck` hears the same 1–2 semitone miss three times running, it adds "your
   guitar may be out of tune" and an "Open the tuner" button (stops the mic, opens the Tuner pop-up).
 - **Photos are files (v63):** the three photos that were inline base64 (`IMG.hold`, `IMG.mistake`, `IMG.hands`) are
