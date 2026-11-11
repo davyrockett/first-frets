@@ -581,7 +581,7 @@ function Fretboard({frets=7,phoneFrets=null,onTap=null,readout=true,orient=true,
   return api;
 }
 
-// Open strings only (Reading Tab – Right Hand, step 1): the strings where the thumb plucks them, over the soundhole, instead of the
+// Open strings only (Reading Tab: Right Hand, step 1): the strings where the thumb plucks them, over the soundhole, instead of the
 // neck. Lap view: neck to the left, thinnest string on top. Same API as Fretboard (setMarks, flash, say); every tap is fret 0.
 function Soundhole({onTap=null,readout=true,hint='Tap a string to hear it.'}={}){
   const W=640,gy=30,sy=k=>40+(k-1)*gy,H=sy(6)+40,cx=330,cy=(sy(1)+sy(6))/2;
@@ -737,7 +737,7 @@ const SONGS={
   emAm:[...Array.from({length:4},(_,i)=>({n:EM,b:1,c:'Em',bar:i===3})),...Array.from({length:4},(_,i)=>({n:AM,b:1,c:'Am',bar:i===3})),
         ...Array.from({length:4},(_,i)=>({n:EM,b:1,c:'Em',bar:i===3})),...Array.from({length:2},()=>({n:AM,b:1,c:'Am'})),{n:EM,b:2,c:'Em'}],
   // Builds up slowly: four notes on the thinnest string, then the B string joins, then the rest. Frets 0-3 only.
-  // Reading Tab – Right Hand, step 1: open strings only, so the line is the only thing to read.
+  // Reading Tab: Right Hand, step 1: open strings only, so the line is the only thing to read.
   open:[N(1,0),N(2,0),N(1,0),N(3,0,1,{bar:true}),N(6,0),N(5,0),N(6,0),N(4,0,1,{bar:true}),N(2,0),N(4,0),N(3,0),N(5,0,1,{bar:true}),N(1,0),N(6,0),N(2,0),N(5,0)],
   tq:[N(1,3),N(1,1),N(1,0),N(2,1,1,{bar:true}),N(2,3),N(1,2),N(3,2),N(3,0,1,{bar:true}),N(4,2),N(5,3),N(6,0),N(6,1)],
   zig:[N(1,3),N(1,1),N(1,0),N(1,2,1,{bar:true}),
@@ -1460,7 +1460,7 @@ const L=[
     <div class="callout tip"><b class="t">This app has a tuner</b><p>When you're ready to tune your guitar for real, tap the <b>Tuner</b> button at the top of any page. Allow the microphone, then pluck one string at a time.</p></div></section>`,
  mount(r){mount(r,'mn',Mnemonic());mount(r,'hs',Headstock());mount(r,'tt',TunerTrainer());}},
 
-{t:'Reading Tab – Right Hand',html:`
+{t:'Reading Tab: Right Hand',html:`
   <p class="lead">Tab is the quickest way to start playing real music. Every note in it has an address: which string, which fret, then pluck that same string. You'll start with your right hand: which string to pluck.</p>
   <section class="block"><h3>Guitar on your lap</h3><p class="prose">For this section and the next, lay the guitar flat on your lap. You'll soon see why: lying like this, it looks exactly like the music you'll read.</p>
     <div class="photo-wrap"><figure><svg class="lap-art" viewBox="0 0 900 822" role="img" aria-label="Drawing of a player sitting cross-legged with the guitar on their lap, looking down at it, left hand reaching over the top of the neck"><defs><mask id="gl-lap" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="822"><image href="img/lap-player.png" x="0" y="0" width="900" height="822"/></mask></defs><rect class="g-ink" x="0" y="0" width="900" height="822" mask="url(#gl-lap)"/></svg><figcaption>Guitar on your lap, left hand reaching over the top of the neck.</figcaption></figure>
@@ -1487,7 +1487,7 @@ const L=[
  mount(r){mount(r,'diag',RightHandDiagram());mount(r,'pad',StrumPad());
    mount(r,'lv',LapView({hole:true}));mount(r,'tq',TabQuiz(SONGS.open,{hole:true}));mount(r,'s',Player(SONGS.nem,{frets:3,bpm:55,ring:true,hole:true}));}},
 
-{t:'Reading Tab – Left Hand',html:`
+{t:'Reading Tab: Left Hand',html:`
   <p class="lead">Now your left hand joins in. It chooses the fret, the second part of the address. Keep the guitar flat on your lap, neck to the left.</p>
 
   <section class="block"><span class="eyebrow">Step 2</span><h3>Which fret</h3><p class="prose">The second part of the address is the fret: the number on the line. A 3 on the top line is the address <b>string 1, fret 3</b>. A 2 on the bottom line is <b>string 6, fret 2</b>.</p>
@@ -1550,7 +1550,7 @@ const L=[
 {t:'Your First Songs',html:`
   <p class="lead">Four short pieces. Each one adds a single new idea, and the last one turns out to be your first chord.</p>
   <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, string 4 and string 5. It starts on open string 4.</p><div data-w="s1"></div></div>
-  <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">You played this on your lap in Reading Tab – Right Hand. Now play it sitting up. No left-hand fingers: move your thumb from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
+  <div class="song"><span class="eyebrow">Open strings, crossing strings</span><h3>Nothing Else Matters · intro</h3><p class="sub">You played this on your lap in Reading Tab: Right Hand. Now play it sitting up. No left-hand fingers: move your thumb from thicker strings to thinner ones and back.</p><div data-w="s2"></div></div>
   <div class="song"><span class="eyebrow">Two fingers</span><h3>Same motion, two fingers down</h3><p class="sub">Put your middle finger on string 5, 2nd fret, and your ring finger on string 4, 2nd fret. Leave both fingers down the whole time, even while you play the other strings. Play thickest to thinnest, one note at a time.</p><div data-w="s3"></div></div>
   <div class="song"><span class="eyebrow">All six at once</span><h3>One sweep of the thumb</h3><p class="sub">Same two fingers, same strings. Now sweep your thumb across all six in one motion. Stacked numbers in tab mean "play these together."</p><div data-w="s4"></div></div>
   <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
@@ -1727,8 +1727,9 @@ nav.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b
 const OLD_ORDER=['Parts of the Guitar','Words We Use','Holding the Guitar','Right Hand Basics','Tuning','The Guitar\'s Map','Reading Tab','Your First Songs','Chord Diagrams','Em and Am Songs'];
 const START_HASH=location.hash; // reference.js opens #scales etc. after go() replaces the hash
 // Sections renamed or merged in v48 (lap-first order).
-// v61: Right Hand Basics and Reading Tab became Reading Tab – Right Hand / Left Hand; Tuning moved to section 2.
-const RENAMED={'Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up','Right Hand Basics':'Reading Tab – Right Hand','Reading Tab':'Reading Tab – Right Hand','Which String?':'Reading Tab – Right Hand','The Guitar\'s Map':'Reading Tab – Left Hand','Same String, Both Hands':'Reading Tab – Left Hand'};
+// v61: Right Hand Basics and Reading Tab became Reading Tab: Right Hand / Left Hand; Tuning moved to section 2.
+const RENAMED={'Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up','Right Hand Basics':'Reading Tab: Right Hand','Reading Tab':'Reading Tab: Right Hand','Which String?':'Reading Tab: Right Hand','The Guitar\'s Map':'Reading Tab: Left Hand','Same String, Both Hands':'Reading Tab: Left Hand',
+  'Reading Tab – Right Hand':'Reading Tab: Right Hand','Reading Tab – Left Hand':'Reading Tab: Left Hand'}; // v61 names
 const hm=/^#s(\d+)$/.exec(location.hash),saved0=store.get('sec',OLD_ORDER[store.get('cur',0)]),saved=RENAMED[saved0]||saved0;
 go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 </script>
@@ -1738,7 +1739,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v61';
+window.APP_VERSION = 'v62';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

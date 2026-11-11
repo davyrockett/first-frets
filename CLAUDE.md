@@ -100,12 +100,11 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   Put it together. Pick It Up (5) has one "Lost? Two ways back" tip and the sitting-up mic check. 13 sections now; the
   old names map to Reading Tab through `RENAMED`. `MapQuiz` is no longer used.
 - **Tuning second, Reading Tab in two (David, 2026-11-11, v61):** order is now Parts of the Guitar · Tuning ·
-  **Reading Tab – Right Hand** (the old Right Hand Basics: lap setup with David's drawing, the thumb stroke, stroke pad;
-  then Step 1 Which string) · **Reading Tab – Left Hand** (Step 2 Which fret, Step 3 Pluck that same string, Put it
+  **Reading Tab: Right Hand** (the old Right Hand Basics: lap setup with David's drawing, the thumb stroke, stroke pad;
+  then Step 1 Which string) · **Reading Tab: Left Hand** (Step 2 Which fret, Step 3 Pluck that same string, Put it
   together with the full 3-question check-in) · Pick It Up · then as before. Tuning no longer teaches the rest stroke
   or points ahead: "for now, hold the guitar however is comfortable and pluck one string with your right thumb."
-  Tuning's peg picture is static now (all six pegs labeled, no game). The titles use a non-breaking space before the
-  dash. Old saved names map through `RENAMED` (Right Hand Basics / Reading Tab → Right Hand; the Map and Same String
+  Tuning's peg picture is static now (all six pegs labeled, no game). Old saved names map through `RENAMED` (Right Hand Basics / Reading Tab → Right Hand; the Map and Same String
   → Left Hand).
 - **No progress ticks (David, 2026-11-02):** no section checkmarks, progress bar or "Reset progress". The open
   section is saved by name (`bg.sec`); old saved numbers map through `OLD_ORDER`.
@@ -126,7 +125,7 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   G C D A E + famous progressions). Each tab has a link: `#scales`, `#metronome` etc. (`START_HASH` is read before
   `go()` replaces the hash). `Chord()` takes `base` (top fret, shows "5fr") and `roots` (orange ring).
 - Students are absolute beginners: keep wording simple and friendly.
-- Parts of the Guitar and Reading Tab – Right Hand use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
+- Parts of the Guitar and Reading Tab: Right Hand use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
   lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is
   CC BY-SA (credit in README); keep that credit.
 - The first version is tagged `v1-original`. The old address www.davyrockett.com/beginner-guitar/ forwards
