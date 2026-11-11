@@ -260,6 +260,8 @@ figcaption{font-size:14px;color:var(--muted)}
 .lh-photo{max-width:560px}
 .lap-art{width:100%;height:auto;display:block}
 .lh-photo img{width:100%;height:auto;border-radius:var(--r)}
+.vid-wrap{margin:4px 0 16px;max-width:640px}
+.vid{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:var(--r);background:#000}
 .photo-wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
 .annot{display:flex;flex-direction:column;gap:12px}
 .annot div{display:flex;flex-direction:column;gap:2px}
@@ -1403,7 +1405,7 @@ const L=[
     <p class="cap">Later, when you sit up with the guitar, this same stroke points down toward the floor.</p></section>
   <section class="block"><h3>Try the stroke</h3><p class="prose">Try it on your guitar: one string at a time, then a slow sweep across all six. The pad below shows the same motion.</p><div data-w="pad"></div></section>
 
-  <section class="block"><span class="eyebrow">Step 1</span><h3>Which string</h3><p class="prose">Tab has six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Pluck string 1, then string 6, on your guitar and match each one to its line. Tap a string in the picture to hear it.</p><div data-w="lv"></div>
+  <section class="block"><span class="eyebrow">Step 1</span><h3>Which string</h3><figure class="vid-wrap"><iframe class="vid" src="https://www.youtube-nocookie.com/embed/pQC3JsbgaTw?start=7&amp;end=55&amp;rel=0&amp;playsinline=1" title="Guitar on the lap: open strings and the lines of tab" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><figcaption>Watch: the guitar on his lap matches the tab, and a 0 appears on each line as he plucks that string. Then try it on your guitar. Video: Good Guitarist on YouTube (needs internet).</figcaption></figure><p class="prose">Tab has six lines, one for each string. With your guitar flat on your lap, neck to the left, the strings line up exactly like the lines of tab. Pluck string 1, then string 6, on your guitar and match each one to its line. Tap a string in the picture to hear it.</p><div data-w="lv"></div>
     <ul class="points"><li><b>Top line:</b> string 1, the thinnest string, farthest from you.</li><li><b>Bottom line:</b> string 6, the thickest string, nearest you.</li><li><b>Tab goes by pitch:</b> the higher the line, the higher the sound.</li></ul>
     <h4 class="subhead">0 means open</h4><p class="prose">For now, every note in the tab is a <b>0</b>. A 0 means an open string: only your right hand plays it. Your left hand's only job is to stay out of the way, off the string being plucked, so it can ring.</p>
     <p class="prose">The highlighted number is your next note. Tap <b>Start listening</b>, then pluck that string on your guitar. Get it right and the tab moves on.</p><div data-w="tq"></div>
@@ -1417,7 +1419,7 @@ const L=[
 {t:'Reading Tab: Left Hand',html:`
   <p class="lead">Now your left hand joins in. It chooses the fret, the second part of the address. Keep the guitar flat on your lap, neck to the left.</p>
 
-  <section class="block"><span class="eyebrow">Step 2</span><h3>Which fret</h3><p class="prose">The second part of the address is the fret: the number on the line. A 3 on the top line is the address <b>string 1, fret 3</b>. A 2 on the bottom line is <b>string 6, fret 2</b>.</p>
+  <section class="block"><span class="eyebrow">Step 2</span><h3>Which fret</h3><figure class="vid-wrap"><iframe class="vid" src="https://www.youtube-nocookie.com/embed/pQC3JsbgaTw?start=58&amp;end=136&amp;rel=0&amp;playsinline=1" title="Counting frets up the thinnest string" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><figcaption>Watch: he counts up the frets on the thinnest string, then shows the dots that help you find your place. Then try it on your guitar. Video: Good Guitarist on YouTube (needs internet).</figcaption></figure><p class="prose">The second part of the address is the fret: the number on the line. A 3 on the top line is the address <b>string 1, fret 3</b>. A 2 on the bottom line is <b>string 6, fret 2</b>.</p>
     <ul class="points">
       <li><b>A fret is a space,</b> the area between two metal wires, not a wire. Fret 2 is the space between the 1st and 2nd wires.</li>
       <li><b>Count from the nut.</b> The nut is fret 0, the open string. Fret 1 is the first space after it, toward the body.</li>
@@ -1666,7 +1668,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v64';
+window.APP_VERSION = 'v65';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

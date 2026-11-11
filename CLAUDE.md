@@ -119,6 +119,10 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   `lap:true`) and `TabDrill` (Tab Practice) have a Start listening button and move on when the mic hears the right
   note; tapping still works as a backup. TabDrill no longer has a Tap/Play mode switch. Keep new instructions
   guitar-first.
+- **YouTube clips (David, 2026-11-11, v65):** Good Guitarist's "Learn How To Read TAB in 5 Minutes"
+  (youtube.com/watch?v=pQC3JsbgaTw) matches the lap-first method. Two embeds (youtube-nocookie, `start`/`end`):
+  0:07–0:55 under Step 1 Which string, 0:58–2:16 under Step 2 Which fret. They need internet (not cached). David
+  isn't worried that the video calls the wire "the fret". Plan: replace with David's own overhead lap clips later.
 - **Out-of-tune hint (v63):** if `NoteCheck` hears the same 1–2 semitone miss three times running, it adds "your
   guitar may be out of tune" and an "Open the tuner" button (stops the mic, opens the Tuner pop-up).
 - **Photos are files (v63):** the three photos that were inline base64 (`IMG.hold`, `IMG.mistake`, `IMG.hands`) are
