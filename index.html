@@ -667,12 +667,16 @@ let STOP_ALL=[];
 // until the next chord or note; the last note always rings out. A note can set its own: ring:true, or hold (beats).
 // count: beats of count-in clicks before the first note. finger: say which finger plays each fretted note
 // (one finger per fret, so in frets 1–4 the finger number is the fret number).
-function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=false,hole=false}={}){
+// listen: adds Start listening. The student plays the tab on their guitar one note at a time; the microphone
+// checks each one (green tick / red cross on the tab) and moves on. Single notes only, no chords.
+function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=false,hole=false,listen=false}={}){
   const el=h(`<div class="player">
     <div class="row"><button class="btn primary play" type="button">▶ Play</button>
       <label class="row" style="gap:6px">Speed <select aria-label="Speed"><option value="40">Very slow</option><option value="55">Slow</option><option value="70">Medium</option><option value="95">Full</option></select></label>
+      ${listen?'<button class="btn pl-mic" type="button"></button>':''}
       <span class="cap">Tap any column to hear it on its own.</span></div>
-    <div class="scroll tabbox"></div><div class="fbbox"></div></div>`);
+    <div class="scroll tabbox"></div><div class="fbbox"></div>
+    ${listen?'<div class="feedback" aria-live="polite"></div><p class="cap">Start listening, then play the tab on your guitar one note at a time. The highlighted note is the next one. Nothing is recorded or sent anywhere.</p>':''}</div>`);
   const sel=el.querySelector('select');sel.value=String(bpm<=45?40:bpm<=60?55:bpm<=80?70:95);
   const sp=store.get('speed','lesson');if(sp!=='lesson')sel.value=String(sp);
   const fb=Fretboard({frets,phoneFrets,orient:false,hint:'',hole});
@@ -686,17 +690,29 @@ function Player(song,{frets=7,phoneFrets=null,bpm=80,ring=false,count=0,finger=f
     return null;};
   const sound=(i,spb)=>{const e=song[i],b=spb?beats(i):null,o=b==null?{}:{hold:b*spb};
     e.n.length>1?strum(e.n,.03,o):playNote(e.n[0][0],e.n[0][1],o);};
-  const tab=Tab(song,{onCol:i=>{stop();show(i);sound(i);}});
+  const tab=Tab(song,{badge:listen,onCol:i=>{stop();show(i);sound(i);if(listen&&mic.on){at=i;busy=false;}}});
   el.querySelector('.tabbox').append(tab.el);el.querySelector('.fbbox').append(fb.el);
   const btn=el.querySelector('.play');let timers=[],playing=false;
   const finish=()=>{timers.forEach(clearTimeout);timers=[];playing=false;btn.textContent='▶ Play';};
   function stop(){const was=playing;finish();if(was)hush();}
-  function play(){STOP_ALL.forEach(f=>f());audio();const spb=60/+sel.value;let t=.15;
+  function play(){STOP_ALL.forEach(f=>f());if(listen&&mic.on){mic.stop();label();}audio();const spb=60/+sel.value;let t=.15;
     for(let k=0;k<count;k++){const n=k+1;metroClick(t,k===0);timers.push(setTimeout(()=>fb.say(`Get ready: ${Array.from({length:count},(_,j)=>j<n?`<b>${j+1}</b>`:j+1).join(' ')}`),t*1000));t+=spb;}
     song.forEach((e,i)=>{timers.push(setTimeout(()=>{show(i);sound(i,spb);},t*1000));t+=e.b*spb;});
     timers.push(setTimeout(()=>{finish();tab.setCur(-1);},t*1000+300));playing=true;btn.textContent='■ Stop';}
   btn.addEventListener('click',()=>playing?stop():play());
   STOP_ALL.push(stop);
+  let at=0,busy=false,mic,label;
+  if(listen){
+    const fbk=el.querySelector('.feedback'),say=(t,cls='')=>{fbk.className='feedback '+cls;fbk.innerHTML=t;};
+    mic=Listener({onNote:m=>{if(busy||at>=song.length)return;const [ts,tf]=song[at].n[0],r=judgeNote(m,ts,tf);
+        if(!r.ok){tab.mark('no');say(r.t,'no');return;}
+        tab.mark('ok');say(`Yes! ${pill(ts)} string ${ts}, ${where(ts,tf)}.`,'ok');busy=true;
+        setTimeout(()=>{busy=false;at++;
+          if(at>=song.length){tab.setCur(-1);say('You played the whole thing. Nice work! Start listening again to go once more.','ok');mic.stop();label();}
+          else show(at);},450);},
+      onMsg:t=>say(t,'no'),onStop:()=>label()});
+    label=micToggle(mic,el.querySelector('.pl-mic'),{onStart:()=>{stop();at=0;busy=false;show(0);say('Listening… play the highlighted note on your guitar.');}});
+  }
   return el;
 }
 
@@ -1466,7 +1482,6 @@ const L=[
       <li><b>A fret is a space,</b> the area between two metal wires, not a wire. Fret 2 is the space between the 1st and 2nd wires.</li>
       <li><b>Count from the nut.</b> The nut is fret 0, the open string. Fret 1 is the first space after it, toward the body.</li>
       <li><b>Higher numbers</b> are toward the body and higher in pitch.</li></ul>
-    <h4 class="subhead">Where exactly to put your finger</h4><p class="prose">Reach over the neck with your left pointer finger and press straight down, with your fingertip in the middle of the fret space. In the photo the address is <b>string 4, fret 5</b>. The dots sit in the middle of their spaces, so your finger goes right beside the dot.</p><div data-w="pl"></div>
     <h4 class="subhead">How hard to press</h4><p class="prose">Clear tone means enough. Buzzing means press more. Tired hand means too much.</p><div data-w="pr"></div></section>
 
   <section class="block"><span class="eyebrow">Step 3</span><h3>Pluck that same string</h3><p class="prose">Your left hand chooses the note. Your right hand has to pluck that same string, or your finger does nothing at all. Each string runs all the way from the headstock to the bridge: your finger presses it near one end, and your thumb plucks it over the soundhole. On your guitar, put a finger on a string and follow that string with your eyes to the soundhole. Not sure? Tap a spot on the neck in the picture to light up its string.</p><div data-w="fs"></div>
@@ -1479,7 +1494,7 @@ const L=[
 
   <section class="block"><span class="eyebrow">Put it together</span><h3>Follow the tab</h3><p class="prose">Press Play and play along on your guitar. It starts with a few notes on the thinnest string, then adds more strings as it goes.</p><div data-w="zig"></div>
     <h4 class="subhead">Check in</h4><p class="prose">Read tab from left to right, like a sentence: each number is the next note to play. Left to right tells you <b>when</b>. The line and the number tell you <b>where</b>.</p><p class="prose">This is the idea most likely to get tangled. Make sure it's solid before moving on. Next, you'll sit up with the guitar.</p><div data-w="q"></div></section>`,
- mount(r){mount(r,'pl',Placement());mount(r,'pr',Pressure());
+ mount(r){mount(r,'pr',Pressure());
    mount(r,'fs',FollowString());mount(r,'nc',NoteCheck([[4,2],[3,2],[5,2],[2,1],[3,1],[4,3],[2,3],[5,3],[1,1],[3,2],[6,3],[1,3],[4,1],[2,2],[5,1],[6,2]],{lap:true,listen:'Listening… string, fret, pluck.'}));
    mount(r,'zig',Player(SONGS.zig,{frets:3,bpm:40}));mount(r,'q',TermQuiz([
    {q:'In tab, a number further to the right means…',o:['play it later','play it closer to the body'],a:0,why:'Yes. Left to right is the order in time.',no:'That\'s the trap. Position on the neck comes only from the number.'},
@@ -1527,7 +1542,7 @@ const L=[
   <section class="block"><div class="big-idea"><span class="eyebrow">Reveal</span><h3>You just played an Em chord!</h3>
     <p class="prose">Here's a map of what your fingers were doing. A chord diagram is a picture of the neck standing up: headstock at the top, thicker strings on the left.</p>
     <div class="chords"><div data-w="em"></div><ul class="points" style="flex:1;min-width:220px"><li>Circle above a string: play it open.</li><li>Dot: put a finger here.</li><li>Middle finger on string 5, ring finger on string 4, both at the 2nd fret. Exactly what you just did.</li></ul></div></div></section>`,
- mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70,ring:true}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70,ring:true}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord({...CH.Em,fingers:{}}));}},
+ mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95,listen:true}));mount(r,'s2',Player(SONGS.nem,{frets:3,bpm:70,ring:true,listen:true}));mount(r,'s3',Player(SONGS.nemEm,{frets:3,bpm:70,ring:true}));mount(r,'s4',Player(SONGS.emStrum,{frets:3,bpm:70}));mount(r,'em',Chord({...CH.Em,fingers:{}}));}},
 
 {t:'One Finger per Fret',html:`
   <p class="lead">Give each finger its own fret: finger 1 on fret 1, finger 2 on fret 2, finger 3 on fret 3. Your hand stays in one place, and every note is ready.</p>
@@ -1710,7 +1725,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v69';
+window.APP_VERSION = 'v70';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

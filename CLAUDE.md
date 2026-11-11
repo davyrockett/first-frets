@@ -125,6 +125,11 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   `lap:true`) and `TabDrill` (Tab Practice) have a Start listening button and move on when the mic hears the right
   note; tapping still works as a backup. TabDrill no longer has a Tap/Play mode switch. Keep new instructions
   guitar-first.
+- **Instant right/wrong (David, 2026-11-11, v69–70):** in the listening tab games the highlight bar turns pale green or red
+  with an outline, and a tick or cross badge pops above it (`Tab(…,{badge:true})`, `tab.mark('ok'|'no')`; red clears
+  after 1.5 s). NoteCheck's target line does the same. `Player(…,{listen:true})` adds Start listening to a song
+  (single notes only): Seven Nation Army and Nothing Else Matters in Your First Songs. Reading Tab: Left Hand no longer
+  has "Where exactly to put your finger" (the video covers it); `Placement()` and `img/neck.webp` are unused now.
 - **YouTube clips (David, 2026-11-11, v65):** Good Guitarist's "Learn How To Read TAB in 5 Minutes"
   (youtube.com/watch?v=pQC3JsbgaTw) matches the lap-first method. Two embeds (youtube-nocookie, `start`/`end`):
   0:07–0:55 under Step 1 Which string, 0:58–2:16 under Step 2 Which fret. They need internet (not cached). David
