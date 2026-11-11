@@ -1534,10 +1534,22 @@ const L=[
  mount(r){mount(r,'dr',TabDrill());mount(r,'pa1',Player(SONGS.pa1,{frets:3,bpm:40,count:4}));mount(r,'pa2',Player(SONGS.pa2,{frets:3,bpm:40,count:4}));}},
 
 {t:'Your First Songs',html:`
-  <p class="lead">Your first song, a famous riff. Press Play and play along, or tap Start listening and play it at your own pace while the app checks each note.</p>
-  <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, string 4 and string 5. It starts on open string 4.</p><div data-w="s1"></div></div>
-`,
- mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95,listen:true}));}},
+  <p class="lead">Songs to play on your guitar: a famous riff to start, then tunes you already know, then riffs further up the neck. Press Play and play along, starting at Very slow.</p>
+  <div class="song"><span class="eyebrow">Two strings</span><h3>Seven Nation Army</h3><p class="sub">The whole riff uses just two strings, string 4 and string 5. It starts on open string 4. Tap Start listening to play it at your own pace while the app checks each note.</p><div data-w="s1"></div></div>
+  <section class="block"><span class="eyebrow">Part 2</span><h3>Melodies</h3>  <p class="prose">Tunes you already know, written in tab. When you know how a tune goes, you can hear your own mistakes.</p>
+  <p class="prose">They all use one finger per fret: fret 1 is finger 1, fret 3 is finger 3. Play along on your guitar, starting at Very slow.</p>
+  <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Mary Had a Little Lamb</h3><div data-w="m1"></div></div>
+  <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Ode to Joy</h3><p class="sub">Beethoven's tune. Same notes as Mary, plus fret 1 on string 1.</p><div data-w="m2"></div></div>
+  <div class="song"><span class="eyebrow">Strings 1, 2 and 3</span><h3>Twinkle, Twinkle, Little Star</h3><p class="sub">String 3 joins in. Its 2nd fret is finger 2.</p><div data-w="m3"></div></div>
+  <div class="song"><span class="eyebrow">Strings 1, 2 and 3</span><h3>Happy Birthday</h3><p class="sub">Three beats to a bar, so the count-in is 1, 2, 3. The tune starts with two quick notes.</p><div data-w="m4"></div></div></section>
+  <section class="block"><span class="eyebrow">Part 3</span><h3>Riffs</h3>  <p class="prose">A riff is a short pattern that a song keeps coming back to. Seven Nation Army is one. These go further up the neck, past fret 3.</p>
+  <p class="prose">Counting past fret 3: keep counting the spaces from the nut, 4, 5, 6. Most guitars have a dot at fret 5. If yours also has one at fret 3, fret 5 is the second dot. Fret 6 is the space right after fret 5.</p>
+  <div class="song"><span class="eyebrow">String 6 only</span><h3>Peter Gunn</h3><p class="sub">All on the thickest string. Try finger 1 for fret 2, finger 2 for fret 3, and finger 4, your pinky, for fret 5.</p><div data-w="r1"></div></div>
+  <div class="song"><span class="eyebrow">String 4 only</span><h3>Smoke on the Water</h3><p class="sub">All on string 4. Try finger 1 for fret 3, finger 3 for fret 5, and finger 4 for fret 6.</p><div data-w="r2"></div></div></section>`,
+ mount(r){mount(r,'s1',Player(SONGS.sna,{frets:3,bpm:95,listen:true}));
+   const o={frets:3,bpm:55,count:4,finger:true};
+   mount(r,'m1',Player(SONGS.mary,o));mount(r,'m2',Player(SONGS.ode,o));mount(r,'m3',Player(SONGS.twinkle,o));mount(r,'m4',Player(SONGS.bday,{...o,count:3}));
+   mount(r,'r1',Player(SONGS.gunn,{frets:7,bpm:55,count:4}));mount(r,'r2',Player(SONGS.smoke,{frets:7,bpm:55,count:4}));}},
 
 {t:'One Finger per Fret',html:`
   <p class="lead">Give each finger its own fret: finger 1 on fret 1, finger 2 on fret 2, finger 3 on fret 3. Your hand stays in one place, and every note is ready.</p>
@@ -1549,23 +1561,6 @@ const L=[
   <section class="block"><div class="song"><span class="eyebrow">Two strings</span><h3>Crossing over</h3><p class="sub">Fingers 1, 2, 3 on string 2, then the same on string 1. Your hand doesn't move; only your fingers do.</p><div data-w="f2"></div></div></section>
   <section class="block"><div class="song"><span class="eyebrow">Every string</span><h3>All the way across</h3><p class="sub">Fingers 1, 2, 3 on each string, from string 6 to string 1. Press, follow, touch, pluck on every string.</p><div data-w="f3"></div></div></section>`,
  mount(r){mount(r,'f1',Player(SONGS.ff1,{frets:3,bpm:55,count:4,finger:true}));mount(r,'f2',Player(SONGS.ff2,{frets:3,bpm:55,count:4,finger:true}));mount(r,'f3',Player(SONGS.ff3,{frets:3,bpm:55,count:3,finger:true}));}},
-
-{t:'Melodies',html:`
-  <p class="lead">Tunes you already know, written in tab. When you know how a tune goes, you can hear your own mistakes.</p>
-  <p class="prose">They all use one finger per fret: fret 1 is finger 1, fret 3 is finger 3. Play along on your guitar, starting at Very slow.</p>
-  <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Mary Had a Little Lamb</h3><div data-w="m1"></div></div>
-  <div class="song"><span class="eyebrow">Strings 1 and 2</span><h3>Ode to Joy</h3><p class="sub">Beethoven's tune. Same notes as Mary, plus fret 1 on string 1.</p><div data-w="m2"></div></div>
-  <div class="song"><span class="eyebrow">Strings 1, 2 and 3</span><h3>Twinkle, Twinkle, Little Star</h3><p class="sub">String 3 joins in. Its 2nd fret is finger 2.</p><div data-w="m3"></div></div>
-  <div class="song"><span class="eyebrow">Strings 1, 2 and 3</span><h3>Happy Birthday</h3><p class="sub">Three beats to a bar, so the count-in is 1, 2, 3. The tune starts with two quick notes.</p><div data-w="m4"></div></div>`,
- mount(r){const o={frets:3,bpm:55,count:4,finger:true};
-   mount(r,'m1',Player(SONGS.mary,o));mount(r,'m2',Player(SONGS.ode,o));mount(r,'m3',Player(SONGS.twinkle,o));mount(r,'m4',Player(SONGS.bday,{...o,count:3}));}},
-
-{t:'Riffs',html:`
-  <p class="lead">A riff is a short pattern that a song keeps coming back to. You already know one: Seven Nation Army. These go further up the neck, past fret 3.</p>
-  <p class="prose">Counting past fret 3: keep counting the spaces from the nut, 4, 5, 6. Most guitars have a dot at fret 5. If yours also has one at fret 3, fret 5 is the second dot. Fret 6 is the space right after fret 5.</p>
-  <div class="song"><span class="eyebrow">String 6 only</span><h3>Peter Gunn</h3><p class="sub">All on the thickest string. Try finger 1 for fret 2, finger 2 for fret 3, and finger 4, your pinky, for fret 5.</p><div data-w="r1"></div></div>
-  <div class="song"><span class="eyebrow">String 4 only</span><h3>Smoke on the Water</h3><p class="sub">All on string 4. Try finger 1 for fret 3, finger 3 for fret 5, and finger 4 for fret 6.</p><div data-w="r2"></div></div>`,
- mount(r){mount(r,'r1',Player(SONGS.gunn,{frets:7,bpm:55,count:4}));mount(r,'r2',Player(SONGS.smoke,{frets:7,bpm:55,count:4}));}},
 
 {t:'Two Notes at Once',html:`
   <p class="lead">Stacked numbers in tab mean "play these strings together." Two notes together on the thick strings is the sound of a lot of rock music.</p>
@@ -1715,7 +1710,7 @@ const OLD_ORDER=['Parts of the Guitar','Words We Use','Holding the Guitar','Righ
 const START_HASH=location.hash; // reference.js opens #scales etc. after go() replaces the hash
 // Sections renamed or merged in v48 (lap-first order).
 // v61: Right Hand Basics and Reading Tab became Reading Tab: Right Hand / Left Hand; Tuning moved to section 2.
-const RENAMED={'Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up','Right Hand Basics':'Reading Tab: Right Hand','Reading Tab':'Reading Tab: Right Hand','Which String?':'Reading Tab: Right Hand','The Guitar\'s Map':'Reading Tab: Left Hand','Same String, Both Hands':'Reading Tab: Left Hand',
+const RENAMED={'Melodies':'Your First Songs','Riffs':'Your First Songs','Words We Use':'Parts of the Guitar','Holding the Guitar':'Pick It Up','Right Hand Basics':'Reading Tab: Right Hand','Reading Tab':'Reading Tab: Right Hand','Which String?':'Reading Tab: Right Hand','The Guitar\'s Map':'Reading Tab: Left Hand','Same String, Both Hands':'Reading Tab: Left Hand',
   'Reading Tab – Right Hand':'Reading Tab: Right Hand','Reading Tab – Left Hand':'Reading Tab: Left Hand'}; // v61 names
 const hm=/^#s(\d+)$/.exec(location.hash),saved0=store.get('sec',OLD_ORDER[store.get('cur',0)]),saved=RENAMED[saved0]||saved0;
 go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
@@ -1726,7 +1721,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v71';
+window.APP_VERSION = 'v72';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

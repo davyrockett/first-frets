@@ -132,7 +132,10 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
   has "Where exactly to put your finger" (the video covers it); `Placement()` and `img/neck.webp` are unused now.
 - **Chords start from the lap piece (David, 2026-11-11, v71):** Nothing Else Matters (sitting up), the two-fingers piece, the
   thumb sweep and the "You just played an Em chord!" reveal moved from Your First Songs to the start of Chord Diagrams.
-  Your First Songs now holds only Seven Nation Army.
+  Your First Songs then held only Seven Nation Army.
+- **Songs in one place (David, 2026-11-11, v72):** Melodies and Riffs were merged into Your First Songs (7) as Part 2 and
+  Part 3, after Seven Nation Army. 11 sections now: … Tab Practice · Your First Songs · One Finger per Fret · Two Notes at
+  Once · Chord Diagrams · Em and Am Songs. Old saved names map through `RENAMED`; `#sN` links after 7 shifted down by two.
 - **YouTube clips (David, 2026-11-11, v65):** Good Guitarist's "Learn How To Read TAB in 5 Minutes"
   (youtube.com/watch?v=pQC3JsbgaTw) matches the lap-first method. Two embeds (youtube-nocookie, `start`/`end`):
   0:07–0:55 under Step 1 Which string, 0:58–2:16 under Step 2 Which fret. They need internet (not cached). David
