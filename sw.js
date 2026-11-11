@@ -2,7 +2,7 @@
 //
 // IMPORTANT: whenever any file below changes, bump VERSION.
 // That is how phones and iPads learn there's an update to download.
-const VERSION = 'v65';
+const VERSION = 'v66';
 const CACHE = `firstfrets-${VERSION}`;
 const FONTS = 'guitar-fonts';
 

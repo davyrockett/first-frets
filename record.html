@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Test Clips</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<!--
+  TEMPORARY page for David (2026-11-11): records test clips of a real guitar through the same
+  microphone settings the tuner and the listening exercises use, so Claude can test them on real sound.
+  Not linked from the app and not cached by sw.js. Delete this file when the testing is done.
+-->
+<style>
+:root{
+  --bg:#F1F0EC; --surface:#FFFFFF; --sunk:#E7E5DF; --ink:#1E1B18; --muted:#676767; --line:#D8D4CC;
+  --accent:#F57C14; --accent-soft:#FDE3CC; --good:#2E7D4F; --bad:#B23A28;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A3A3A3; --line:#3B342D;
+  --accent:#FF9433; --accent-soft:#422712; --good:#5DBB84; --bad:#E5735F;}}
+:root[data-theme="dark"]{
+  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A3A3A3; --line:#3B342D;
+  --accent:#FF9433; --accent-soft:#422712; --good:#5DBB84; --bad:#E5735F;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 var(--f-body);
+  padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(110px + env(safe-area-inset-bottom,0px))}
+main{max-width:680px;margin:0 auto}
+h1{font:800 34px/1 var(--f-display);margin:8px 0 6px;letter-spacing:.01em}
+h2{font:800 22px/1.1 var(--f-display);margin:26px 0 8px}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 14px 12px;margin:10px 0}
+.card.done{border-color:var(--good)}
+.head{display:flex;gap:10px;align-items:baseline}
+.num{font:800 20px/1 var(--f-display);color:var(--accent);min-width:1.6em}
+.title{font-weight:700}
+.tick{margin-left:auto;color:var(--good);font-weight:700;font-size:15px;white-space:nowrap}
+.how{margin:6px 0 10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:8px;
+  cursor:pointer;font:700 15px/1.2 var(--f-body);touch-action:manipulation}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1E1B18}
+.btn.rec{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);min-width:3.4em}
+.meter{flex:1 1 80px;height:10px;background:var(--sunk);border-radius:5px;overflow:hidden;min-width:60px}
+.meter i{display:block;height:100%;width:0;background:var(--good);transition:width .05s}
+.meter.hot i{background:var(--bad)}
+textarea{width:100%;margin-top:8px;font:15px/1.35 var(--f-body);color:var(--ink);background:var(--bg);
+  border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical;min-height:2.6em}
+.setup li{margin-bottom:6px}
+.send{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.send .in{max-width:680px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.send .msg{flex:1;font-size:14px;color:var(--muted)}
+#links a{display:block;color:var(--accent);margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+  <h1>Test Clips</h1>
+  <p class="muted">A temporary page for testing the tuner and the "listen to my guitar" checks. It records through the same microphone settings the app uses. Your clips stay on this phone until you send them.</p>
+
+  <h2>Before you start</h2>
+  <ul class="setup">
+    <li>Use the guitar a beginner would have (your acoustic is ideal), tuned with your own tuner.</li>
+    <li>Put the phone where a student would: on a table or music stand about an arm's length away, bottom edge (the mic) toward the guitar. Unless a clip says otherwise, keep it there.</li>
+    <li>Quiet room, and don't talk during a clip (the clip names say what's in it). Hold the strings still when you press Record and when you stop.</li>
+    <li>Pluck with your thumb, the way the students are taught.</li>
+    <li>Anything worth knowing (a string buzzed, the dog barked, what your tuner said) goes in the note box under the clip.</li>
+  </ul>
+
+  <div id="clips"></div>
+
+  <h2>Sending</h2>
+  <p>Tap <b>Send clips</b> at the bottom. On the iPhone, choose <b>Save to Files</b>, then attach them in the Claude chat with the <b>+</b> button. A short "info" file comes along with them (which phone, mic settings, your notes).</p>
+  <div id="links"></div>
+  <p><button class="btn" id="clear" type="button">Delete all clips from this phone</button></p>
+</main>
+
+<div class="send"><div class="in">
+  <span class="msg" id="count">No clips yet.</span>
+  <button class="btn primary" id="send" type="button" disabled>Send clips</button>
+</div></div>
+
+<script>
+try{const t=JSON.parse(localStorage.getItem('bg.theme'));if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}
+
+// The shot list. secs = suggested length (recording stops by itself at 45 s).
+const CLIPS=[
+  ['open6','Open string 6 (low E), let it ring','Pluck once at a normal strength and let it ring until you can barely hear it.',15],
+  ['open5','Open string 5 (A), let it ring','Same: one normal pluck, let it die away.',15],
+  ['open4','Open string 4 (D), let it ring','One normal pluck, let it die away.',15],
+  ['open3','Open string 3 (G), let it ring','One normal pluck, let it die away.',15],
+  ['open2','Open string 2 (B), let it ring','One normal pluck, let it die away.',15],
+  ['open1','Open string 1 (high E), let it ring','One normal pluck, let it die away.',15],
+  ['soft6','Soft plucks, string 6','Three gentle plucks, like a nervous beginner, about 3 seconds apart.',12],
+  ['soft1','Soft plucks, string 1','Three gentle plucks, about 3 seconds apart.',12],
+  ['hard6','Hard pluck, string 6','One really firm pluck (the string slaps the frets a little). Let it ring.',12],
+  ['across','All six, low to high','Strings 6, 5, 4, 3, 2, 1, one pluck each, about 2 seconds apart.',16],
+  ['flat5','String 5 a little flat','Tune string 5 a little flat (your tuner says about 15 to 25 cents flat). Pluck twice, 4 seconds apart. Write the cents in the note.',12],
+  ['sharp5','String 5 a little sharp','Tune string 5 a little sharp (about 15 to 25 cents). Pluck twice. Write the cents in the note.',12],
+  ['flat6','String 6 way off','Tune string 6 about a half step flat (your tuner reads around E♭). Pluck twice. Write what your tuner said. Then tune everything back.',12],
+  ['frets','Fretted notes from the lessons','String 1 fret 3, string 2 fret 1, string 3 fret 2, string 6 fret 3: one pluck each, about 3 seconds apart.',16],
+  ['buzz','A buzzy beginner note','String 2 fret 1, pressed too lightly so it buzzes or sounds dull. Three plucks.',12],
+  ['twostr','Two strings by accident','Pluck string 3, and let your thumb also catch string 2 (both ring). Do it three times.',12],
+  ['quick','Quick notes','String 1 open, fret 1, fret 3, fret 1, open, one a second, then the same twice as fast.',14],
+  ['noise','With background noise','TV, music or someone talking in the room, at a normal level. Pluck strings 6, 4 and 1, about 3 seconds apart.',14],
+  ['far','Phone across the room','Phone about 2 metres away. Pluck strings 6, 3 and 1, about 3 seconds apart, normal strength.',14],
+  ['room','Just the room','Ten seconds of nothing: guitar quiet, room as it normally is.',10],
+];
+
+const $=s=>document.querySelector(s);
+const el=(t,c,txt)=>{const e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;};
+
+/* ---------- saved clips (IndexedDB, so a locked phone or reload doesn't lose them) ---------- */
+let db=null;const saved={};
+function openDB(){return new Promise(r=>{try{const q=indexedDB.open('ff-testclips',1);
+  q.onupgradeneeded=()=>q.result.createObjectStore('clips');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null);}catch(e){r(null)}});}
+function put(k,v){if(!db)return;try{db.transaction('clips','readwrite').objectStore('clips').put(v,k);}catch(e){}}
+function del(k){if(!db)return;try{db.transaction('clips','readwrite').objectStore('clips').delete(k);}catch(e){}}
+function all(){return new Promise(r=>{if(!db)return r({});const out={},s=db.transaction('clips').objectStore('clips').openCursor();
+  s.onsuccess=()=>{const c=s.result;if(c){out[c.key]=c.value;c.continue();}else r(out);};s.onerror=()=>r(out);});}
+
+/* ---------- microphone: the same request as the tuner and Listener in index.html ---------- */
+let AC=null,stream=null,src=null,proc=null,sink=null,track=null,settings={};
+let cur=null; // {id,chunks,len,started,ui}
+async function micOn(){
+  if(!AC){const C=window.AudioContext||window.webkitAudioContext;AC=new C();}
+  if(AC.state!=='running')try{await AC.resume();}catch(e){}
+  if(stream)return true;
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});}
+  catch(e){alert('Recording needs the microphone. Allow microphone access for this site in Settings, then try again.');return false;}
+  track=stream.getAudioTracks()[0];try{settings=track.getSettings();}catch(e){settings={};}
+  src=AC.createMediaStreamSource(stream);
+  // Raw microphone samples, before the app's own filters (those can be applied afterwards).
+  proc=AC.createScriptProcessor(4096,1,1);sink=AC.createGain();sink.gain.value=0;
+  src.connect(proc);proc.connect(sink);sink.connect(AC.destination);
+  proc.onaudioprocess=e=>{
+    if(!cur)return;const x=e.inputBuffer.getChannelData(0);cur.chunks.push(new Float32Array(x));cur.len+=x.length;
+    let s=0,pk=0;for(let i=0;i<x.length;i++){s+=x[i]*x[i];const a=Math.abs(x[i]);if(a>pk)pk=a;}
+    const rms=Math.sqrt(s/x.length),w=Math.min(100,Math.max(0,(20*Math.log10(rms+1e-9)+60)/60*100));
+    cur.ui.bar.style.width=w+'%';if(pk>.98)cur.ui.meter.classList.add('hot');
+  };
+  return true;
+}
+function micOff(){
+  if(proc){proc.onaudioprocess=null;try{src.disconnect();proc.disconnect();sink.disconnect();}catch(e){}}
+  if(stream)stream.getTracks().forEach(t=>t.stop());stream=src=proc=sink=null;
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(cur)stopRec();micOff();}});
+
+function wav(chunks,len,sr){
+  const b=new ArrayBuffer(44+len*2),v=new DataView(b);let o=0;
+  const str=s=>{for(let i=0;i<s.length;i++)v.setUint8(o++,s.charCodeAt(i));},u32=n=>{v.setUint32(o,n,true);o+=4;},u16=n=>{v.setUint16(o,n,true);o+=2;};
+  str('RIFF');u32(36+len*2);str('WAVE');str('fmt ');u32(16);u16(1);u16(1);u32(sr);u32(sr*2);u16(2);u16(16);str('data');u32(len*2);
+  for(const c of chunks)for(let i=0;i<c.length;i++){const s=Math.max(-1,Math.min(1,c[i]));v.setInt16(o,s<0?s*32768:s*32767,true);o+=2;}
+  return new Blob([b],{type:'audio/wav'});
+}
+
+async function startRec(id,ui){
+  if(cur)stopRec();
+  if(!await micOn())return;
+  cur={id,chunks:[],len:0,started:performance.now(),ui};ui.meter.classList.remove('hot');
+  ui.rec.textContent='Stop';ui.rec.classList.add('rec');
+  cur.timer=setInterval(()=>{const s=(performance.now()-cur.started)/1000;ui.time.textContent=s.toFixed(1)+' s';if(s>=45)stopRec();},100);
+}
+function stopRec(){
+  const c=cur;if(!c)return;cur=null;clearInterval(c.timer);
+  c.ui.rec.textContent='Record again';c.ui.rec.classList.remove('rec');c.ui.bar.style.width='0';
+  if(c.len<AC.sampleRate*.5){c.ui.time.textContent='too short';return;}
+  const rec={blob:wav(c.chunks,c.len,AC.sampleRate),secs:c.len/AC.sampleRate,sr:AC.sampleRate,at:new Date().toISOString(),
+    settings,note:(saved[c.id]&&saved[c.id].note)||c.ui.note.value||'',hot:c.ui.meter.classList.contains('hot')};
+  saved[c.id]=rec;put(c.id,rec);show(c.id);
+}
+
+/* ---------- the list ---------- */
+const UI={};
+CLIPS.forEach(([id,title,how,secs],i)=>{
+  const card=el('div','card'),head=el('div','head');
+  head.append(el('span','num',i+1),el('span','title',title));const tick=el('span','tick');head.append(tick);
+  const p=el('p','how muted',how+` (about ${secs} s)`);
+  const row=el('div','row'),rec=el('button','btn primary','Record'),time=el('span','time','');
+  const meter=el('div','meter'),bar=el('i');meter.append(bar);
+  const play=el('button','btn','Listen');play.disabled=true;
+  rec.type=play.type='button';row.append(rec,time,meter,play);
+  const note=el('textarea');note.rows=1;note.placeholder='Note (optional)';
+  card.append(head,p,row,note);$('#clips').append(card);
+  const ui=UI[id]={card,tick,rec,time,meter,bar,play,note};
+  rec.onclick=()=>{if(cur&&cur.id===id)stopRec();else startRec(id,ui);};
+  play.onclick=()=>{const r=saved[id];if(!r)return;const a=new Audio(URL.createObjectURL(r.blob));a.play();};
+  note.oninput=()=>{if(saved[id]){saved[id].note=note.value;put(id,saved[id]);}};
+});
+function show(id){
+  const ui=UI[id],r=saved[id];
+  ui.card.classList.toggle('done',!!r);ui.play.disabled=!r;
+  ui.tick.textContent=r?('✓ '+r.secs.toFixed(0)+' s'+(r.hot?' · too loud':'')):'';
+  if(r){ui.rec.textContent='Record again';ui.time.textContent='';if(r.note&&!ui.note.value)ui.note.value=r.note;}
+  const n=Object.keys(saved).length;
+  $('#count').textContent=n?`${n} of ${CLIPS.length} clips recorded.`:'No clips yet.';$('#send').disabled=!n;
+}
+
+function info(){
+  const L=['First Frets test clips','Recorded: '+new Date().toString(),'Device: '+navigator.userAgent,
+    'Standalone (Home Screen app): '+(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true),''];
+  CLIPS.forEach(([id,title],i)=>{const r=saved[id];if(!r)return;
+    L.push(`${String(i+1).padStart(2,'0')}-${id}.wav  ${title}`,`   ${r.secs.toFixed(1)} s, ${r.sr} Hz${r.hot?', clipped (too loud)':''}, ${r.at}`,
+      '   mic: '+JSON.stringify(r.settings||{}),r.note?'   note: '+r.note:'',''); });
+  return L.filter(x=>x!=='').join('\n')+'\n';
+}
+function files(){
+  const out=[];CLIPS.forEach(([id],i)=>{const r=saved[id];if(r)out.push(new File([r.blob],`${String(i+1).padStart(2,'0')}-${id}.wav`,{type:'audio/wav'}));});
+  out.push(new File([info()],'info.txt',{type:'text/plain'}));return out;
+}
+$('#send').onclick=async()=>{
+  if(cur)stopRec();
+  const f=files();
+  if(navigator.canShare&&navigator.canShare({files:f})){try{await navigator.share({files:f,title:'First Frets test clips'});return;}catch(e){if(e.name==='AbortError')return;}}
+  // No share sheet (most computers): download links instead.
+  const box=$('#links');box.textContent='';
+  f.forEach(x=>{const a=el('a','',x.name);a.href=URL.createObjectURL(x);a.download=x.name;box.append(a);});
+  box.scrollIntoView({behavior:'smooth'});
+};
+$('#clear').onclick=()=>{
+  if(!confirm('Delete all recorded clips from this phone?'))return;
+  for(const id of Object.keys(saved)){delete saved[id];del(id);UI[id].note.value='';UI[id].rec.textContent='Record';show(id);}
+};
+
+openDB().then(async d=>{db=d;Object.assign(saved,await all());CLIPS.forEach(([id])=>show(id));});
+</script>
+</body>
+</html>
