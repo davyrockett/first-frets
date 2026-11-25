@@ -438,10 +438,10 @@ figcaption{font-size:14px;color:var(--muted)}
 .menu-hide{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--muted);font-size:14px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer}
 .menu-hide:hover{background:var(--sunk);color:var(--ink)}
 .tools .menu-show{display:none}
-/* Menu hidden (wide screens): the left menu folds into a slim top bar, lessons use the full width and tabs grow (up to 1.6x). */
+/* Menu hidden (wide screens): the left menu folds into a slim top bar pinned to the top, lessons use the full width and tabs grow (up to 1.6x). */
 @media (min-width:861px){
   .app.nomenu{grid-template-columns:minmax(0,1fr)}
-  .nomenu .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px clamp(16px,4vw,56px)}
+  .nomenu .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px clamp(16px,4vw,56px)}
   .nomenu .brand{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
   .nomenu .brand h1{font-size:28px}
   .nomenu .brand p,.nomenu .nav,.nomenu .menu-hide{display:none}
@@ -1745,7 +1745,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v79';
+window.APP_VERSION = 'v80';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
