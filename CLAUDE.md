@@ -166,6 +166,10 @@ students. Live: https://www.davyrockett.com/first-frets/ (`#s3` etc. link to a s
 - **Test clips (2026-11-11):** a temporary `record.html` recorded David's real guitar through the tuner's mic settings
   (raw WAV + info.txt) for the v67 tuner fixes; deleted the same day once David confirmed the tuner works. Bring it
   back from git history (commit 50bbd27) if more real-guitar testing is needed.
+- **Hide menu (David, 2026-11-24, v79):** "« Hide menu" at the bottom of the left menu (wide screens only; phones
+  already use a top strip) folds it into a slim top bar with "☰ Menu" to bring it back. Lessons then use up to 1240px
+  and tabs grow to fill the width (up to 1.6x their normal size; long tabs keep their size and scroll). Remembered per
+  device (`bg.menuHidden`). Tab SVGs carry `--w` (natural width) for this.
 - Students are absolute beginners: keep wording simple and friendly.
 - Parts of the Guitar and Reading Tab: Right Hand use a guitar line drawing David supplied (v21, `img/guitar-lines.png`, used as an SVG mask so the
   lines follow light/dark mode; part outlines are in its 784 × 1168 pixel space). The neck close-up photo is

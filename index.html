@@ -435,7 +435,23 @@ figcaption{font-size:14px;color:var(--muted)}
 .mt-lights span.first.on{background:var(--accent)}
 .mt-btns{justify-content:center}
 .mt-btns .btn{min-width:130px;padding:12px 16px}
+.menu-hide{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--muted);font-size:14px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer}
+.menu-hide:hover{background:var(--sunk);color:var(--ink)}
+.tools .menu-show{display:none}
+/* Menu hidden (wide screens): the left menu folds into a slim top bar, lessons use the full width and tabs grow (up to 1.6x). */
+@media (min-width:861px){
+  .app.nomenu{grid-template-columns:minmax(0,1fr)}
+  .nomenu .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px clamp(16px,4vw,56px)}
+  .nomenu .brand{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .nomenu .brand h1{font-size:28px}
+  .nomenu .brand p,.nomenu .nav,.nomenu .menu-hide{display:none}
+  .nomenu .tools{margin:0}
+  .nomenu .tools .menu-show{display:inline-flex}
+  .nomenu .lesson{max-width:1240px}
+  .nomenu .tab{width:100%;height:auto;min-width:var(--w);max-width:calc(var(--w) * 1.6);margin-inline:auto}
+}
 @media (max-width:860px){
+  .menu-hide{display:none}
   .app{grid-template-columns:minmax(0,1fr)}
   .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;height:auto;border-right:0;border-bottom:1px solid var(--line);background:var(--bg);padding:12px 16px;gap:10px}
   .brand{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -456,9 +472,10 @@ figcaption{font-size:14px;color:var(--muted)}
 <body>
 <div class="app">
   <aside class="rail">
-    <div class="brand"><h1>First Frets</h1><p>A guitar method for absolute beginners</p><div class="tools"><button type="button" class="btn" id="tuner-open">Tuner</button><button type="button" class="btn" id="metro-open">Metronome</button><button type="button" class="btn" id="ref-open">Reference</button><button type="button" class="btn icon" id="settings-open" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.5 7.5 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.5 7.5 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.5 7.5 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.5 7.5 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button></div>
+    <div class="brand"><h1>First Frets</h1><p>A guitar method for absolute beginners</p><div class="tools"><button type="button" class="btn menu-show" id="menu-show" aria-label="Show the menu">☰ Menu</button><button type="button" class="btn" id="tuner-open">Tuner</button><button type="button" class="btn" id="metro-open">Metronome</button><button type="button" class="btn" id="ref-open">Reference</button><button type="button" class="btn icon" id="settings-open" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.5 7.5 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.5 7.5 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.5 7.5 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.5 7.5 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button></div>
     </div>
     <ul class="nav" id="nav"></ul>
+    <button type="button" class="menu-hide" id="menu-hide" title="Hide the menu so lessons and tabs can be bigger">« Hide menu</button>
   </aside>
   <main id="main"></main>
 </div>
@@ -631,7 +648,7 @@ function Soundhole({onTap=null,readout=true,hint='Tap a string to hear it.'}={})
 /* ---------- tab ---------- */
 function Tab(events,{onCol,badge=false}={}){
   const colW=44,x0=48,hasCh=events.some(e=>e.c),top=hasCh?40:badge?38:18,ly=s=>top+(s-1)*20,W=x0+events.length*colW+14,H=ly(6)+16;
-  let s=`<svg class="tab" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Tab">`;
+  let s=`<svg class="tab" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="--w:${W}px" role="img" aria-label="Tab">`;
   events.forEach((e,i)=>{s+=`<rect class="cur" data-c="${i}" x="${x0+i*colW+3}" y="${ly(1)-12}" width="${colW-6}" height="${ly(6)-ly(1)+24}" rx="6"/>`;});
   for(let k=1;k<=6;k++){s+=`<line class="l" x1="${x0-12}" x2="${W-10}" y1="${ly(k)}" y2="${ly(k)}"/><text class="tl" x="18" y="${ly(k)}">${k}</text>`;}
   s+=`<line class="bar" x1="${x0-12}" x2="${x0-12}" y1="${ly(1)}" y2="${ly(6)}"/><line class="bar" x1="${W-10}" x2="${W-10}" y1="${ly(1)}" y2="${ly(6)}"/>`;
@@ -659,7 +676,7 @@ function Tab(events,{onCol,badge=false}={}){
     setCur(i){clearTimeout(markT);el.querySelectorAll('.mk').forEach(m=>m.classList.remove('ok','no'));
       el.querySelectorAll('.cur').forEach(r=>{r.classList.remove('ok','no');r.classList.toggle('on',+r.dataset.c===i);});
     const r=el.querySelector(`.cur[data-c="${i}"]`);const sc=el.closest('.scroll');
-    if(r&&sc&&sc.scrollWidth>sc.clientWidth){const x=+r.getAttribute('x');sc.scrollTo({left:Math.max(0,x-sc.clientWidth/3),behavior:'smooth'});}}};
+    if(r&&sc&&sc.scrollWidth>sc.clientWidth){const x=+r.getAttribute('x')*(el.getBoundingClientRect().width/W||1);sc.scrollTo({left:Math.max(0,x-sc.clientWidth/3),behavior:'smooth'});}}};
 }
 
 /* ---------- song player: tab + fretboard in sync ---------- */
@@ -1601,6 +1618,11 @@ for(let k=L.length-1;k>=0;k--)if(L[k].hide)L.splice(k,1);
 
 /* ---------- shell ---------- */
 const nav=document.getElementById('nav'),main=document.getElementById('main');
+// Hide menu: folds the left menu away (wide screens) so lessons and tabs get the whole width. Remembered on this device.
+function setMenu(hidden){document.querySelector('.app').classList.toggle('nomenu',hidden);store.set('menuHidden',hidden);}
+setMenu(store.get('menuHidden',false));
+document.getElementById('menu-hide').onclick=()=>setMenu(true);
+document.getElementById('menu-show').onclick=()=>setMenu(false);
 let cur=0;
 function renderNav(){
   nav.innerHTML=L.map((l,i)=>`<li><button type="button" data-i="${i}" aria-current="${i===cur}"><span class="n">${i+1}</span><span class="t">${l.t}</span></button></li>`).join('');
@@ -1723,7 +1745,7 @@ go(hm?(+hm[1]-1):Math.max(0,L.findIndex(l=>l.t===saved)),false);
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v78';
+window.APP_VERSION = 'v79';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
